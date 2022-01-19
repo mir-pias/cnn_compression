@@ -1,5 +1,4 @@
 # cnn_compression
-Master's thesis
 
 To do:
 1. High-level SciPy prototype (if case you need a reference implementation)

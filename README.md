@@ -1,5 +1,6 @@
 # cnn_compression
-TUK Master's thesis 2022
+Master's thesis
+
 To do:
 1. High-level SciPy prototype (if case you need a reference implementation)
 2. Purely NumPy-implemented prototype

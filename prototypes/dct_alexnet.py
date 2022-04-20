@@ -56,20 +56,26 @@ class DCT_layer(nn.Module):
         self.out_features = out_features
         
         default_dtype = torch.get_default_dtype()
-        self.fc = nn.Parameter(torch.arange((self.out_features), dtype=default_dtype).reshape(-1,1))      
+        self.fc = nn.Parameter(torch.arange((self.out_features), dtype=default_dtype).reshape(-1,1))     
+        
+        self.fc.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
 
     def dct_kernel(self,t): 
-        return torch.cos(0.5 * np.pi * self.fc * (2 * t + 1) / self.out_features)
+        dct_m = np.sqrt(2/(self.out_features)) * torch.cos(0.5 * np.pi * self.fc * (2 * t + 1) / self.out_features)
+        
+        dct_m[0] = dct_m[0]/np.sqrt(2)
+        
+        return dct_m
     
         
     def forward(self,x):
 #         print(x.shape)
         t = torch.arange(x.shape[-1]).reshape(1,-1).to(device)
-        w = nn.Parameter(self.dct_kernel(t)) 
+        w = self.dct_kernel(t) 
+        
         
         y = F.linear(x,w)   
         return y
-
 
 # In[5]:
 

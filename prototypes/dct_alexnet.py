@@ -77,7 +77,109 @@ class DCT_layer(nn.Module):
         y = F.linear(x,w)   
         return y
 
+
 # In[5]:
+
+
+class DCT_conv_layer(nn.Module):
+    def __init__(self,in_channels: int,out_channels: int, kernel_size, stride=1,padding=0):
+        super(DCT_conv_layer, self).__init__()
+        
+        self.out_channels = out_channels
+        self.in_channels = in_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        
+        default_dtype = torch.get_default_dtype()
+        self.fc = nn.Parameter(torch.arange((self.kernel_size), dtype=default_dtype, device=device).reshape(-1,1))     
+        
+        self.weight = nn.Parameter(torch.empty((self.out_channels,self.in_channels,self.kernel_size,self.kernel_size), 
+                                          dtype=default_dtype, device=device))
+        
+        self.reset_parameters()
+        
+        self.weight.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
+        self.fc.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
+        
+
+    def dct_kernel(self,t): 
+        dct_m = np.sqrt(2/(self.kernel_size)) * torch.cos(0.5 * np.pi * self.fc * (2 * t + 1) / self.kernel_size)
+        
+        dct_m[0] = dct_m[0]/np.sqrt(2)
+        
+        return dct_m.to(device)
+    
+    def reset_parameters(self) -> None:
+        # Setting a=sqrt(5) in kaiming_uniform is the same as initializing with
+        # uniform(-1/sqrt(k), 1/sqrt(k)), where k = weight.size(1) * prod(*kernel_size)
+        # For more details see: https://github.com/pytorch/pytorch/issues/15314#issuecomment-477448573
+#         nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5), non)
+        k = 1/(self.in_channels * (self.kernel_size)**2)
+        nn.init.uniform_(self.weight, a= -math.sqrt(k), b = math.sqrt(k))
+        
+    def kernel_reshape(self,w):
+        dct_l1 = []
+        for i in range(self.out_channels):
+            dct_l1.append(w)
+            
+        a = torch.stack(dct_l1,0)
+        
+        dct_l2 = []
+        for i in range(self.in_channels):
+            dct_l2.append(a)
+        
+        b = torch.stack(dct_l2,1)
+        
+        return b
+        
+    def forward(self,x):
+        
+        t = torch.arange(self.kernel_size).reshape(1,-1).to(device)
+        dct_m = self.dct_kernel(t) 
+        
+#         print(self.w.shape)
+
+        w = self.weight @ dct_m   ## dct on uniform weights, weights as conv kernel 
+#         w = self.kernel_reshape(dct_m)  ## use dct_m as conv kernel
+
+#         print(x.shape)
+#         print(w.shape)
+#         print((x@w.T).shape)
+        
+        y = F.conv2d(x,w,stride = self.stride, padding = self.padding)   
+        return y
+
+# in_features = 256 * 2 * 2
+# out_features = 32
+
+# x = torch.nn.Parameter(torch.randn(batch_size,3,32,32))
+
+# dct_layer = DCT_conv_layer(3,64,3,2,1)
+
+# y = dct_layer(x.to(device))
+# y.shapeconv = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1)
+
+# conv(x).shapemaxpool = nn.MaxPool2d(kernel_size=2)
+
+# x_pool = maxpool(y)
+
+# x_pool.shapedct_layer2 = DCT_conv_layer(64,192,3,padding=1)
+
+# y2 = dct_layer2(x_pool)
+
+# y2.shapedct_layer3 = DCT_conv_layer(192,384,3,padding=1)
+# x_pool2 = maxpool(y2)
+
+# y3 = dct_layer3(x_pool2)
+# y3.shapeconv2 = nn.Conv2d(64, 192, kernel_size=3, padding=1)
+
+# conv2(conv(x)).shape
+# for X, y in trainloader:
+#     inputs, labels = X, y
+#     print(inputs.shape)
+#     break
+# In[6]:
 
 
 class AlexNet(nn.Module):
@@ -85,19 +187,30 @@ class AlexNet(nn.Module):
     def __init__(self, num_classes: int = 10) -> None:
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
+#             nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
+            DCT_conv_layer(3, 64, kernel_size=3, stride=2, padding=1),
+#             nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2),   
+#             nn.Conv2d(64, 192, kernel_size=3, padding=1),
+            DCT_conv_layer(64, 192, kernel_size=3, padding=1),
+#             nn.BatchNorm2d(192),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2),    
+#             nn.Conv2d(192, 384, kernel_size=3, padding=1),
+            DCT_conv_layer(192, 384, kernel_size=3, padding=1),
+#             nn.BatchNorm2d(384),
+            nn.ReLU(inplace=True),
+#             nn.Conv2d(384, 256, kernel_size=3, padding=1),
+            DCT_conv_layer(384, 256, kernel_size=3, padding=1),
+#             nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+#             nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            DCT_conv_layer(256, 256, kernel_size=3, padding=1),
+            nn.BatchNorm2d(256),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(64, 192, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(192, 384, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(384, 256, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2),
+
         )
         self.classifier = nn.Sequential(
             nn.Dropout(),
@@ -122,11 +235,11 @@ net = AlexNet(num_classes=10).to(device)
 print(net)
 
 
-# In[6]:
+# In[7]:
 
 
 def train(dataloader,model,criterion,optimizer):
-
+#     torch.autograd.detect_anomaly() 
     train_loss = 0.0
     for X, y in dataloader:
         inputs, labels = X.to(device), y.to(device)
@@ -145,7 +258,7 @@ def train(dataloader,model,criterion,optimizer):
     print(f'Training Loss: {train_loss:.8f}')
 
 
-# In[7]:
+# In[8]:
 
 
 def test(dataloader, model, loss_fn):
@@ -164,13 +277,13 @@ def test(dataloader, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
-# In[8]:
+# In[9]:
 
 
 import torch.optim as optim
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
 
 print("DCT_AlexNet")
 epochs = 5

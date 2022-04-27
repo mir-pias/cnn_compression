@@ -135,34 +135,7 @@ class DCT_conv_layer(nn.Module):
         y = F.conv2d(x,w,stride = self.stride, padding = self.padding)   
         return y
 
-in_features = 256 * 2 * 2
-out_features = 32
 
-x = torch.nn.Parameter(torch.randn(batch_size,3,32,32))
-
-dct_layer = DCT_conv_layer(3,64,3,2,1)
-
-y = dct_layer(x.to(device))
-y.shapeconv = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1)
-
-conv(x).shapemaxpool = nn.MaxPool2d(kernel_size=2)
-
-x_pool = maxpool(y)
-
-x_pool.shapedct_layer2 = DCT_conv_layer(64,192,3,padding=1)
-
-y2 = dct_layer2(x_pool)
-
-y2.shapedct_layer3 = DCT_conv_layer(192,384,3,padding=1)
-x_pool2 = maxpool(y2)
-
-y3 = dct_layer3(x_pool2)
-y3.shapeconv2 = nn.Conv2d(64, 192, kernel_size=3, padding=1)
-
-conv2(conv(x)).shapefor X, y in trainloader:
-    inputs, labels = X, y
-    print(inputs.shape)
-    break
 # In[6]:
 
 
@@ -198,15 +171,14 @@ class AlexNet(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Dropout(),
-#             nn.Linear(256 * 2 * 2, 4096),
-            DCT_layer(4096),
+            nn.Linear(256 * 2 * 2, 4096),
+#             DCT_layer(4096),
             nn.ReLU(inplace=True),
             nn.Dropout(),
-            DCT_layer(4096),
-#             nn.Linear(4096, 4096),
+#             DCT_layer(4096),
+            nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Linear(4096, num_classes),
-#             DCT_layer(num_classes)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -269,7 +241,7 @@ import torch.optim as optim
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
 
-print("DCT_AlexNet")
+print("DCT_conv_AlexNet")
 epochs = 5
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")

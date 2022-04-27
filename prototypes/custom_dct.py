@@ -5,6 +5,7 @@ import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 
+
 def dct2(x, norm=None):
     N = len(x)
     n = np.arange(N)

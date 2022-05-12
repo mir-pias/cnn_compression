@@ -37,8 +37,7 @@ if __name__ == '__main__':
 
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        
+      
     net = DCT_fc_AlexNet(num_classes=10).to(device)
     print(net)
 

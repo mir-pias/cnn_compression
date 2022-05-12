@@ -1,0 +1,8 @@
+DCT_layer -> LinearDCT -> old DCT linear implementation, working
+DCT_conv_layer -> same -> old DCT convolution implementation, somewhat working (?)
+
+ConvDCT -> new DCT convolution implementation, working 
+DCT_linear_layer -> new DCT linear implementation, not working
+
+jupyter notebooks -> not/somewhat working (?) implementations, new linear and old conv
+py files -> working implementations, old linear and new conv

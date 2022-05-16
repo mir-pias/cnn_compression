@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
-    file = open('DCT_alexnet_py_output.txt','w')
+    file = open('py_outputs/DCT_alexnet_py_output.txt','w')
 
 
     print("DCT_AlexNet.....new dct_conv + linear_dct")

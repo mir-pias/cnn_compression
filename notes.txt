@@ -6,3 +6,10 @@ DCT_linear_layer -> new DCT linear implementation, not working
 
 jupyter notebooks -> not/somewhat working (?) implementations, new linear and old conv
 py files -> working implementations, old linear and new conv
+
+after 5 epochs
+			Alexnet acc: 43.7%
+
+DCT_alexnet acc: 39.3%			DST_alexnet acc: 36.0%
+DCT_conv_alexnet acc: 44.1%		DST_conv_alexnet acc: 38.4%
+DCT_fc_alexnet acc: 45.3%		DST_fc_alexnet acc: 46.2%

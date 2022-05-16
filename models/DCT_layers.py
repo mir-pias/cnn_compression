@@ -45,9 +45,18 @@ class LinearDCT(nn.Module):
             )
 
     def dct_kernel(self,t): 
-        dct_m = np.sqrt(2/(self.out_features)) * torch.cos(0.5 * np.pi * self.fc * (2 * t + 1) / self.out_features)
+
+        norm = torch.rsqrt(
+            torch.full_like(
+                self.fc, 2 * self.out_features
+            ) * (
+                torch.eye(self.out_features, 1, device=t.device, dtype=t.dtype) + 1
+            )
+        )
+
+        dct_m = 2 * norm * torch.cos(0.5 * PI * self.fc * (2 * t + 1) / self.out_features)
         
-        dct_m[0] = dct_m[0]/np.sqrt(2)
+        # dct_m[0] = dct_m[0]/np.sqrt(2)
         
         return dct_m
     
@@ -151,7 +160,7 @@ class Conv2dDCT(torch.nn.Module):
                 torch.eye(self.out_channels, 1, device=x.device, dtype=x.dtype) + 1
             )
         )
-        # print('norm_c shape: ', norm_c.shape)
+        # print( norm_c)
 
         kc: torch.Tensor = 2 * norm_c * torch.cos(0.5 * PI * self.fcc * (2 * t_c + 1) / self.out_channels)
 
@@ -164,7 +173,8 @@ class Conv2dDCT(torch.nn.Module):
         )
         # print('t_l shape: ', t_l.shape)
         # print('t_c shape: ', t_c.shape)
-        # print('norm_l shape: ', norm_l.shape)
+        # print(norm_l)
+
         kl: torch.Tensor = 2 * norm_l * torch.cos(0.5 * PI * self.fcl * (2 * t_l + 1) / self.kernel_size[0])
 
         # print('kc_reshape:', kc.reshape(

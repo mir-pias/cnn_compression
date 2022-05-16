@@ -2,53 +2,28 @@ DCT_fc_AlexNet......linear_dct
  
 Epoch 1
 -------------------------------
-<<<<<<< HEAD
-Training Loss: 76.10452104 
-Test Error: Accuracy: 10.0%, Avg loss: 2.343914 
+Training Loss: 75.97052475 
+Test Error: Accuracy: 10.0%, Avg loss: 2.402267 
  
 Epoch 2
 -------------------------------
-Training Loss: 74.49078008 
-Test Error: Accuracy: 17.8%, Avg loss: 2.185598 
+Training Loss: 72.46949498 
+Test Error: Accuracy: 20.9%, Avg loss: 2.059251 
  
 Epoch 3
 -------------------------------
-Training Loss: 62.55223730 
-Test Error: Accuracy: 27.4%, Avg loss: 1.909764 
+Training Loss: 61.55216120 
+Test Error: Accuracy: 30.5%, Avg loss: 1.818794 
  
 Epoch 4
 -------------------------------
-Training Loss: 54.80217518 
-Test Error: Accuracy: 41.5%, Avg loss: 1.556138 
+Training Loss: 55.33950040 
+Test Error: Accuracy: 38.4%, Avg loss: 1.678479 
  
 Epoch 5
 -------------------------------
-Training Loss: 49.78261638 
-Test Error: Accuracy: 44.4%, Avg loss: 1.474940 
-=======
-Training Loss: 76.01962622 
-Test Error: Accuracy: 10.0%, Avg loss: 2.391320 
- 
-Epoch 2
--------------------------------
-Training Loss: 70.56549146 
-Test Error: Accuracy: 18.5%, Avg loss: 2.000761 
- 
-Epoch 3
--------------------------------
-Training Loss: 59.87547731 
-Test Error: Accuracy: 28.5%, Avg loss: 1.805383 
- 
-Epoch 4
--------------------------------
-Training Loss: 54.21084842 
-Test Error: Accuracy: 36.5%, Avg loss: 1.639296 
- 
-Epoch 5
--------------------------------
-Training Loss: 49.57272927 
-Test Error: Accuracy: 43.4%, Avg loss: 1.464940 
->>>>>>> c51b6145c2c59d51ca710cbb5f961d5007fae59f
+Training Loss: 50.46919998 
+Test Error: Accuracy: 45.3%, Avg loss: 1.467512 
  
 
  

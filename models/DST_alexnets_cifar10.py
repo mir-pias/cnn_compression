@@ -5,10 +5,10 @@ import torch.nn.functional as F
 from models.DST_layers import LinearDST, Conv2dDST 
 import math
 
-class DST_fc_AlexNet(nn.Module):
+class AlexnetLinearDST(nn.Module):
 
         def __init__(self, num_classes: int = 10) -> None:
-            super(DST_fc_AlexNet, self).__init__()
+            super(AlexnetLinearDST, self).__init__()
             self.features = nn.Sequential(
                 nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
     #             DCT_conv_layer(3, 64, kernel_size=3, stride=2, padding=1),
@@ -44,8 +44,8 @@ class DST_fc_AlexNet(nn.Module):
                 LinearDST(4096, 4096),
     #             nn.Linear(4096, 4096),
                 nn.ReLU(inplace=True),
-                nn.Linear(4096, num_classes),
-    #             DCT_layer(num_classes)
+                LinearDST(4096, num_classes),
+    #          
             )
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -55,10 +55,10 @@ class DST_fc_AlexNet(nn.Module):
             return x
 
 
-class DST_conv_AlexNet(nn.Module):
+class AlexnetConvDST(nn.Module):
 
         def __init__(self, num_classes: int = 10) -> None:
-            super(DST_conv_AlexNet, self).__init__()
+            super(AlexnetConvDST, self).__init__()
             self.features = nn.Sequential(
     #             nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
                 # DCT_conv_layer(3, 64, kernel_size=3, stride=2, padding=1),
@@ -109,10 +109,10 @@ class DST_conv_AlexNet(nn.Module):
             return x
 
 
-class DST_AlexNet(nn.Module):
+class AlexnetDST(nn.Module):
 
         def __init__(self, num_classes: int = 10) -> None:
-            super(DST_AlexNet, self).__init__()
+            super(AlexnetDST, self).__init__()
             self.features = nn.Sequential(
     #             nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
                 Conv2dDST(3, 64, kernel_size=3, stride=2, padding=1),

@@ -1,15 +1,31 @@
 DCT_layer -> LinearDCT -> old DCT linear implementation, working
-DCT_conv_layer -> same -> old DCT convolution implementation, somewhat working (?)
+DCT_conv_layer -> same -> old DCT convolution implementation, somewhat working (?) -> nope, increases trainable params, not working
 
 ConvDCT -> new DCT convolution implementation, working 
 DCT_linear_layer -> new DCT linear implementation, not working
 
-jupyter notebooks -> not/somewhat working (?) implementations, new linear and old conv
-py files -> working implementations, old linear and new conv
+jupyter notebooks -> not/somewhat working (?) implementations, new linear and old conv -> no more updates from now
+py files -> working implementations, old linear and new conv -> only conv
+
+
+17-05
 
 after 5 epochs
-			Alexnet acc: 43.7%
+					Alexnet acc: 43.7%
 
-DCT_alexnet acc: 39.3%			DST_alexnet acc: 36.0%
-DCT_conv_alexnet acc: 44.1%		DST_conv_alexnet acc: 38.4%
-DCT_fc_alexnet acc: 45.3%		DST_fc_alexnet acc: 46.2%
+AlexnetDCT acc: 39.3%				AlexnetDST acc: 36.0%
+AlexnetConvDCT acc: 44.1%			AlexnetConvDST acc: 38.4%
+AlexnetLinearDCT acc: 45.3%			AlexnetLinearDST  acc: 46.2%
+
+24-05 
+changed network names 
+
+for AlexnetLinearDCT, replacing the classification layer gives better acc, but not for AlexnetDCT
+
+after 5 epochs, with LinearDCT/LinearDST classification layer
+
+AlexnetDCT acc:	23.1%				AlexnetDST acc: 20.6%
+AlexnetLinearDCT acc: 52.3%			AlexnetLinearDST acc: 51.3%
+
+
+AlexnetLinearDFT: loss function problem

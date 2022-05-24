@@ -11,7 +11,7 @@ if __name__ == '__main__':
     import torchvision
     import torchvision.transforms as transforms
     from scipy.fftpack import dct
-    from models.DST_alexnets_cifar10 import DST_conv_AlexNet
+    from models.DST_alexnets_cifar10 import AlexnetConvDST
     ## cifar10 download problem solve
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
         
-    net = DST_conv_AlexNet(num_classes=10).to(device)
+    net = AlexnetConvDST(num_classes=10).to(device)
     print(net)
 
     def train(dataloader,model,criterion,optimizer,file):
@@ -84,10 +84,10 @@ if __name__ == '__main__':
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
-    file = open('py_outputs/DST_conv_alexnet_py_output.txt','w')
+    file = open('py_outputs/dst_conv_alexnet_py_output.txt','w')
 
-    print("DST_conv_AlexNet..........")
-    file.write("DST_conv_AlexNet.......... \n \n")
+    print("AlexnetConvDST..........Conv2dDST")
+    file.write("AlexnetConvDST..........Conv2dDST \n \n")
     epochs = 5
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")

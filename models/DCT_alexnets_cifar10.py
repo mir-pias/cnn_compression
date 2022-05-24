@@ -2,13 +2,13 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-from models.DCT_layers import DCT_conv_layer, LinearDCT, Conv2dDCT, DCT_linear_layer
+from models.DCT_layers import LinearDCT, Conv2dDCT
 import math
 
-class DCT_fc_AlexNet(nn.Module):
+class AlexnetLinearDCT(nn.Module):
 
         def __init__(self, num_classes: int = 10) -> None:
-            super(DCT_fc_AlexNet, self).__init__()
+            super(AlexnetLinearDCT, self).__init__()
             self.features = nn.Sequential(
                 nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
     #             DCT_conv_layer(3, 64, kernel_size=3, stride=2, padding=1),
@@ -44,7 +44,7 @@ class DCT_fc_AlexNet(nn.Module):
                 LinearDCT(4096, 4096),
     #             nn.Linear(4096, 4096),
                 nn.ReLU(inplace=True),
-                nn.Linear(4096, num_classes),
+                LinearDCT(4096, num_classes),
     #             DCT_layer(num_classes)
             )
 
@@ -55,10 +55,10 @@ class DCT_fc_AlexNet(nn.Module):
             return x
         
 
-class DCT_conv_AlexNet(nn.Module):
+class AlexnetConvDCT(nn.Module):
 
         def __init__(self, num_classes: int = 10) -> None:
-            super(DCT_conv_AlexNet, self).__init__()
+            super(AlexnetConvDCT, self).__init__()
             self.features = nn.Sequential(
     #             nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
                 # DCT_conv_layer(3, 64, kernel_size=3, stride=2, padding=1),
@@ -109,10 +109,10 @@ class DCT_conv_AlexNet(nn.Module):
             return x
 
 
-class DCT_AlexNet(nn.Module):
+class AlexnetDCT(nn.Module):
 
         def __init__(self, num_classes: int = 10) -> None:
-            super(DCT_AlexNet, self).__init__()
+            super(AlexnetDCT, self).__init__()
             self.features = nn.Sequential(
     #             nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
                 Conv2dDCT(3, 64, kernel_size=3, stride=2, padding=1),

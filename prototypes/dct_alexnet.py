@@ -11,7 +11,7 @@ if __name__ == '__main__':
     import torchvision
     import torchvision.transforms as transforms
     from scipy.fftpack import dct
-    from models.DCT_alexnets_cifar10 import DCT_AlexNet
+    from models.DCT_alexnets_cifar10 import AlexnetDCT
     ## cifar10 download problem solve
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-    net = DCT_AlexNet(num_classes=10).to(device)
+    net = AlexnetDCT(num_classes=10).to(device)
     print(net)
 
 
@@ -86,11 +86,11 @@ if __name__ == '__main__':
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
-    file = open('py_outputs/DCT_alexnet_py_output.txt','w')
+    file = open('py_outputs/dct_alexnet_py_output.txt','w')
 
 
-    print("DCT_AlexNet.....new dct_conv + linear_dct")
-    file.write("DCT_AlexNet.....new dct_conv + linear_dct \n \n")
+    print("AlexNetDCT.....dct_conv + linear_dct")
+    file.write("AlexNetDCT.....dct_conv + linear_dct \n \n")
     epochs = 5
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")

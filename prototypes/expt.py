@@ -10,13 +10,40 @@ if __name__ == '__main__':
     import torch.nn.functional as F
     import torchvision
     import torchvision.transforms as transforms
-    from scipy.fftpack import dct
+    from scipy.fftpack import dct, fft , ifft
     import math
     from misc.conv import Conv1dDCT
-    from models.DCT_layers import DCT_conv_layer, Conv2dDCT, LinearDCT, DCT_linear_layer
+    from models.DCT_layers import Conv2dDCT, LinearDCT
     from models.DFT_layers import LinearDFT
     from models.LinearFBSP import LinearFBSP
+    from math import pi as PI
+
+    ## dct matrix check
+
+    # in_features, out_features = 3,3
+
+    # t = torch.arange(in_features).reshape(1, -1)
+    # # t = torch.linspace(-1.0, 1.0, in_features).reshape(1, -1, 1)
+    # fc = torch.arange(out_features ).reshape(-1, 1)
+    # print((t * fc).shape)
     
+    # # w = torch.exp(torch.as_tensor((-2*np.pi*i)/N, dtype=torch.cfloat))
+
+    # norm = torch.rsqrt(
+    #         torch.full_like(
+    #             fc, 2 * out_features
+    #         ) * (
+    #             torch.eye(out_features, 1, device=t.device, dtype=t.dtype) + 1
+    #         )
+    #     )
+
+    # dct_m = 2 * norm * torch.cos(0.5 * PI * fc * (2 * t + 1) / out_features)
+
+    # print(dct_m)
+
+    # print(dct(np.eye(3), norm='ortho'))
+
+
     # dct conv check .....................................................................
 
     # in_features = 256 * 2 * 2
@@ -87,7 +114,7 @@ if __name__ == '__main__':
     # x2 = torch.nn.Parameter(torch.randn(batch_size, 120))
     # conv_dct = Conv2dDCT(in_features,out_features, kernel_size, stride=2, padding=1)
 
-    # lin_dct = LinearDCT(120,84)
+    # lin_dct = LinearDFT(120,84)
 
     # y = conv_dct(x)
     # y2 = lin_dct(x2)
@@ -106,17 +133,32 @@ if __name__ == '__main__':
 
     from scipy.linalg import dft
 
-    in_features, out_features = 32,32
+    in_features, out_features = 5,3
 
-    t = torch.linspace(-1.0, 1.0, in_features).reshape(1, -1, 1)
+    t = torch.arange(in_features).reshape(1, -1, 1)
+    # t = torch.linspace(-1.0, 1.0, in_features).reshape(1, -1, 1)
     fc = torch.arange(out_features ).reshape(-1, 1, 1)
-    # print((t * fc).shape)
+    print((t * fc).shape)
     
     # w = torch.exp(torch.as_tensor((-2*np.pi*i)/N, dtype=torch.cfloat))
 
-    dft_m = torch.cat((torch.cos((fc*t*2*np.pi)/out_features), - torch.sin((fc*t*2*np.pi)/out_features)), dim=-1)
+    norm = torch.rsqrt(
+            torch.full_like(
+                fc, in_features
+            ) * (
+                torch.ones(in_features, 1, device=t.device, dtype=t.dtype) 
+            )
+        )
+
+    print(norm)
+
+    dft_m = norm * torch.cat((torch.cos((fc*t*2*np.pi)/in_features), - torch.sin((fc*t*2*np.pi)/in_features)), dim=-1)
+
+    # dft_m = dft_m / (math.sqrt(in_features)) ## normalize
     
-    # print(dft_m[0,0])
+    print(dft_m)
+
+    print(dft(5,scale= 'sqrtn'))
     # print(dft_m[1,1])
     
     # print(dft_m[...,2])
@@ -124,7 +166,7 @@ if __name__ == '__main__':
 
     # plt.plot(dft_m[0,0])
     # plt.plot(dft_m[1,1])
-    plt.show()
+    # plt.show()
     
     # print(dft(3))
 
@@ -135,18 +177,16 @@ if __name__ == '__main__':
     # LinearDFT check..............................................................................................
 
     in_features, out_features = 1024,4096
-    batch_size = 2
+    batch_size = 32
     
     x = torch.randn(batch_size,out_features)
 
-    t = torch.linspace(-1.0, 1.0, in_features).reshape(1, -1, 1)
-    fc = torch.arange(out_features ).reshape(-1, 1, 1)
+    # t = torch.linspace(-1.0, 1.0, in_features).reshape(1, -1, 1)
+    # fc = torch.arange(out_features ).reshape(-1, 1, 1)
 
-    weights = torch.cat((torch.cos((fc*t*2*np.pi)/out_features), - torch.sin((fc*t*2*np.pi)/out_features)), dim=-1)
+    # weights = torch.cat((torch.cos((fc*t*2*np.pi)/out_features), - torch.sin((fc*t*2*np.pi)/out_features)), dim=-1)
 
     # print(weights[..., 1].shape)
-
-    dft_layer = LinearDFT(in_features=in_features, out_features=out_features)
 
     # y = torch.stack((
     #                 F.linear(x, weights[..., 0]),
@@ -157,6 +197,7 @@ if __name__ == '__main__':
 
     fbsp_layer = LinearFBSP(out_features=out_features)
 
+    dft_layer = LinearDFT(in_features=in_features, out_features=out_features)
     # y = fbsp_layer(x)
 
     # print(y[1])
@@ -176,4 +217,20 @@ if __name__ == '__main__':
     o = dft_layer3(y22)
 
     print(o.shape)
+    
+    # print((o[:,:,0]+o[:,:,1]).shape)
 
+    # o2 = (o[:,:,0]*o[:,:,1])
+
+    # o3 =(o[0,:,1]+o[1,:,1])
+    print(o.mean(-1).shape)
+    # print(o2.shape)
+    # print(o3)
+    # print(torch.stack((o2,o3)).shape)
+    # print(ifft_x[:1])
+    # plt.plot(x[0][0:10])
+    # plt.show()
+    # plt.plot(o2[:10].detach().numpy())
+    # plt.plot(fft_x[:3])
+    # plt.plot(ifft_x[:3])
+    plt.show()

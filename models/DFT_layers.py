@@ -44,11 +44,19 @@ class LinearDFT(nn.Module):
                 param=None
             )
 
-    def dft_kernel(self,t,fc): 
+    def dft_kernel(self,t,fc,in_features): 
 
-        dft_m = torch.cat((torch.cos((fc*t*2*PI)/self.out_features), - torch.sin((fc*t*2*PI)/self.out_features)), dim=-1)
+        norm = torch.rsqrt(
+            torch.full_like(
+                fc, in_features
+            ) * (
+                torch.ones(in_features, 1, device=t.device, dtype=t.dtype) 
+            )
+        )
+
+        dft_m = norm * torch.cat((torch.cos((fc*t*2*PI)/in_features), - torch.sin((fc*t*2*PI)/in_features)), dim=-1) 
         
-        dft_m = (1/math.sqrt(self.out_features)) * dft_m
+        # dft_m = dft_m / (math.sqrt(self.in_features)) ## normalize
         
         return dft_m
     
@@ -56,11 +64,13 @@ class LinearDFT(nn.Module):
         x_is_complex = x.shape[-1] == 2
         in_features = x.shape[-1 - int(x_is_complex)]
 
-        t = torch.linspace(-1.0, 1.0, in_features, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
+        # print(x_is_complex)
+        # print(in_features)
+        t = torch.arange(in_features,dtype=x.dtype, device=x.device).reshape(1, -1, 1)
+        # t = torch.linspace(-1.0, 1.0, in_features, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
         fc = self.fc
 
-        weights = self.dft_kernel(t,fc)
-
+        weights = self.dft_kernel(t,fc,in_features) 
         return weights, x_is_complex
 
     def forward(self,x):

@@ -52,4 +52,4 @@ class AlexNetLinearDFT(nn.Module):
             x = self.features(x)
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
-            return x
+            return x.mean(-1)  ## mean in the last dim to get correct shape output for loss function

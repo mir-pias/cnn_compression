@@ -49,6 +49,9 @@ if __name__ == '__main__':
             inputs, labels = X.to(device), y.to(device)
             
             outputs = model(inputs)
+            # outputs = outputs.mean(-1)
+
+            # print(outputs.shape)
             loss = criterion(outputs, labels)
             
             optimizer.zero_grad()
@@ -72,6 +75,9 @@ if __name__ == '__main__':
             for X, y in dataloader:
                 X, y = X.to(device), y.to(device)
                 pred = model(X)
+                
+                # pred = pred.mean(-1)
+                
                 test_loss += loss_fn(pred, y).item()
                 correct += (pred.argmax(1) == y).type(torch.float).sum().item()
         test_loss /= num_batches

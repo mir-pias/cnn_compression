@@ -20,7 +20,7 @@ AlexnetLinearDCT acc: 45.3%			AlexnetLinearDST  acc: 46.2%
 24-05 
 changed network names 
 
-for AlexnetLinearDCT, replacing the classification layer gives better acc, but not for AlexnetDCT
+for AlexnetLinearDCT/DST, replacing the classification layer gives better acc, but not for AlexnetDCT/DST
 
 after 5 epochs, with LinearDCT/LinearDST classification layer
 
@@ -29,3 +29,21 @@ AlexnetLinearDCT acc: 52.3%			AlexnetLinearDST acc: 51.3%
 
 
 AlexnetLinearDFT: loss function problem
+
+08-06
+
+					trainable params
+
+AlexnetDCT: 18723					AlexnetDST: 18723
+AlexnetConvDCT: 21023001			AlexnetConvDST: 21023001
+AlexnetLinearDCT: 2267988			AlexnetLinearDST: 2267988
+
+AlexnetLinearDFT: 2276190
+
+after 5 epochs
+AlexnetLinearDFT acc: 44.7% 
+
+
+
+
+note to self: check out MLFlow and migrate to pytorch lightning

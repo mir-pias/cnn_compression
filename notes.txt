@@ -43,7 +43,9 @@ AlexnetLinearDFT: 2276190
 after 5 epochs
 AlexnetLinearDFT acc: 44.7% 
 
-
-
-
 note to self: check out MLFlow and migrate to pytorch lightning
+
+
+existing prototype scripts not usable after changing models to pytorch_lightning, maybe discard?
+
+ignore old accuracies and params count, from now just consider model_summary and lightning_logs metrics

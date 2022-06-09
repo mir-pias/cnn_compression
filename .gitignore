@@ -1,5 +1,9 @@
 data/
 misc/
 __pycache__/
+*.py[cod]
+*$py.class
 .ipynb_checkpoints/
-models/LinearFBSP.py
+models/TransformLayers/LinearFBSP.py
+*.sh
+lightning_logs/

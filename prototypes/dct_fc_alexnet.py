@@ -10,7 +10,7 @@ if __name__ == '__main__':
     import torch.nn.functional as F
     import torchvision
     import torchvision.transforms as transforms
-    from models.DCT_alexnets_cifar10 import AlexnetLinearDCT
+    from models.DCT_alexnets_cifar10 import AlexNetLinearDCT
     ## cifar10 download problem solve
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
       
-    net = AlexnetLinearDCT(num_classes=10).to(device)
+    net = AlexNetLinearDCT(num_classes=10).to(device)
     print(net)
 
 

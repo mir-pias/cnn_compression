@@ -11,7 +11,7 @@ if __name__ == '__main__':
     import torchvision
     import torchvision.transforms as transforms
     from scipy.fftpack import dct
-    from models.DCT_alexnets_cifar10 import AlexnetDCT
+    from models.DCT_alexnets_cifar10 import AlexNetDCT
     ## cifar10 download problem solve
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-    net = AlexnetDCT(num_classes=10).to(device)
+    net = AlexNetDCT(num_classes=10).to(device)
     print(net)
 
 

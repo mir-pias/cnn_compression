@@ -99,3 +99,154 @@ class LinearDFT(nn.Module):
         return 'in_features={}, out_features={}, bias={}'.format(
             self.in_features, self.out_features, self.bias is not None
         )
+
+class Conv2dDFT(torch.nn.Module):
+
+    fcc: torch.nn.Parameter  # central frequencies (output channels)
+    fcl: torch.nn.Parameter  # central frequencies (2D convolutional kernel length)
+    bias: torch.nn.Parameter
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: Union[int, Tuple[int]],
+        stride: Union[int, Tuple[int]] = 1,
+        padding: Optional[Union[int, Tuple[int]]] = 0,
+        dilation: Union[int, Tuple[int]] = 1,
+        groups: int = 1,
+        bias: bool = True
+    ):
+        super(Conv2dDFT, self).__init__()
+        
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = _single(kernel_size)
+        self.stride = _single(stride)
+        self.padding = _single(padding)
+        self.dilation = _single(dilation)
+        self.groups = groups
+
+        self.register_parameter(
+            name='fcc',
+            param=torch.nn.Parameter(
+                torch.arange(
+                    self.out_channels,
+                    dtype=torch.get_default_dtype()
+                ).reshape(-1, 1, 1)
+            )
+        )
+        self.register_parameter(
+            name='fcl',
+            param=torch.nn.Parameter(
+                torch.arange(
+                    self.kernel_size[0],
+                    dtype=torch.get_default_dtype()
+                ).reshape(-1, 1, 1)
+            )
+        )
+
+        if bias:
+            self.register_parameter(
+                name='bias',
+                param=torch.nn.Parameter(
+                    torch.normal(
+                        mean=0.0,
+                        std=0.5,
+                        size=(self.out_channels,)
+                    )
+                )
+            )
+        else:
+            self.register_parameter(
+                name='bias',
+                param=None
+            )
+
+        def norm(grad):
+            return grad / torch.linalg.norm(grad, ord=None)
+
+        self.fcc.register_hook(norm)
+        self.fcl.register_hook(norm)
+
+    def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
+        # in_features = x.shape[1]
+        x_is_complex = x.shape[-1] == 2
+
+        tc = torch.arange(self.in_channels, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
+
+        tl = torch.arange(self.kernel_size[0], dtype=x.dtype, device=x.device).reshape(1, -1, 1)
+
+        norm_c = torch.rsqrt(
+            torch.full_like(
+                self.fcc, self.in_channels
+            ) * (
+                torch.ones(self.in_channels, 1, device=x.device, dtype=x.dtype) 
+            )
+        )
+
+        kc: torch.Tensor = 2 * norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/self.in_channels), - torch.sin((self.fcc*tc*2*PI)/self.in_channels)), dim=-1)
+
+        norm_l = torch.rsqrt(
+            torch.full_like(
+                self.fcl, self.kernel_size[0]
+            ) * (
+                torch.ones(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) 
+            )
+        )
+        
+        kl: torch.Tensor = 2 * norm_l * torch.cat((torch.cos((self.fcl*tl*2*PI)/self.kernel_size[0]), - torch.sin((self.fcl*tl*2*PI)/self.kernel_size[0])), dim=-1)
+
+
+        w: torch.Tensor = kc.reshape(
+        self.out_channels, -1,kc.shape[-1],1,1
+        ) * kl.reshape(
+        1,1,kl.shape[-1], -1, self.kernel_size[0]
+        )
+
+        return w.transpose(2,4), x_is_complex ## transpose to fix shape for F.conv2d
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        weights, x_is_complex = self._materialize_weights(x)
+        # print('w: ', w.shape)
+        
+        if x_is_complex:
+
+            y0 = F.conv2d(input=x[..., 0],weight=weights[...,0],bias=self.bias,
+                        stride=self.stride,padding=self.padding,dilation=self.dilation,groups=self.groups
+                        ) 
+            - F.conv2d(input=x[..., 1],weight=weights[...,1],bias=self.bias,
+                        stride=self.stride,padding=self.padding,dilation=self.dilation,groups=self.groups
+                        ) 
+
+            y1 = F.conv2d(input=x[..., 0],weight=weights[...,1],bias=self.bias,
+                        stride=self.stride,padding=self.padding,dilation=self.dilation,groups=self.groups
+                        ) 
+            + F.conv2d(input=x[..., 1],weight=weights[...,0],bias=self.bias,
+                        stride=self.stride,padding=self.padding,dilation=self.dilation,groups=self.groups
+                        ) 
+
+            y = torch.stack((y0,y1), dim=-1)
+
+        else:
+            y0 = F.conv2d(input=x,weight=weights[...,0],bias=self.bias,
+                        stride=self.stride,padding=self.padding,dilation=self.dilation,groups=self.groups
+                        ) 
+            y1 = F.conv2d(input=x,weight=weights[...,1],bias=self.bias,
+                        stride=self.stride,padding=self.padding,dilation=self.dilation,groups=self.groups
+                        ) 
+
+            y = torch.stack((y0,y1), dim=-1)
+
+        return y.sum(-1) ## no more complex outputs from this layer, maybe ok
+
+    def extra_repr(self):
+        s = ('in_channels={in_channels}, out_channels={out_channels}, kernel_size={kernel_size}'
+             ', stride={stride}')
+        if self.padding != (0,) * len(self.padding):
+            s += ', padding={padding}'
+        if self.dilation != (1,) * len(self.dilation):
+            s += ', dilation={dilation}'
+        if self.groups != 1:
+            s += ', groups={groups}'
+        return s.format(**self.__dict__)

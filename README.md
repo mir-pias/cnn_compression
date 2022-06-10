@@ -2,6 +2,8 @@
 DEADLINE : 01.09.2022
 
 run example 
+
+
 python src/main_AlexNetCifar10.py --kernel 'dct' layers 'linear'
 
 
@@ -9,8 +11,13 @@ python src/main_AlexNetCifar10.py --kernel 'dct' layers 'linear'
 
 --layers: 'all', 'linear'|'fc', 'conv' (None is same as 'all')
 
+--devices: default=None
 
-note: for --kernel 'dft' only --layers 'linear' is implemented for now
+--max_epochs: default=5
+
+--rep: default=False ## reproducible flag, to compare changes in layers, arch etc. 
+
+note: for --kernel 'dft' only --layers 'linear'|'fc' is implemented for now
 
 implemented arch: AlexNet, dataset: CIFAR10
 

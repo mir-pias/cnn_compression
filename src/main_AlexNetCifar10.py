@@ -4,7 +4,7 @@ sys.path.append('.')
 
 import torch
 
-from models.AlexNetCifar10.DFTAlexNets import AlexNetLinearDFT
+from models.AlexNetCifar10.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNetConvDFT
 from models.AlexNetCifar10.AlexNet import AlexNet
 from models.AlexNetCifar10.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, AlexNetDCT
 from models.AlexNetCifar10.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetLinearDST
@@ -38,15 +38,19 @@ def model_select(kernel, layers):
             return AlexNetLinearDST(), 'AlexNetLinearDST'
 
     if kernel == 'DFT' or kernel == 'dft':
-        # if layers == 'all' or layers == 'All' or layers == None:
-            # return AlexNetDCT , 'AlexNetDCT'
-        # if layers == 'conv' or layers == 'Conv':
-            # return AlexNetConvDCT, 'AlexNetConvDCT'
+        if layers == 'all' or layers == 'All' or layers == None:
+            return AlexNetDFT() , 'AlexNetDFT'
+        if layers == 'conv' or layers == 'Conv':
+            return AlexNetConvDFT(), 'AlexNetConvDFT'
         if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
             return AlexNetLinearDFT(), 'AlexNetLinearDFT'
     
 
 def main(inputs):
+    
+    if inputs.rep:
+        pl.seed_everything(42, workers=True) ## for reproduciblilty
+
     ## data load
     data = Cifar10DataModule()
 
@@ -64,12 +68,20 @@ def main(inputs):
         devices = None
 
     ## training
-    trainer = pl.Trainer(accelerator="auto",
-                        devices=devices, 
-                        max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
-                        logger = CSVLogger("lightning_logs/cifar10/", name=model_name))
+    if inputs.rep:
+        trainer_det = pl.Trainer(accelerator="auto",
+                                devices=devices, 
+                                max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
+                                logger = CSVLogger("lightning_logs/cifar10/", name=model_name), deterministic=True) ## for reproduciblilty
 
-    trainer.fit(model=model, datamodule=data)
+        trainer_det.fit(model=model, datamodule=data)
+    else:
+        trainer = pl.Trainer(accelerator="auto",
+                            devices=devices, 
+                            max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
+                            logger = CSVLogger("lightning_logs/cifar10/", name=model_name),)
+        trainer.fit(model=model, datamodule=data)
+
 
     ## test
     trainer.test(model=model, datamodule=data)
@@ -81,18 +93,12 @@ def main(inputs):
 
 if __name__ == '__main__':
     
-    # ## data load
-    # data = Cifar10DataModule()
-
-    # ## model init
-    # net = AlexNetLinearDCT(num_classes=10)
-    # print(net)
-
     parser = ArgumentParser()
     parser.add_argument("--kernel", default=None)
     parser.add_argument("--layers", default=None)
     parser.add_argument("--devices", default=None)
     parser.add_argument("--max_epochs", default=5)
+    parser.add_argument("--rep", default=False) ## reproducible flag
     args = parser.parse_args()
     
     main(args)

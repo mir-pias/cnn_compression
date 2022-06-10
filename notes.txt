@@ -49,3 +49,18 @@ note to self: check out MLFlow and migrate to pytorch lightning
 existing prototype scripts not usable after changing models to pytorch_lightning, maybe discard?
 
 ignore old accuracies and params count, from now just consider model_summary and lightning_logs metrics
+
+10-06
+
+Conv2dDFT complex output is not compatible with maxpool2d, works for maxpool3d, but shape has '1' in last dim, 
+not suitable for either complex or non-complex input into next Conv2dDFT layer, maybe squeeze the last dim(?).
+or just take mean of 'y' after every Conv2dDFT(?), then no more complex output at all for both these ideas, 
+but maxpool3d is not needed when taking mean
+
+Also, taking mean at the end of forward function is probably not mathematically correct. 
+
+alternative: take sum, same in Conv2dDFT.
+
+sum seems to be better performing in AlexNetLinearDFT, reproducible tests needed
+
+AlexnetConvDFT validation step error

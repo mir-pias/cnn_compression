@@ -185,7 +185,7 @@ class Conv2dDFT(torch.nn.Module):
             )
         )
 
-        kc: torch.Tensor = 2 * norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/self.in_channels), - torch.sin((self.fcc*tc*2*PI)/self.in_channels)), dim=-1)
+        kc: torch.Tensor = norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/self.in_channels), - torch.sin((self.fcc*tc*2*PI)/self.in_channels)), dim=-1)
 
         norm_l = torch.rsqrt(
             torch.full_like(
@@ -195,7 +195,7 @@ class Conv2dDFT(torch.nn.Module):
             )
         )
         
-        kl: torch.Tensor = 2 * norm_l * torch.cat((torch.cos((self.fcl*tl*2*PI)/self.kernel_size[0]), - torch.sin((self.fcl*tl*2*PI)/self.kernel_size[0])), dim=-1)
+        kl: torch.Tensor = norm_l * torch.cat((torch.cos((self.fcl*tl*2*PI)/self.kernel_size[0]), - torch.sin((self.fcl*tl*2*PI)/self.kernel_size[0])), dim=-1)
 
 
         w: torch.Tensor = kc.reshape(

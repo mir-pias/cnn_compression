@@ -64,3 +64,10 @@ alternative: take sum, same in Conv2dDFT.
 sum seems to be better performing in AlexNetLinearDFT, reproducible tests needed
 
 AlexnetConvDFT validation step error
+
+13-06
+missing return value in forward function in AlexnetConvDCT, fixed
+
+AlexnetConvDFT validation loss nan, normalization prob, fixed, other variations seem to be ok
+
+to do: incorportate kernel width (self.kernel_size[1]) in all conv layers.

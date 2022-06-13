@@ -236,11 +236,9 @@ class AlexNetConvDFT(pl.LightningModule):
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
-            # print(x.shape)
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
-            # print(x[0])
-            # return x.sum(-1)  ## sum in the last dim to get correct shape output for loss function
+            return x  
 
 
         def configure_optimizers(self):
@@ -251,7 +249,6 @@ class AlexNetConvDFT(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
 
-            print(y_hat[0])
             loss = F.cross_entropy(y_hat, y)
             # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
             return loss
@@ -259,7 +256,7 @@ class AlexNetConvDFT(pl.LightningModule):
         def validation_step(self, batch, batch_idx):
             x, y = batch
             y_hat = self(x)
-            
+
             val_loss = F.cross_entropy(y_hat, y)
             
             preds = torch.argmax(y_hat, dim=1)

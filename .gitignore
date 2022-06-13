@@ -7,3 +7,5 @@ __pycache__/
 models/TransformLayers/LinearFBSP.py
 *.sh
 lightning_logs/
+notebooks/
+py_outputs/

@@ -256,10 +256,10 @@ if __name__ == '__main__':
 
     # # LinearDFT check..............................................................................................
 
-    in_features, out_features = 1024,4096
-    batch_size = 32
+    # in_features, out_features = 1024,4096
+    # batch_size = 32
     
-    x = torch.randn(batch_size,out_features)
+    # x = torch.randn(batch_size,out_features)
 
     # # t = torch.linspace(-1.0, 1.0, in_channels).reshape(1, -1, 1)
     # # fc = torch.arange(out_features ).reshape(-1, 1, 1)
@@ -277,30 +277,30 @@ if __name__ == '__main__':
 
     # fbsp_layer = LinearFBSP(out_features=out_features)
 
-    dft_layer = LinearDFT(in_features=in_features, out_features=out_features)
-    # y = fbsp_layer(x)
+    # dft_layer = LinearDFT(in_features=in_features, out_features=out_features)
+    # # y = fbsp_layer(x)
 
-    # print(y[1])
+    # # print(y[1])
 
-    y2 = dft_layer(x)
+    # y2 = dft_layer(x)
 
-    print(y2.shape)
+    # print(y2.shape)
 
-    dft_layer2 = LinearDFT(in_features=4096, out_features=4096)
+    # dft_layer2 = LinearDFT(in_features=4096, out_features=4096)
 
-    y22 = dft_layer2(y2)
+    # y22 = dft_layer2(y2)
 
-    print(y22.shape)
+    # print(y22.shape)
 
-    dft_layer3 = LinearDFT(4096,10)
+    # dft_layer3 = LinearDFT(4096,10)
 
-    o = dft_layer3(y22)
+    # o = dft_layer3(y22)
 
-    print(o[0])
+    # print(o[0])
 
-    print(o[0].sum(-1))
+    # print(o[0].sum(-1))
     
-    print('................................................................................')
+    # print('................................................................................')
     # # print((o[:,:,0]+o[:,:,1]).shape)
 
     # # o2 = (o[:,:,0]*o[:,:,1])
@@ -403,10 +403,11 @@ if __name__ == '__main__':
 
     ConvDFT_1 = Conv2dDFT(in_channels,out_channels, kernel_size, stride=2, padding=1)
 
-    y1 = ConvDFT_1(x)
-    # print(y1.shape)
+    with torch.no_grad():
+        y1 = ConvDFT_1(x)
+        print(y1.shape)
 
-    m = nn.MaxPool3d(kernel_size=2)
+    # m = nn.MaxPool3d(kernel_size=2)
     # print(m(y1).shape)
 
     ConvDFT_2 = Conv2dDFT(64, 192, kernel_size=3, padding=1)

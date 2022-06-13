@@ -49,7 +49,7 @@ def model_select(kernel, layers):
 def main(inputs):
     
     if inputs.rep:
-        pl.seed_everything(42, workers=True) ## for reproduciblilty
+        pl.seed_everything(87, workers=True) ## for reproduciblilty
 
     ## data load
     data = Cifar10DataModule()
@@ -67,7 +67,7 @@ def main(inputs):
     else:
         devices = None
 
-    ## training
+    ## train and test
     if inputs.rep:
         trainer_det = pl.Trainer(accelerator="auto",
                                 devices=devices, 
@@ -75,6 +75,10 @@ def main(inputs):
                                 logger = CSVLogger("lightning_logs/cifar10/", name=model_name), deterministic=True) ## for reproduciblilty
 
         trainer_det.fit(model=model, datamodule=data)
+            
+        ## test
+        trainer_det.test(model=model, datamodule=data)
+
     else:
         trainer = pl.Trainer(accelerator="auto",
                             devices=devices, 
@@ -82,13 +86,10 @@ def main(inputs):
                             logger = CSVLogger("lightning_logs/cifar10/", name=model_name),)
         trainer.fit(model=model, datamodule=data)
 
+            
+        ## test
+        trainer.test(model=model, datamodule=data)
 
-    ## test
-    trainer.test(model=model, datamodule=data)
-
-
-    # file = open('model_summary/Alexnet.txt','w')
-    # file.write("AlexNet...... \n \n" )
     print(ModelSummary(model, max_depth=-1))
 
 if __name__ == '__main__':

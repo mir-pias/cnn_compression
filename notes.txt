@@ -71,3 +71,8 @@ missing return value in forward function in AlexnetConvDCT, fixed
 AlexnetConvDFT validation loss nan, normalization prob, fixed, other variations seem to be ok
 
 to do: incorportate kernel width (self.kernel_size[1]) in all conv layers.
+
+21-06
+DenseNet tests ok, recursive replace layer doesn't work entirely for resnet
+
+to do: incorportate kernel width (self.kernel_size[1]) in all conv layers. + wavelet layers

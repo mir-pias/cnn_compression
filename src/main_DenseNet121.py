@@ -11,7 +11,7 @@ from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.utilities.model_summary import ModelSummary
 from argparse import ArgumentParser
-from utils.utils import model_select_DenseNet121
+from utils.model_select import model_select_DenseNet121
 
 def main(inputs):
     

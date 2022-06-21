@@ -30,31 +30,31 @@ class Cifar10DataModule(pl.LightningDataModule):
 
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
-            cifar100_full = CIFAR10(self.data_dir, train=True, transform=self.transform)
+            cifar10_full = CIFAR10(self.data_dir, train=True, transform=self.transform)
             
-            val_size = int(len(cifar100_full)*0.1)
-            train_size = int(len(cifar100_full) - val_size)
+            val_size = int(len(cifar10_full)*0.1)
+            train_size = int(len(cifar10_full) - val_size)
 
-            self.cifar100_train, self.cifar100_val = random_split(cifar100_full, [train_size, val_size], generator=torch.Generator().manual_seed(42))
+            self.cifar10_train, self.cifar10_val = random_split(cifar10_full, [train_size, val_size], generator=torch.Generator().manual_seed(42))
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
-            self.cifar100_test = CIFAR10(self.data_dir, train=False, transform=self.transform)
+            self.cifar10_test = CIFAR10(self.data_dir, train=False, transform=self.transform)
 
         if stage == "predict" or stage is None:
-            self.cifar100_predict = CIFAR10(self.data_dir, train=False, transform=self.transform)
+            self.cifar10_predict = CIFAR10(self.data_dir, train=False, transform=self.transform)
 
     def train_dataloader(self):
-        return DataLoader(self.cifar100_train, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(self.cifar10_train, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
-        return DataLoader(self.cifar100_val, batch_size=self.batch_size)
+        return DataLoader(self.cifar10_val, batch_size=self.batch_size)
 
     def test_dataloader(self):
-        return DataLoader(self.cifar100_test, batch_size=self.batch_size)
+        return DataLoader(self.cifar10_test, batch_size=self.batch_size)
 
     def predict_dataloader(self):
-        return DataLoader(self.cifar100_predict, batch_size=self.batch_size)
+        return DataLoader(self.cifar10_predict, batch_size=self.batch_size)
 
 
 class Cifar100DataModule(pl.LightningDataModule):

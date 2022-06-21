@@ -19,12 +19,12 @@ def main(inputs):
         pl.seed_everything(87, workers=True) ## for reproduciblilty
 
     ## data load
-    if inputs.dataset == 'Cifar10':
+    if inputs.dataset == 'Cifar10' or inputs.dataset == 'cifar10':
         data = Cifar10DataModule()
         num_classes = 10
         
     
-    if inputs.dataset == 'Cifar100':
+    if inputs.dataset == 'Cifar100' or inputs.dataset == 'cifar100':
         data = Cifar100DataModule()
         num_classes = 100
         

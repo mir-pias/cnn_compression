@@ -3,13 +3,13 @@ DEADLINE : 01.09.2022
 
 run example 
 
+python src/main_AlexNet.py --kernel 'dct' layers 'linear' 
 
-python src/main_AlexNetCifar10.py --kernel 'dct' layers 'linear'
+options
 
+--kernel:  default=None | 'dct', 'dst', 'dft, None
 
---kernel: 'dct', 'dst', 'dft, None
-
---layers: 'all', 'linear'|'fc', 'conv' (None is same as 'all')
+--layers:  default=None | 'all', 'linear'|'fc', 'conv' (None is same as 'all')
 
 --devices: default=None
 
@@ -17,15 +17,13 @@ python src/main_AlexNetCifar10.py --kernel 'dct' layers 'linear'
 
 --rep: default=False ## reproducible flag, to compare changes in layers, arch etc. 
 
-note: for --kernel 'dft' only --layers 'linear'|'fc' is implemented for now
+--dataset: default=cifar10 | 'cifar10', 'cifar100'
 
-implemented arch: AlexNet, dataset: CIFAR10
+
+
+implemented arch: AlexNet, dataset: CIFAR10, CIFAR100
 
 to do: 
-
-
-implement 'conv' and 'all' layers for dft kernel
-
 
 implement everything for wavelets
 

@@ -73,6 +73,8 @@ AlexnetConvDFT validation loss nan, normalization prob, fixed, other variations 
 to do: incorportate kernel width (self.kernel_size[1]) in all conv layers.
 
 21-06
-DenseNet tests ok, recursive replace layer doesn't work entirely for resnet
+recursive replace layer doesn't work entirely for resnet,
+
+DenseNetLinearDCT ok, DenseNetConvDCT doesn't train
 
 to do: incorportate kernel width (self.kernel_size[1]) in all conv layers. + wavelet layers

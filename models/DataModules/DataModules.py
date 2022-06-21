@@ -83,10 +83,10 @@ class Cifar100DataModule(pl.LightningDataModule):
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
-            self.cifar100_test = CIFAR10(self.data_dir, train=False, transform=self.transform)
+            self.cifar100_test = CIFAR100(self.data_dir, train=False, transform=self.transform)
 
         if stage == "predict" or stage is None:
-            self.cifar100_predict = CIFAR10(self.data_dir, train=False, transform=self.transform)
+            self.cifar100_predict = CIFAR100(self.data_dir, train=False, transform=self.transform)
 
     def train_dataloader(self):
         return DataLoader(self.cifar100_train, batch_size=self.batch_size, shuffle=True)

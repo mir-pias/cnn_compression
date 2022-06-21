@@ -13,7 +13,8 @@ from scipy.fftpack import dct, fft , ifft
 import math
 from misc.conv import Conv1dDCT
 from models.TransformLayers.DCT_layers import Conv2dDCT, LinearDCT
-from models.TransformLayers.DFT_layers import LinearDFT
+from models.TransformLayers.DFT_layers import LinearDFT, Conv2dDFT
+from models.TransformLayers.DST_layers import LinearDST, Conv2dDST
 from models.TransformLayers.LinearFBSP import LinearFBSP
 from math import pi as PI
 
@@ -415,3 +416,25 @@ if __name__ == '__main__':
     # y2 = ConvDFT_2(m(y1))
 
     # print(y2.shape)
+    
+    ## .............................................................................................
+
+
+    import torchvision.models as models
+
+    model = models.resnet18(num_classes=10)
+    # print(model)
+
+    from utils.utils import replace_conv2d, replace_linear
+
+    # replace_conv2d(model, 'model',Conv2dDFT)
+    # replace_conv2d(model, 'model')
+    
+    # print(model)
+
+    mod = models.densenet121(num_classes=10)
+    
+    replace_conv2d(mod,'mod',kernel='DFT')
+    replace_linear(mod,'mod','DFT')
+
+    print(mod.classifier)

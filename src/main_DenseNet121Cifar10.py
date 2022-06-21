@@ -11,7 +11,7 @@ from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.utilities.model_summary import ModelSummary
 from argparse import ArgumentParser
-from utils.utils import model_select_AlexNet
+from utils.utils import model_select_DenseNet121
 
 def main(inputs):
     
@@ -22,9 +22,15 @@ def main(inputs):
     if inputs.dataset == 'Cifar10':
         data = Cifar10DataModule()
         num_classes = 10
+        
+    
+    if inputs.dataset == 'Cifar100':
+        data = Cifar100DataModule()
+        num_classes = 100
+        
 
     ## model init
-    model , model_name = model_select_AlexNet(inputs.kernel, inputs.layers, num_classes)
+    model , model_name = model_select_DenseNet121(inputs.kernel, inputs.layers, num_classes)
     print(model)
 
 

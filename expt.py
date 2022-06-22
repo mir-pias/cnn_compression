@@ -56,30 +56,25 @@ if __name__ == '__main__':
     # x2 = torch.nn.Parameter(torch.randn(batch_size,3,32,32))
     # dct_layer_conv1 = Conv2dDCT(in_channels=3,out_channels=64, kernel_size=3, stride=2,padding=1)
 
-    # # dct_layer_conv2 = DCT_conv_layer(3,64,3,2,1)
-
     # y = dct_layer_conv1(x2)
     # print(y.shape)
 
-    # # y2 = dct_layer_conv2(x2)
-    # # print(y2.shape)
-
-    # dct_layer_conv1_2 = Conv2dDCT(in_channels=64,out_channels=192,kernel_size=3,padding=1)
+    # dct_layer_conv1_2 = Conv2dDCT(in_channels=64,out_channels=192,kernel_size=(2,3),padding=1)
 
     # y1_2 = dct_layer_conv1_2(y)
     # print(y1_2.shape)
     # print('................................................................................')
     # in_channels = 3
     # out_channels = 4
-    # kernel_size =3
+    # kernel_size = (3,2)
 
     # fcc = torch.arange(out_channels ).reshape(-1, 1)
 
-    # fcl = torch.arange(kernel_size).reshape(-1, 1)
+    # fcl = torch.arange(kernel_size[0]).reshape(-1, 1)
 
     # tc = torch.arange(in_channels).reshape(1, -1)
 
-    # t_l = torch.arange(kernel_size).reshape(1, -1)
+    # t_l = torch.arange(kernel_size[1]).reshape(1, -1)
 
     # norm_c = torch.rsqrt(
     #     torch.full_like(
@@ -94,16 +89,16 @@ if __name__ == '__main__':
 
     # norm_l = torch.rsqrt(
     #     torch.full_like(
-    #         fcl, 2 * kernel_size
+    #         fcl, 2 * kernel_size[0]
     #     ) * (
-    #         torch.eye(kernel_size, 1) + 1
+    #         torch.eye(kernel_size[0], 1) + 1
     #     )
     # )
     # # print('t_l shape: ', t_l.shape)
     # # print('tc shape: ', tc.shape)
     # # print(norm_l)
 
-    # kl: torch.Tensor = 2 * norm_l * torch.cos(0.5 * PI * fcl * (2 * t_l + 1) / kernel_size)
+    # kl: torch.Tensor = 2 * norm_l * torch.cos(0.5 * PI * fcl * (2 * t_l + 1) / kernel_size[0])
 
     # # print('kc_reshape:', kc.reshape(
     # #     out_channels, -1, 1,1
@@ -118,14 +113,14 @@ if __name__ == '__main__':
     # w: torch.Tensor = kc.reshape(
     #     out_channels, -1, 1,1
     # ) * kl.reshape(
-    #     1,1, -1, kernel_size
+    #     1,1, -1, kernel_size[1]
     # )
     # print(kc.reshape(
     #     out_channels, -1, 1,1
     # ).shape)
 
     # print(kl.reshape(
-    #     1,1, -1, kernel_size
+    #     1,1, -1, kernel_size[1]
     # ).shape)
 
     # print(w.shape)
@@ -134,17 +129,17 @@ if __name__ == '__main__':
 
     # # print(dct_1.shape)
 
-    # dct_2 = dct(np.eye(3,3),norm='ortho')
+    # dct_2 = dct(np.eye(3,2),norm='ortho')
 
     # # print(dct_2.shape)
 
     # w2 = dct_1.reshape(
     #     out_channels, -1, 1
     # ) * dct_2.reshape(
-    #     1, -1, kernel_size
+    #     1, -1, kernel_size[1]
     # )
 
-    # print(w2)
+    # print(w2.shape)
 
 
     # ...................................................................
@@ -323,15 +318,15 @@ if __name__ == '__main__':
     
     in_channels = 3
     out_channels = 64
-    kernel_size =3
+    kernel_size =(7,3)
 
     fcc = torch.arange(out_channels ).reshape(-1,1, 1)
 
-    fcl = torch.arange(kernel_size).reshape(-1,1, 1)
+    fcl = torch.arange(kernel_size[0]).reshape(-1,1, 1)
 
     tc = torch.arange(in_channels).reshape(1, -1,1)
 
-    tl = torch.arange(kernel_size).reshape(1, -1,1)
+    tl = torch.arange(kernel_size[1]).reshape(1, -1,1)
 
     norm_c = torch.rsqrt(
             torch.full_like(
@@ -345,9 +340,9 @@ if __name__ == '__main__':
 
     norm_l = torch.rsqrt(
             torch.full_like(
-                fcl, kernel_size
+                fcl, kernel_size[0]
             ) * (
-                torch.ones(kernel_size, 1) 
+                torch.ones(kernel_size[1], 1) 
             )
         )
     # print('t_l shape: ', tl.shape)
@@ -356,8 +351,9 @@ if __name__ == '__main__':
     # print(norm_l.shape)
     # print((fcl*tl).shape)
 
-    kl: torch.Tensor = 2 * norm_l * torch.cat((torch.cos((fcl*tl*2*PI)/kernel_size), - torch.sin((fcl*tl*2*PI)/kernel_size)), dim=-1)
+    kl: torch.Tensor = 2 * norm_l * torch.cat((torch.cos((fcl*tl*2*PI)/kernel_size[0]), - torch.sin((fcl*tl*2*PI)/kernel_size[0])), dim=-1)
 
+    # print(torch.cat((torch.cos((fcl*tl*2*PI)/kernel_size[0]), - torch.sin((fcl*tl*2*PI)/kernel_size[0])), dim=-1).shape)
     # print('kc_reshape:', kc.reshape(
     #     out_channels, -1, 1,1
     # ).shape)
@@ -374,19 +370,19 @@ if __name__ == '__main__':
     # ).shape)
 
     # print(kl.reshape(
-        # 1,1,kl.shape[-1], -1, kernel_size
+    #     1,1, kl.shape[-1],-1,  kernel_size[1]
     # ).shape)
 
     w: torch.Tensor = kc.reshape(
         out_channels, -1,kc.shape[-1],1,1
     ) * kl.reshape(
-        1,1,kl.shape[-1], -1, kernel_size
+        1,1, kl.shape[-1], -1, kernel_size[0]
     )
 
     # print(w.shape)
     # print(w.transpose(2,4).shape)
 
-    w = w.transpose(2,4)
+    # w = w.transpose(2,4)
 
     from models.TransformLayers.DFT_layers import Conv2dDFT
 
@@ -403,38 +399,41 @@ if __name__ == '__main__':
 
 
     ConvDFT_1 = Conv2dDFT(in_channels,out_channels, kernel_size, stride=2, padding=1)
+    conv = nn.Conv2d(in_channels,out_channels, kernel_size, stride=2, padding=1)
+    
+    y1 = ConvDFT_1(x)
+    print(y1.shape)
+    print(conv(x).shape)
 
-    with torch.no_grad():
-        y1 = ConvDFT_1(x)
-        print(y1.shape)
-
-    # m = nn.MaxPool3d(kernel_size=2)
+    m = nn.MaxPool2d(kernel_size=2)
     # print(m(y1).shape)
 
-    ConvDFT_2 = Conv2dDFT(64, 192, kernel_size=3, padding=1)
+    ConvDFT_2 = Conv2dDFT(64, 192, kernel_size=(3,2), padding=1)
+    conv2 = nn.Conv2d(64, 192, kernel_size=(3,2), padding=1)
 
-    # y2 = ConvDFT_2(m(y1))
+    y2 = ConvDFT_2(m(y1))
 
-    # print(y2.shape)
-    
+
+    print(y2.shape)
+    print(conv2(m(y1)).shape)
     ## .............................................................................................
 
 
-    import torchvision.models as models
+    # import torchvision.models as models
 
-    model = models.resnet18(num_classes=10)
-    # print(model)
+    # model = models.resnet18(num_classes=10)
+    # # print(model)
 
-    from utils.utils import replace_conv2d, replace_linear
+    # from utils.replace_layers import replace_conv2d, replace_linear
 
-    # replace_conv2d(model, 'model',Conv2dDFT)
-    # replace_conv2d(model, 'model')
+    # # replace_conv2d(model, 'model',Conv2dDFT)
+    # # replace_conv2d(model, 'model')
     
-    # print(model)
+    # # print(model)
 
-    mod = models.densenet121(num_classes=10)
+    # mod = models.densenet121(num_classes=10)
     
-    replace_conv2d(mod,'mod',kernel='DFT')
-    replace_linear(mod,'mod','DFT')
+    # replace_conv2d(mod,'mod',kernel='DFT')
+    # replace_linear(mod,'mod','DFT')
 
-    print(mod.classifier)
+    # print(mod.classifier)

@@ -56,18 +56,14 @@ class LinearDST(nn.Module):
 
         dst_m = 2 * norm * torch.sin(0.5 * PI * (self.fc + 1) * (2 * t + 1) / self.out_features)
         
-        # dct_m[0] = dct_m[0]/np.sqrt(2)
-        
         return dst_m
     
         
     def forward(self,x):
-        # print(x.shape)
         
         t = torch.arange(x.shape[-1], device = x.device).reshape(1,-1)
         w = self.dst_kernel(t) 
-        
-        # print('dct_lin w: ', w.shape)  
+         
         y = F.linear(x,w, self.bias)   
         return y
 
@@ -81,7 +77,7 @@ class LinearDST(nn.Module):
 class Conv2dDST(torch.nn.Module):
 
     fcc: torch.nn.Parameter  # central frequencies (output channels)
-    fcl: torch.nn.Parameter  # central frequencies (1D convolutional kernel length)
+    fcl: torch.nn.Parameter  # central frequencies (2D convolutional kernel length)
     bias: torch.nn.Parameter
 
     def __init__(
@@ -150,9 +146,14 @@ class Conv2dDST(torch.nn.Module):
     def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         # in_features = x.shape[1]
 
+        try:
+            width = self.kernel_size[1]
+        except IndexError:
+            width = self.kernel_size[0]
+
         t_c = torch.arange(self.in_channels, dtype=x.dtype, device=x.device).reshape(1, -1)
 
-        t_l = torch.arange(self.kernel_size[0], dtype=x.dtype, device=x.device).reshape(1, -1)
+        t_l = torch.arange(width, dtype=x.dtype, device=x.device).reshape(1, -1)
 
         norm_c = torch.rsqrt(
             torch.full_like(
@@ -161,7 +162,6 @@ class Conv2dDST(torch.nn.Module):
                 torch.eye(self.out_channels, 1, device=x.device, dtype=x.dtype) + 1
             )
         )
-        # print( norm_c)
 
         kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * (self.fcc + 1) * (2 * t_c + 1) / self.out_channels)
 
@@ -172,18 +172,9 @@ class Conv2dDST(torch.nn.Module):
                 torch.eye(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) + 1
             )
         )
-        # print('t_l shape: ', t_l.shape)
-        # print('t_c shape: ', t_c.shape)
-        # print(norm_l)
 
         kl: torch.Tensor = 2 * norm_l * torch.sin(0.5 * PI * (self.fcl + 1) * (2 * t_l + 1) / self.kernel_size[0])
 
-        # print('kc_reshape:', kc.reshape(
-        #     self.out_channels, -1, 1,1
-        # ).shape)
-        # print('kl_reshape:', kl.reshape(
-        #     1,1, -1, self.kernel_size[0]
-        # ).shape)
 
         # print('kc_shape: ', kc.shape)
         # print('kl_shape: ', kl.shape)
@@ -191,14 +182,14 @@ class Conv2dDST(torch.nn.Module):
         w: torch.Tensor = kc.reshape(
             self.out_channels, -1, 1,1
         ) * kl.reshape(
-            1,1, -1, self.kernel_size[0]
+            1,1, -1, width
         )
 
         return w
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         w = self._materialize_weights(x)
-        # print('w: ', w.shape)
+
         return F.conv2d(
             input=x,
             weight=w,

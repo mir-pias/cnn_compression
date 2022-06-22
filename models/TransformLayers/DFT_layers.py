@@ -171,11 +171,16 @@ class Conv2dDFT(torch.nn.Module):
 
     def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         # in_features = x.shape[1]
+        try:
+            width = self.kernel_size[1]
+        except IndexError:
+            width = self.kernel_size[0]
+
         x_is_complex = x.shape[-1] == 2
 
         tc = torch.arange(self.in_channels, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
 
-        tl = torch.arange(self.kernel_size[0], dtype=x.dtype, device=x.device).reshape(1, -1, 1)
+        tl = torch.arange(width, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
 
         norm_c = torch.rsqrt(
             torch.full_like(
@@ -191,7 +196,7 @@ class Conv2dDFT(torch.nn.Module):
             torch.full_like(
                 self.fcl, self.kernel_size[0]
             ) * (
-                torch.ones(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) 
+                torch.ones(width, 1, device=x.device, dtype=x.dtype) 
             )
         )
         

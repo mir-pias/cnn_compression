@@ -1,9 +1,9 @@
 from models.TransformLayers.LinearFBSP import LinearFBSP
 from math import pi as PI
-from models.AlexNet.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNetConvDFT
-from models.AlexNet.AlexNet import AlexNet
-from models.AlexNet.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, AlexNetDCT
-from models.AlexNet.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetLinearDST
+from models.AlexNetCifar.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNetConvDFT
+from models.AlexNetCifar.AlexNet import AlexNet
+from models.AlexNetCifar.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, AlexNetDCT
+from models.AlexNetCifar.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetLinearDST
 from models.DenseNet121.DenseNet121 import DenseNet121
 from models.DenseNet121.DCTDenseNets121 import DenseNet121ConvDCT, DenseNet121DCT, DenseNet121LinearDCT
 

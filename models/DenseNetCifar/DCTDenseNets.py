@@ -7,11 +7,20 @@ from torchmetrics import Accuracy
 import torchvision.models as models
 from utils.replace_layers import replace_conv2d, replace_linear
 
-class DenseNet121LinearDCT(pl.LightningModule):
+import re
+from collections import OrderedDict
+from functools import partial
+from typing import Any, List, Optional, Tuple
+
+import torch.utils.checkpoint as cp
+from torch import Tensor
+from models.DenseNetCifar.DenseNet import DenseNet
+
+class DenseNetLinearDCT(pl.LightningModule):
         def __init__(self, num_classes: int=10):
-            super(DenseNet121LinearDCT, self).__init__()
+            super(DenseNetLinearDCT, self).__init__()
             
-            model = models.densenet121(num_classes=num_classes)
+            model = DenseNet(num_classes=num_classes)
             replace_linear(model,'model', kernel='DCT')
 
             self.features = model.features
@@ -21,10 +30,7 @@ class DenseNet121LinearDCT(pl.LightningModule):
             self.test_accuracy = Accuracy()
 
         def forward(self, x):
-            x = self.features(x)
-            x = x.view(x.size(0), 256 * 2 * 2)
-            x = self.classifier(x)
-            return x
+            return DenseNet.forward(self, x)
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
@@ -68,11 +74,11 @@ class DenseNet121LinearDCT(pl.LightningModule):
             pred = self(x)
             return pred
 
-class DenseNet121ConvDCT(pl.LightningModule):
+class DenseNetConvDCT(pl.LightningModule):
         def __init__(self, num_classes: int=10):
-            super(DenseNet121ConvDCT, self).__init__()
+            super(DenseNetConvDCT, self).__init__()
             
-            model = models.densenet121(num_classes=num_classes)
+            model = DenseNet(num_classes=num_classes)
             replace_conv2d(model,'model', kernel='DCT')
 
             self.features = model.features
@@ -82,10 +88,7 @@ class DenseNet121ConvDCT(pl.LightningModule):
             self.test_accuracy = Accuracy()
 
         def forward(self, x):
-            x = self.features(x)
-            x = x.view(x.size(0), 256 * 2 * 2)
-            x = self.classifier(x)
-            return x
+            return DenseNet.forward(self, x)
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
@@ -129,11 +132,11 @@ class DenseNet121ConvDCT(pl.LightningModule):
             pred = self(x)
             return pred
 
-class DenseNet121DCT(pl.LightningModule):
+class DenseNetDCT(pl.LightningModule):
         def __init__(self, num_classes: int=10):
-            super(DenseNet121DCT, self).__init__()
+            super(DenseNetDCT, self).__init__()
             
-            model = models.densenet121(num_classes=num_classes)
+            model = DenseNet(num_classes=num_classes)
             replace_linear(model,'model', kernel='DCT')
             replace_conv2d(model,'model', kernel='DCT')
 
@@ -144,10 +147,7 @@ class DenseNet121DCT(pl.LightningModule):
             self.test_accuracy = Accuracy()
 
         def forward(self, x):
-            x = self.features(x)
-            x = x.view(x.size(0), 256 * 2 * 2)
-            x = self.classifier(x)
-            return x
+            return DenseNet.forward(self, x)
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)

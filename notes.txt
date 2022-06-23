@@ -78,3 +78,7 @@ recursive replace layer doesn't work entirely for resnet,
 DenseNetLinearDCT ok, DenseNetConvDCT doesn't train
 
 to do: incorportate kernel width (self.kernel_size[1]) in all conv layers. + wavelet layers
+
+23-06
+DenseNet needs to be fixed from scratch, following implementation details for CIFAR in paper. https://arxiv.org/pdf/1608.06993v5.pdf
+prob: size of feature map of dense block , DenseNet.py line 170

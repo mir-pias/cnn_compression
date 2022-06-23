@@ -4,8 +4,8 @@ from models.AlexNetCifar.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNe
 from models.AlexNetCifar.AlexNet import AlexNet
 from models.AlexNetCifar.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, AlexNetDCT
 from models.AlexNetCifar.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetLinearDST
-from models.DenseNet121.DenseNet121 import DenseNet121
-from models.DenseNet121.DCTDenseNets121 import DenseNet121ConvDCT, DenseNet121DCT, DenseNet121LinearDCT
+from models.DenseNetCifar.DenseNet import DenseNet
+from models.DenseNetCifar.DCTDenseNets import DenseNetConvDCT, DenseNetDCT, DenseNetLinearDCT
 
 
 def model_select_AlexNet(kernel, layers, num_classes):
@@ -41,15 +41,15 @@ def model_select_AlexNet(kernel, layers, num_classes):
 def model_select_DenseNet121(kernel, layers, num_classes):
 
     if kernel == None:
-        return DenseNet121(num_classes=num_classes), 'DenseNet121'
+        return DenseNet(num_classes=num_classes), 'DenseNet121'
 
     if kernel == 'DCT' or kernel == 'dct':
         if layers == 'all' or layers == 'All' or layers == None:
-            return DenseNet121DCT(num_classes=num_classes), 'DenseNet121DCT'
+            return DenseNetDCT(num_classes=num_classes), 'DenseNet121DCT'
         if layers == 'conv' or layers == 'Conv':
-            return DenseNet121ConvDCT(num_classes=num_classes), 'DenseNet121ConvDCT'
+            return DenseNetConvDCT(num_classes=num_classes), 'DenseNet121ConvDCT'
         if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
-            return DenseNet121LinearDCT(num_classes=num_classes), 'DenseNet121LinearDCT'
+            return DenseNetLinearDCT(num_classes=num_classes), 'DenseNet121LinearDCT'
 
     # if kernel == 'DST' or kernel == 'dst':
     #     if layers == 'all' or layers == 'All' or layers == None:

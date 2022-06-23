@@ -131,7 +131,7 @@ class DenseNet121ConvDCT(pl.LightningModule):
 
 class DenseNet121DCT(pl.LightningModule):
         def __init__(self, num_classes: int=10):
-            super(DenseNet121LinearDCT, self).__init__()
+            super(DenseNet121DCT, self).__init__()
             
             model = models.densenet121(num_classes=num_classes)
             replace_linear(model,'model', kernel='DCT')

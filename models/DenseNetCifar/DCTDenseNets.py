@@ -79,10 +79,14 @@ class DenseNetConvDCT(pl.LightningModule):
             super(DenseNetConvDCT, self).__init__()
             
             model = DenseNet(num_classes=num_classes)
-            replace_conv2d(model,'model', kernel='DCT')
+            # replace_conv2d(model,'model', kernel='DCT')
 
             self.features = model.features
             self.classifier = model.classifier
+
+            for name, module in self.features.named_children():
+                if 'denseblock3' in name:
+                    replace_conv2d(module, 'module','DCT')
 
             self.val_accuracy = Accuracy()
             self.test_accuracy = Accuracy()

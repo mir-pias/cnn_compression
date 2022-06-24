@@ -85,4 +85,6 @@ prob: size of feature map of dense block , DenseNet.py line 170
 
 added drop_rate=0.2
 
-not sure if its worth doing this, DenseNetConvDCT is still not training in current state
+not sure if its worth doing this, DenseNetConvDCT is still not training in current state, maybe just change kernel in one block?
+
+even changing one block doesn't work, need to look into normalization

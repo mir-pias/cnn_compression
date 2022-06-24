@@ -135,7 +135,7 @@ class DenseNet(pl.LightningModule):
     self,
     growth_rate: int = 12,
     block_config: Tuple[int, int, int] = (6, 12, 24),
-    num_init_features: int = 16,
+    num_init_features: int = 24, ## 2* growth_rate
     bn_size: int = 4,
     drop_rate: float = 0.2,
     num_classes: int = 10,
@@ -180,6 +180,9 @@ class DenseNet(pl.LightningModule):
 
         # Linear layer
         self.classifier = nn.Linear(num_features, num_classes)
+
+        self.val_accuracy = Accuracy()
+        self.test_accuracy = Accuracy()
 
         # Official init from torch repo.
         for m in self.modules():

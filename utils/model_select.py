@@ -38,18 +38,18 @@ def model_select_AlexNet(kernel, layers, num_classes):
             return AlexNetLinearDFT(num_classes=num_classes), 'AlexNetLinearDFT'
 
 
-def model_select_DenseNet121(kernel, layers, num_classes):
+def model_select_DenseNet(kernel, layers, num_classes):
 
     if kernel == None:
-        return DenseNet(num_classes=num_classes), 'DenseNet121'
+        return DenseNet(num_classes=num_classes), 'DenseNet'
 
     if kernel == 'DCT' or kernel == 'dct':
         if layers == 'all' or layers == 'All' or layers == None:
-            return DenseNetDCT(num_classes=num_classes), 'DenseNet121DCT'
+            return DenseNetDCT(num_classes=num_classes), 'DenseNetDCT'
         if layers == 'conv' or layers == 'Conv':
-            return DenseNetConvDCT(num_classes=num_classes), 'DenseNet121ConvDCT'
+            return DenseNetConvDCT(num_classes=num_classes), 'DenseNetConvDCT'
         if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
-            return DenseNetLinearDCT(num_classes=num_classes), 'DenseNet121LinearDCT'
+            return DenseNetLinearDCT(num_classes=num_classes), 'DenseNetLinearDCT'
 
     # if kernel == 'DST' or kernel == 'dst':
     #     if layers == 'all' or layers == 'All' or layers == None:

@@ -11,7 +11,7 @@ from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.utilities.model_summary import ModelSummary
 from argparse import ArgumentParser
-from utils.model_select import model_select_DenseNet121
+from utils.model_select import model_select_DenseNet
 
 def main(inputs):
     
@@ -30,7 +30,7 @@ def main(inputs):
         
 
     ## model init
-    model , model_name = model_select_DenseNet121(inputs.kernel, inputs.layers, num_classes)
+    model , model_name = model_select_DenseNet(inputs.kernel, inputs.layers, num_classes)
     print(model)
 
 

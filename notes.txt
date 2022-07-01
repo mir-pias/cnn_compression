@@ -88,3 +88,8 @@ added drop_rate=0.2
 not sure if its worth doing this, DenseNetConvDCT is still not training in current state, maybe just change kernel in one block?
 
 even changing one block doesn't work, need to look into normalization
+
+01-07
+Find a way to compare normal conv layers and kernel-parameterized conv layers, check variance (how many params needed for x% of variance), 
+check which features are more prominent, visualize the filters,  (prof. vollmer ideas), find an explanantion whatever can be seen (diffs or no diffs)
+maybe haar and daubechies wavelets, in addition to shannon wavelets, so both CWT and DWT

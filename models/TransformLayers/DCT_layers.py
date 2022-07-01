@@ -44,16 +44,19 @@ class LinearDCT(nn.Module):
                 param=None
             )
 
-    def dct_kernel(self,t): 
+    def materialize_weights(self,x): 
+
+        t = torch.arange(x.shape[-1], device = x.device).reshape(1,-1)
 
         norm = torch.rsqrt(
             torch.full_like(
                 self.fc, 2 * self.out_features
             ) * (
-                torch.eye(self.out_features, 1, device=t.device, dtype=t.dtype) + 1
+                torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype) + 1
             )
         )
 
+        
         dct_m = 2 * norm * torch.cos(0.5 * PI * self.fc * (2 * t + 1) / self.out_features)
         
         
@@ -62,8 +65,7 @@ class LinearDCT(nn.Module):
         
     def forward(self,x):
         
-        t = torch.arange(x.shape[-1], device = x.device).reshape(1,-1)
-        w = self.dct_kernel(t) 
+        w = self.materialize_weights(x) 
           
         y = F.linear(x,w, self.bias)   
         return y

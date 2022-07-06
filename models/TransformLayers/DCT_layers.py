@@ -140,7 +140,7 @@ class Conv2dDCT(torch.nn.Module):
             )
 
         def norm(grad):
-            return grad / torch.linalg.norm(grad, ord=None)
+            return grad / (torch.linalg.norm(grad, ord=None) + 1e-8)
 
         self.fcc.register_hook(norm)
         self.fcl.register_hook(norm)

@@ -163,7 +163,8 @@ class Conv2dDST(torch.nn.Module):
             ) * (
                 torch.eye(self.out_channels, 1, device=x.device, dtype=x.dtype) + 1
             )
-        )
+        ) * torch.rsqrt(torch.full_like(
+                self.fcc, 2))
 
         kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * (self.fcc + 1) * (2 * t_c + 1) / self.out_channels)
 
@@ -173,13 +174,10 @@ class Conv2dDST(torch.nn.Module):
             ) * (
                 torch.eye(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) + 1
             )
-        )
+        ) * torch.rsqrt(torch.full_like(
+                self.fcl, 2))
 
         kl: torch.Tensor = 2 * norm_l * torch.sin(0.5 * PI * (self.fcl + 1) * (2 * t_l + 1) / self.kernel_size[0])
-
-
-        # print('kc_shape: ', kc.shape)
-        # print('kl_shape: ', kl.shape)
 
         w: torch.Tensor = kc.reshape(
             self.out_channels, -1, 1,1

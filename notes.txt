@@ -93,3 +93,39 @@ even changing one block doesn't work, need to look into normalization
 Find a way to compare normal conv layers and kernel-parameterized conv layers, check variance (how many params needed for x% of variance), 
 check which features are more prominent, visualize the filters,  (prof. vollmer ideas), find an explanantion whatever can be seen (diffs or no diffs)
 maybe haar and daubechies wavelets, in addition to shannon wavelets, so both CWT and DWT
+
+04-07
+datadings for imagenet - pypi - joachim folz
+
+fix conv2d implementation
+check on lenet,mnist, alexnet, CIFAR
+MLflow integration
+
+complex layers - use cardioid activation, stella, uni berkely - no relu
+complex parts, use some epsilon
+
+complex networks forward - sum of squares
+
+complex - custom batchnorm2d for two parts, real and complex - concatenatedBatchnorm
+
+05-07
+conv2dDCT not orthonormal, both versions, but older is more closer to orthonormal
+
+06-07
+new version now orthonormal, and somewhat orthonormal for non-square kernel_size, better than old version 
+looks same for square kernel_size.
+
+in new version, inner product of 2 vectors is closer to zero than old version for non-square kernel_size, zero for square kernel_size. 
+
+in old version, very close to zero for square kernel_size
+
+https://www.commsp.ee.ic.ac.uk/~tania/teaching/Maths%20for%20Signals%20and%20Systems/Lectures%208-9%202015.pdf
+
+but old version gives more test accuracy, for now, weird!!
+
+similar for conv2dDST, except inner product is closer to zero in old version than new, for square kernel_size, 
+vice versa for non-square kernel_size
+
+maybe just overcomplicating things with seperate filters for height and width, then merging them together, too much loss of info
+
+

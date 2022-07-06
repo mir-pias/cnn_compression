@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 # noinspection PyProtectedMember
 from torch.nn.modules.utils import _pair
-
+import math
 from math import pi as PI
 
 from typing import (
@@ -13,7 +13,7 @@ from typing import (
 )
 
 
-class Conv2dDCT(torch.nn.Module):
+class Conv2dDST(torch.nn.Module):
 
     fcc: torch.nn.Parameter    # central frequencies (output channels)
     fch: torch.nn.Parameter    # central frequencies (2D convolutional kernel height)
@@ -32,7 +32,7 @@ class Conv2dDCT(torch.nn.Module):
         groups: int = 1,
         bias: bool = True
     ):
-        super(Conv2dDCT, self).__init__()
+        super(Conv2dDST, self).__init__()
 
         self.in_channels = in_channels
         self.out_channels = out_channels    
@@ -99,8 +99,9 @@ class Conv2dDCT(torch.nn.Module):
             ) * (
                 torch.eye(self.out_channels, 1, device=x.device, dtype=x.dtype) + 1
             )
-        )
-        kc: torch.Tensor = 2 * norm_c * torch.cos(0.5 * PI * (self.fcc / self.out_channels) * (2 * tc + 1))
+        ) 
+
+        kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * ((self.fcc + 1 )/ self.out_channels) * (2 * tc + 1)) 
 
         norm_h: torch.Tensor = torch.rsqrt(
             torch.full_like(
@@ -108,8 +109,8 @@ class Conv2dDCT(torch.nn.Module):
             ) * (
                 torch.eye(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) + 1
             )
-        )
-        kh: torch.Tensor = 2 * norm_h * torch.cos(0.5 * PI * (self.fch / self.kernel_size[0]) * (2 * th + 1))
+        ) 
+        kh: torch.Tensor = 2 * norm_h * torch.sin(0.5 * PI * ((self.fch +1) / self.kernel_size[0]) * (2 * th + 1)) 
 
         norm_w: torch.Tensor = torch.rsqrt(
             torch.full_like(
@@ -117,8 +118,8 @@ class Conv2dDCT(torch.nn.Module):
             ) * (
                 torch.eye(self.kernel_size[1], 1, device=x.device, dtype=x.dtype) + 1
             )
-        )
-        kw: torch.Tensor = 2 * norm_w * torch.cos(0.5 * PI * (self.fcw / self.kernel_size[1]) * (2 * tw + 1))
+        ) 
+        kw: torch.Tensor = 2 * norm_w * torch.sin(0.5 * PI * ((self.fcw +1) / self.kernel_size[1]) * (2 * tw + 1)) 
 
 
         w: torch.Tensor = kc.reshape(
@@ -128,14 +129,13 @@ class Conv2dDCT(torch.nn.Module):
         ) * kw.reshape(
             1, 1, 1, 1, -1, self.kernel_size[1]                               # N_out x N_in x kH x kH x kW x kW
         )
-
         
         w = w.reshape(self.out_channels, in_channels, -1, *self.kernel_size)  # N_out x N_in x kH x (kH * kW) x kW
 
         # weighted sum of basis functions
         # w = torch.mean(w * self.delta.reshape(self.out_channels, 1, -1, 1, 1), dim=2)  # N_out x N_in x kH x kW
         w = torch.mean(w,dim=2)
-        return w
+        return w 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         w = self._materialize_weights(x)

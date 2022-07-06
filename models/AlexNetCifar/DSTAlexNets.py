@@ -2,7 +2,8 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-from models.TransformLayers.DST_layers import LinearDST, Conv2dDST 
+from models.TransformLayers.DST_layers import LinearDST
+from models.TransformLayers.conv2d_dst import Conv2dDST
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
 

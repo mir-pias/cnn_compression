@@ -455,7 +455,7 @@ if __name__ == '__main__':
     x = torch.randn(batch_size,in_features)
 
     # print(x.shape[-1])
-    t = torch.linspace(-1.0, 1.0, x.shape[-1]).reshape(1, -1)
+    t = torch.linspace(-1.0 , 1.0, x.shape[-1]).reshape(1, -1)
     a = torch.arange(1, out_features+1 ).reshape(-1, 1)
     b = torch.arange(out_features ).reshape(-1, 1)
 
@@ -464,7 +464,7 @@ if __name__ == '__main__':
 
     # print(psi.shape)
     # print(w.shape)
-    # plt.imshow(psi.detach().numpy())
+    # plt.imshow((w.T @ w).detach().numpy())
     # plt.show()
     # # plt.plot(psi[0])
     # # plt.plot(psi[11])
@@ -480,24 +480,26 @@ if __name__ == '__main__':
 
     from models.TransformLayers.CWT_layers import LinearCWT
 
-    cwt = LinearCWT(in_features,out_features)
+    lin_cwt = LinearCWT(in_features,out_features)
 
-    p = cwt(x)
+    # p = lin_cwt.materialize_weights(x)
 
     # print(p.shape)
     ##...........................................................................................................
 
     lin_dct = LinearDCT(in_features,out_features)
 
-    dft = LinearDFT(in_features,out_features)
+    lin_dft = LinearDFT(in_features,out_features)
 
-    dst = LinearDST(in_features,out_features)
+    lin_dst = LinearDST(in_features,out_features)
 
-    weights = lin_dct.materialize_weights(x)
+    weights = lin_cwt.materialize_weights(x)
     
-    check = weights.T @ weights 
+    check = torch.linalg.lstsq(weights,weights).solution
 
-    print('linear weights: ', weights.shape)
+    # ch = torch.linalg.lstsq(weights[0][:,:,0],weights[0][:,:,0]).solution ## for dft
+
+    # print('linear weights: ', weights.shape)
 
     # plt.plot(weights[2].detach().numpy())
     # plt.show()
@@ -510,11 +512,12 @@ if __name__ == '__main__':
     ##...............
 
     from models.TransformLayers.conv2d_dct import Conv2dDCT as dct2
+    from models.TransformLayers.conv2d_dst import Conv2dDST as dst2
 
     x2 = torch.nn.Parameter(torch.randn(batch_size,3,32,32))
     
-    conv_dct2 = dct2(3,64,(3,3),stride=2,padding=1)
-    conv_dct = Conv2dDCT(3,64,(3,3),stride=2,padding=1)
+    conv_dct2 = dst2(3,64,(3,3),stride=2,padding=1)
+    conv_dct = Conv2dDST(3,64,(3,3),stride=2,padding=1)
     
 
     conv_weight2 = conv_dct2._materialize_weights(x2)
@@ -527,25 +530,29 @@ if __name__ == '__main__':
     print(conv_weight2.shape)
     print(conv_weight.shape)
     
-    ortho2 = conv_weight2[1][1].T @ conv_weight2[1][1]
-    ortho = conv_weight[1][1].T @ conv_weight[1][1]
+    
+    ortho2 = torch.linalg.lstsq(conv_weight2[1][1],conv_weight2[1][1]).solution
+    ortho = torch.linalg.lstsq(conv_weight[1][1],conv_weight[1][1]).solution
 
     plt.imshow(ortho2.detach().numpy())
     plt.show()
 
-    print(ortho2)
+    # print(ortho2)
 
     plt.imshow(ortho.detach().numpy())
     plt.show()
 
-    print(ortho)
+    # print(ortho)
 
-    sp_dct = dct(np.eye(3)) * dct(np.eye(3)) 
+    # sp_dct = dct(np.eye(3)) * dct(np.eye(3)) 
 
-    # print(weights[0:2][0:3])
-    # print(sp_dct.T @ sp_dct) 
-    # plt.imshow(sp_dct.T @ sp_dct)
-    # plt.show()
+    # # print(weights[0:2][0:3])
+    # # print(sp_dct.T @ sp_dct) 
+    # # plt.imshow(sp_dct.T @ sp_dct)
+    # # plt.show()
 
-    # plt.plot(sp_dct[2])
-    # plt.show()
+    # # plt.plot(sp_dct[2])
+    # # plt.show()
+
+    print(conv_weight2[1][1][0][:].T @ conv_weight2[1][1][-1][:])
+    print(conv_weight[1][1][0][:].T @ conv_weight[1][1][-1][:])

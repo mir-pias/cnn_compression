@@ -49,15 +49,16 @@ def main(inputs):
         devices = None
 
     try:
-        expt_id = mlflow.create_experiment(model_name)
+        expt_id = mlflow.create_experiment("AlexNets")
     except mlflow.exceptions.MlflowException:
-        expt = mlflow.get_experiment_by_name(model_name)
+        expt = mlflow.get_experiment_by_name('AlexNets')
         expt_id = expt.experiment_id
     
     mlflow.pytorch.autolog()
 
+    run_name = inputs.dataset + '_' + model_name
     ## train and test
-    with mlflow.start_run(experiment_id = expt_id, run_name= inputs.dataset) as run:
+    with mlflow.start_run(experiment_id = expt_id, run_name=run_name ) as run:
         if inputs.rep:
             trainer_det = pl.Trainer(accelerator="auto",
                                     devices=devices, 

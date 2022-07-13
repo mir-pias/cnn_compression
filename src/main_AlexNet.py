@@ -57,7 +57,7 @@ def main(inputs):
     mlflow.pytorch.autolog()
 
     ## train and test
-    with mlflow.start_run(experiment_id = expt_id) as run:
+    with mlflow.start_run(experiment_id = expt_id, run_name= inputs.dataset) as run:
         if inputs.rep:
             trainer_det = pl.Trainer(accelerator="auto",
                                     devices=devices, 

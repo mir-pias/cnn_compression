@@ -67,7 +67,7 @@ class AlexNetLinearDCT(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             loss = F.cross_entropy(y_hat, y)
-            # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -78,8 +78,8 @@ class AlexNetLinearDCT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
 
-            self.log("val_loss", val_loss, prog_bar=True)
-            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
             
             # return val_loss, self.val_accuracy
              
@@ -91,8 +91,8 @@ class AlexNetLinearDCT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
 
-            self.log("test_loss", test_loss, prog_bar=True)
-            self.log("test_acc", self.test_accuracy, prog_bar=True)
+            self.log("test_loss", test_loss, prog_bar=True, on_epoch=True)
+            self.log("test_acc", self.test_accuracy, prog_bar=True, on_epoch=True)
 
             # return test_loss, self.test_accuracy
 
@@ -166,7 +166,7 @@ class AlexNetConvDCT(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             loss = F.cross_entropy(y_hat, y)
-            # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -177,8 +177,8 @@ class AlexNetConvDCT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
 
-            self.log("val_loss", val_loss, prog_bar=True)
-            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
             
             # return val_loss, self.val_accuracy
              
@@ -190,8 +190,8 @@ class AlexNetConvDCT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
 
-            self.log("test_loss", test_loss, prog_bar=True)
-            self.log("test_acc", self.test_accuracy, prog_bar=True)
+            self.log("test_loss", test_loss, prog_bar=True, on_epoch=True)
+            self.log("test_acc", self.test_accuracy, prog_bar=True, on_epoch=True)
 
             # return test_loss, self.test_accuracy
 
@@ -260,7 +260,7 @@ class AlexNetDCT(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             loss = F.cross_entropy(y_hat, y)
-            # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -271,8 +271,8 @@ class AlexNetDCT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
 
-            self.log("val_loss", val_loss, prog_bar=True)
-            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
             
             # return val_loss, self.val_accuracy
              
@@ -284,8 +284,8 @@ class AlexNetDCT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
 
-            self.log("test_loss", test_loss, prog_bar=True)
-            self.log("test_acc", self.test_accuracy, prog_bar=True)
+            self.log("test_loss", test_loss, prog_bar=True, on_epoch=True)
+            self.log("test_acc", self.test_accuracy, prog_bar=True, on_epoch=True)
 
             # return test_loss, self.test_accuracy
 

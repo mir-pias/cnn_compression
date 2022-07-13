@@ -9,3 +9,4 @@ models/TransformLayers/LinearFBSP.py
 lightning_logs/
 notebooks/
 py_outputs/
+mlruns/

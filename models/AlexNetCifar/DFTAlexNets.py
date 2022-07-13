@@ -64,7 +64,7 @@ class AlexNetLinearDFT(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             loss = F.cross_entropy(y_hat, y)
-            # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -75,8 +75,8 @@ class AlexNetLinearDFT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
 
-            self.log("val_loss", val_loss, prog_bar=True)
-            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
             
             # return val_loss, self.val_accuracy
              
@@ -157,7 +157,7 @@ class AlexNetDFT(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             loss = F.cross_entropy(y_hat, y)
-            # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -168,8 +168,8 @@ class AlexNetDFT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
 
-            self.log("val_loss", val_loss, prog_bar=True)
-            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
             
             # return val_loss, self.val_accuracy
              
@@ -250,7 +250,7 @@ class AlexNetConvDFT(pl.LightningModule):
             y_hat = self(x)
 
             loss = F.cross_entropy(y_hat, y)
-            # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -262,8 +262,8 @@ class AlexNetConvDFT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
 
-            self.log("val_loss", val_loss, prog_bar=True)
-            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
             
             # return val_loss, self.val_accuracy
              

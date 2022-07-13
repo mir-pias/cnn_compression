@@ -12,6 +12,9 @@ from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.utilities.model_summary import ModelSummary
 from argparse import ArgumentParser
 from utils.model_select import model_select_AlexNet
+from pytorch_lightning.loggers import MLFlowLogger
+import mlflow.pytorch
+from mlflow.tracking import MlflowClient
 
 def main(inputs):
     
@@ -31,6 +34,11 @@ def main(inputs):
     model , model_name = model_select_AlexNet(inputs.kernel, inputs.layers, num_classes)
     print(model)
 
+    # mlf_logger = MLFlowLogger(experiment_name=model_name)
+
+    # experiment_id = mlflow.create_experiment(model_name)
+    
+    # csv_logger = CSVLogger(f"lightning_logs/{inputs.dataset}/", name=model_name)
 
     if torch.cuda.is_available():
         if inputs.devices == None:
@@ -40,28 +48,44 @@ def main(inputs):
     else:
         devices = None
 
+    try:
+        expt_id = mlflow.create_experiment(model_name)
+    except mlflow.exceptions.MlflowException:
+        expt = mlflow.get_experiment_by_name(model_name)
+        expt_id = expt.experiment_id
+    
+    mlflow.pytorch.autolog()
+
     ## train and test
-    if inputs.rep:
-        trainer_det = pl.Trainer(accelerator="auto",
+    with mlflow.start_run(experiment_id = expt_id) as run:
+        if inputs.rep:
+            trainer_det = pl.Trainer(accelerator="auto",
+                                    devices=devices, 
+                                    max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
+                                    deterministic=True) ## for reproduciblilty
+            
+            
+            trainer_det.fit(model=model, datamodule=data)
+                
+            ## test
+            trainer_det.test(model=model, datamodule=data)
+
+        else:
+            trainer = pl.Trainer(accelerator="auto",
                                 devices=devices, 
                                 max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
-                                logger = CSVLogger(f"lightning_logs/{inputs.dataset}/", name=model_name), deterministic=True) ## for reproduciblilty
-
-        trainer_det.fit(model=model, datamodule=data)
-            
-        ## test
-        trainer_det.test(model=model, datamodule=data)
-
-    else:
-        trainer = pl.Trainer(accelerator="auto",
-                            devices=devices, 
-                            max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
-                            logger = CSVLogger(f"lightning_logs/{inputs.dataset}/", name=model_name),)
-        trainer.fit(model=model, datamodule=data)
+                                )
 
             
-        ## test
-        trainer.test(model=model, datamodule=data)
+            trainer.fit(model=model, datamodule=data)
+
+            ## test
+            trainer.test(model=model, datamodule=data)
+
+    # experiment = mlflow.get_experiment_by_name(model_name)
+
+    # with mlflow.start_run(experiment_id=experiment.experiment_id) as run:
+    #     mlflow.pytorch.log_model(model, "model")
 
     print(ModelSummary(model, max_depth=-1))
 

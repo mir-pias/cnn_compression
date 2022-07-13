@@ -61,7 +61,8 @@ class Conv2dDCT(torch.nn.Module):
         self.register_parameter(name='fcw', param=torch.nn.Parameter(fcw))
 
         num_filters = self.kernel_size[0] * self.kernel_size[1]
-        delta = torch.randn(self.out_channels, num_filters)
+        delta = torch.full_like(fcc, 1/num_filters)
+
         self.register_parameter(name='delta', param=torch.nn.Parameter(delta))
 
         self.register_parameter(name='bias', param=torch.nn.Parameter(torch.zeros(self.out_channels)) if bias else None)

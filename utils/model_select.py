@@ -6,6 +6,7 @@ from models.AlexNetCifar.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, Al
 from models.AlexNetCifar.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetLinearDST
 from models.DenseNetCifar.DenseNet import DenseNet
 from models.DenseNetCifar.DCTDenseNets import DenseNetConvDCT, DenseNetDCT, DenseNetLinearDCT
+from models.AlexNetCifar.CWTAlexNets import AlexNetLinearCWT
 
 
 def model_select_AlexNet(kernel, layers, num_classes):
@@ -36,6 +37,14 @@ def model_select_AlexNet(kernel, layers, num_classes):
             return AlexNetConvDFT(num_classes=num_classes), 'AlexNetConvDFT'
         if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
             return AlexNetLinearDFT(num_classes=num_classes), 'AlexNetLinearDFT'
+
+    if kernel == 'CWT' or kernel == 'cwt':
+        # if layers == 'all' or layers == 'All' or layers == None:
+            # return AlexNetDFT(num_classes=num_classes) , 'AlexNetDFT'
+        # if layers == 'conv' or layers == 'Conv':
+            # return AlexNetConvDFT(num_classes=num_classes), 'AlexNetConvDFT'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+            return AlexNetLinearCWT(num_classes=num_classes), 'AlexNetLinearCWT'
 
 
 def model_select_DenseNet(kernel, layers, num_classes):

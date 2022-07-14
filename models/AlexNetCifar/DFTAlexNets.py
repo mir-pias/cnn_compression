@@ -2,7 +2,8 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-from models.TransformLayers.DFT_layers import LinearDFT, Conv2dDFT
+from models.TransformLayers.DFT_layers import LinearDFT
+from models.TransformLayers.conv2d_dft import Conv2dDFT
 import math
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
@@ -19,31 +20,22 @@ class AlexNetLinearDFT(pl.LightningModule):
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),    
                 nn.Conv2d(192, 384, kernel_size=3, padding=1),
-    #             DCT_conv_layer(192, 384, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(384),
                 nn.ReLU(inplace=True),
                 nn.Conv2d(384, 256, kernel_size=3, padding=1),
-    #             DCT_conv_layer(384, 256, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(256),
                 nn.ReLU(inplace=True),
                 nn.Conv2d(256, 256, kernel_size=3, padding=1),
-    #             DCT_conv_layer(256, 256, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(256),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),
 
             )
             self.classifier = nn.Sequential(
                 nn.Dropout(),
-    #             nn.Linear(256 * 2 * 2, 4096),
                 LinearDFT(256 * 2 * 2, 4096),
                 nn.ReLU(inplace=True),
                 nn.Dropout(),
                 LinearDFT(4096, 4096),
-    #             nn.Linear(4096, 4096),
                 nn.ReLU(inplace=True),
                 LinearDFT(4096, num_classes),
-    #             DCT_layer(num_classes)
             )
 
             self.val_accuracy = Accuracy()
@@ -112,31 +104,22 @@ class AlexNetDFT(pl.LightningModule):
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),    
                 Conv2dDFT(192, 384, kernel_size=3, padding=1),
-    #             DCT_conv_layer(192, 384, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(384),
                 nn.ReLU(inplace=True),
                 Conv2dDFT(384, 256, kernel_size=3, padding=1),
-    #             DCT_conv_layer(384, 256, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(256),
                 nn.ReLU(inplace=True),
                 Conv2dDFT(256, 256, kernel_size=3, padding=1),
-    #             DCT_conv_layer(256, 256, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(256),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),
 
             )
             self.classifier = nn.Sequential(
                 nn.Dropout(),
-    #             nn.Linear(256 * 2 * 2, 4096),
                 LinearDFT(256 * 2 * 2, 4096),
                 nn.ReLU(inplace=True),
                 nn.Dropout(),
                 LinearDFT(4096, 4096),
-    #             nn.Linear(4096, 4096),
                 nn.ReLU(inplace=True),
                 LinearDFT(4096, num_classes),
-    #             DCT_layer(num_classes)
             )
 
             self.val_accuracy = Accuracy()
@@ -204,31 +187,22 @@ class AlexNetConvDFT(pl.LightningModule):
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),    
                 Conv2dDFT(192, 384, kernel_size=3, padding=1),
-    #             DCT_conv_layer(192, 384, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(384),
                 nn.ReLU(inplace=True),
                 Conv2dDFT(384, 256, kernel_size=3, padding=1),
-    #             DCT_conv_layer(384, 256, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(256),
                 nn.ReLU(inplace=True),
                 Conv2dDFT(256, 256, kernel_size=3, padding=1),
-    #             DCT_conv_layer(256, 256, kernel_size=3, padding=1),
-    #             nn.BatchNorm2d(256),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),
 
             )
             self.classifier = nn.Sequential(
                 nn.Dropout(),
-    #             nn.Linear(256 * 2 * 2, 4096),
                 nn.Linear(256 * 2 * 2, 4096),
                 nn.ReLU(inplace=True),
                 nn.Dropout(),
                 nn.Linear(4096, 4096),
-    #             nn.Linear(4096, 4096),
                 nn.ReLU(inplace=True),
                 nn.Linear(4096, num_classes),
-    #             DCT_layer(num_classes)
             )
 
             self.val_accuracy = Accuracy()

@@ -50,13 +50,13 @@ class LinearDST(nn.Module):
 
         norm = torch.rsqrt(
             torch.full_like(
-                self.fc, 2 * self.out_features
+                self.fc, 2 * self.in_features
             ) * (
-                torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype) + 1
+                torch.eye(self.in_features, 1, device=x.device, dtype=x.dtype) + 1
             )
         )
 
-        dst_m = 2 * norm * torch.sin(0.5 * PI * (self.fc + 1) * (2 * t + 1) / self.out_features)
+        dst_m = 2 * norm * torch.sin(0.5 * PI * (self.fc + 1) * (2 * t + 1) / self.in_features)
         
         return dst_m
     

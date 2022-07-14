@@ -8,11 +8,9 @@ from models.DataModules.DataModules import Cifar10DataModule, Cifar100DataModule
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
-from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.utilities.model_summary import ModelSummary
 from argparse import ArgumentParser
 from utils.model_select import model_select_AlexNet
-from pytorch_lightning.loggers import MLFlowLogger
 import mlflow.pytorch
 from mlflow.tracking import MlflowClient
 

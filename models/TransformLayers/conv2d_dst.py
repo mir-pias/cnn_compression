@@ -62,6 +62,7 @@ class Conv2dDST(torch.nn.Module):
 
         num_filters = self.kernel_size[0] * self.kernel_size[1]
         delta = torch.randn(self.out_channels, num_filters)
+        
         self.register_parameter(name='delta', param=torch.nn.Parameter(delta))
 
         self.register_parameter(name='bias', param=torch.nn.Parameter(torch.zeros(self.out_channels)) if bias else None)
@@ -101,7 +102,7 @@ class Conv2dDST(torch.nn.Module):
             )
         ) 
 
-        kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * ((self.fcc + 1 )/ self.out_channels) * (2 * tc + 1)) 
+        kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * ((self.fcc + 1 )/ in_channels) * (2 * tc + 1)) 
 
         norm_h: torch.Tensor = torch.rsqrt(
             torch.full_like(

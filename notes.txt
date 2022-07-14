@@ -128,4 +128,10 @@ vice versa for non-square kernel_size
 
 maybe just overcomplicating things with seperate filters for height and width, then merging them together, too much loss of info
 
+14-07
+CWT still not orthonormal, all the conv2d was fixed, maybe overcomplicating, but new version is the correct way,
+conv2dDFT was so wrong, weighted sum works better for dft but not dct, didn't test dst, need more testing 
 
+fixed all the other layers, was dividing by out_channels in the kernels, but N=in_channels
+
+new conv2ds are very slow, especially Conv2dDFT

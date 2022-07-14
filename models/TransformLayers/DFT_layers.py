@@ -4,7 +4,7 @@ from torch import nn
 import torch.nn.functional as F
 import math
 # noinspection PyProtectedMember
-from torch.nn.modules.utils import _single
+from torch.nn.modules.utils import _pair
 
 from math import pi as PI
 
@@ -103,7 +103,7 @@ class LinearDFT(nn.Module):
 class Conv2dDFT(torch.nn.Module):
 
     fcc: torch.nn.Parameter  # central frequencies (output channels)
-    fcl: torch.nn.Parameter  # central frequencies (2D convolutional kernel length)
+    fch: torch.nn.Parameter  # central frequencies (2D convolutional kernel length)
     bias: torch.nn.Parameter
 
     def __init__(
@@ -121,10 +121,10 @@ class Conv2dDFT(torch.nn.Module):
         
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.kernel_size = _single(kernel_size)
-        self.stride = _single(stride)
-        self.padding = _single(padding)
-        self.dilation = _single(dilation)
+        self.kernel_size = _pair(kernel_size)
+        self.stride = _pair(stride)
+        self.padding = _pair(padding)
+        self.dilation = _pair(dilation)
         self.groups = groups
 
         self.register_parameter(
@@ -137,7 +137,7 @@ class Conv2dDFT(torch.nn.Module):
             )
         )
         self.register_parameter(
-            name='fcl',
+            name='fch',
             param=torch.nn.Parameter(
                 torch.arange(
                     self.kernel_size[0],
@@ -167,20 +167,17 @@ class Conv2dDFT(torch.nn.Module):
             return grad / torch.linalg.norm(grad, ord=None)
 
         self.fcc.register_hook(norm)
-        self.fcl.register_hook(norm)
+        self.fch.register_hook(norm)
 
     def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         # in_features = x.shape[1]
-        try:
-            width = self.kernel_size[1]
-        except IndexError:
-            width = self.kernel_size[0]
+        
 
         x_is_complex = x.shape[-1] == 2
 
         tc = torch.arange(self.in_channels, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
 
-        tl = torch.arange(width, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
+        tl = torch.arange(self.kernel_size[0], dtype=x.dtype, device=x.device).reshape(1, -1, 1)
 
         norm_c = torch.rsqrt(
             torch.full_like(
@@ -190,17 +187,17 @@ class Conv2dDFT(torch.nn.Module):
             )
         )
 
-        kc: torch.Tensor = norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/self.in_channels), - torch.sin((self.fcc*tc*2*PI)/self.in_channels)), dim=-1)
+        kc: torch.Tensor = norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/self.out_channels), - torch.sin((self.fcc*tc*2*PI)/self.out_channels)), dim=-1)
 
         norm_l = torch.rsqrt(
             torch.full_like(
-                self.fcl, self.kernel_size[0]
+                self.fch, self.kernel_size[0]
             ) * (
-                torch.ones(width, 1, device=x.device, dtype=x.dtype) 
+                torch.ones(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) 
             )
         )
         
-        kl: torch.Tensor = norm_l * torch.cat((torch.cos((self.fcl*tl*2*PI)/self.kernel_size[0]), - torch.sin((self.fcl*tl*2*PI)/self.kernel_size[0])), dim=-1)
+        kl: torch.Tensor = norm_l * torch.cat((torch.cos((self.fch*tl*2*PI)/self.kernel_size[0]), - torch.sin((self.fch*tl*2*PI)/self.kernel_size[0])), dim=-1)
 
 
         w: torch.Tensor = kc.reshape(

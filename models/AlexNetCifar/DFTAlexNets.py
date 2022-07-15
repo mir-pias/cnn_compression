@@ -7,6 +7,7 @@ from models.TransformLayers.conv2d_dft import Conv2dDFT
 import math
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
+from utils.complex import Cardioid, ConcatenatedMaxPool2d,ConcatenatedReLU as cReLU
 
 class AlexNetLinearDFT(pl.LightningModule):
 
@@ -181,18 +182,18 @@ class AlexNetConvDFT(pl.LightningModule):
             super(AlexNetConvDFT, self).__init__()
             self.features = nn.Sequential(
                 Conv2dDFT(3, 64, kernel_size=3, stride=2, padding=1),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2),   
+                cReLU(),
+                ConcatenatedMaxPool2d(kernel_size=2),   
                 Conv2dDFT(64, 192, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2),    
+                cReLU(),
+                ConcatenatedMaxPool2d(kernel_size=2),    
                 Conv2dDFT(192, 384, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
+                cReLU(),
                 Conv2dDFT(384, 256, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
+                cReLU(),
                 Conv2dDFT(256, 256, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2),
+                cReLU(),
+                ConcatenatedMaxPool2d(kernel_size=2),
 
             )
             self.classifier = nn.Sequential(
@@ -210,6 +211,7 @@ class AlexNetConvDFT(pl.LightningModule):
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
+            x = x.sum(-1) ## hack
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
             return x  

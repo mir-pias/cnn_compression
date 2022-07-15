@@ -87,18 +87,18 @@ class LeNetDFT(pl.LightningModule):
             super(LeNetDFT, self).__init__()
             self.features = nn.Sequential(
                 Conv2dDFT(1, 6, 5),
-                nn.ReLU(),
+                Cardioid(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDFT(6, 16, 5),
-                nn.ReLU(),
+                Cardioid(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDFT(16, 120, 5),
-                nn.ReLU(),
+                Cardioid(),
 
             )
             self.classifier = nn.Sequential(
                 LinearDFT(120, 84),
-                nn.ReLU(),
+                Cardioid(),
                 LinearDFT(84, num_classes),
             )
             
@@ -158,13 +158,13 @@ class LeNetConvDFT(pl.LightningModule):
             super(LeNetConvDFT, self).__init__()
             self.features = nn.Sequential(
                 Conv2dDFT(1, 6, 5),
-                nn.ReLU(),
+                Cardioid(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDFT(6, 16, 5),
-                nn.ReLU(),
+                Cardioid(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDFT(16, 120, 5),
-                nn.ReLU(),
+                Cardioid(),
 
             )
             self.classifier = nn.Sequential(

@@ -52,7 +52,7 @@ class LinearDCT(nn.Module):
             torch.full_like(
                 self.fc, 2 * self.in_features
             ) * (
-                torch.eye(self.in_features, 1, device=x.device, dtype=x.dtype) + 1
+                torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype) + 1
             )
         )
 

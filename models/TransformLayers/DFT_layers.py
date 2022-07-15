@@ -49,9 +49,7 @@ class LinearDFT(nn.Module):
         norm = torch.rsqrt(
             torch.full_like(
                 fc, in_features
-            ) * (
-                torch.ones(in_features, 1, device=t.device, dtype=t.dtype) 
-            )
+            ) 
         )
 
         dft_m = norm * torch.cat((torch.cos((fc*t*2*PI)/in_features), - torch.sin((fc*t*2*PI)/in_features)), dim=-1) 

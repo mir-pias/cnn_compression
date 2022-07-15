@@ -39,10 +39,7 @@ def main(inputs):
     # csv_logger = CSVLogger(f"lightning_logs/{inputs.dataset}/", name=model_name)
 
     if torch.cuda.is_available():
-        if inputs.devices == None:
-            devices = 1
-        else:
-            devices = inputs.devices
+        devices = inputs.devices
     else:
         devices = None
 
@@ -93,7 +90,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--kernel", default=None)
     parser.add_argument("--layers", default=None)
-    parser.add_argument("--devices", default=None)
+    parser.add_argument("--devices", default=1)
     parser.add_argument("--max_epochs", default=5)
     parser.add_argument("--rep", default=False) ## reproducible flag
     parser.add_argument('--dataset', default='Cifar10')

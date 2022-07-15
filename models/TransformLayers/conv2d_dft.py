@@ -129,14 +129,6 @@ class Conv2dDFT(torch.nn.Module):
         kw: torch.Tensor = norm_w * torch.cat((torch.cos((self.fcw*tw*2*PI)/self.kernel_size[1]), 
                                             - torch.sin((self.fcw*tw*2*PI)/self.kernel_size[1])), dim=-1)
 
-        
-        # print("kc: ", kc.reshape(
-        # self.out_channels, -1, kc.shape[-1], 1,1,1,1,1,1
-        # ).shape)
-        # print("kh: ", kh.reshape(
-        # 1,1, 1, self.kernel_size[0],-1,kh.shape[-1],1,1,1
-        # ).shape)
-        # print("kw: ", kw.reshape(1,1,1,1 ,1,1, self.kernel_size[1],-1 ,kw.shape[-1]).shape)
 
 
         w: torch.Tensor =kc.reshape(
@@ -148,19 +140,12 @@ class Conv2dDFT(torch.nn.Module):
         w = torch.sum(w,dim=(2,5))  # N_out x N_in x 2 x kH x kH  x kW x kW x 2
         ## mean doesn't train, sum in complex dims trains
 
-        # print(w.shape)
-        # w = torch.sum(w,dim=4) # N_out x N_in x kH x kH x kW x kW x 2
-        # ## mean doesn't train, sum in complex dim trains
-
         w = w.reshape(self.out_channels, self.in_channels , self.kernel_size[0], -1, self.kernel_size[1], w.shape[-1] )  
         # N_out x N_in x kH x (kH * kW) x kW x 2
         
+        
         w = torch.mean(w * self.delta.reshape(self.out_channels, 1, 1, -1, 1, 1), dim=3)  # N_out x N_in x kH x kW x 2
-        # w = torch.mean(w,dim=3) 
-
-        # print(w.shape)
-
-        # w = w.reshape(self.out_channels, self.in_channels, *self.kernel_size, -1) 
+        # w = w.mean(w,dim=3)
 
         return w, x_is_complex 
 
@@ -196,7 +181,7 @@ class Conv2dDFT(torch.nn.Module):
 
             y = torch.stack((y0,y1), dim=-1)
 
-        return y.sum(-1) ## no more complex outputs from this layer, maybe ok
+        return y 
 
     def extra_repr(self):
         s = ('in_channels={in_channels}, out_channels={out_channels}, kernel_size={kernel_size}'
@@ -208,3 +193,5 @@ class Conv2dDFT(torch.nn.Module):
         if self.groups != 1:
             s += ', groups={groups}'
         return s.format(**self.__dict__)
+
+    

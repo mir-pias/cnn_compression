@@ -61,6 +61,7 @@ class Conv2dDST(torch.nn.Module):
         self.register_parameter(name='fcw', param=torch.nn.Parameter(fcw))
 
         num_filters = self.kernel_size[0] * self.kernel_size[1]
+        
         delta = torch.randn(self.out_channels, num_filters)
         
         self.register_parameter(name='delta', param=torch.nn.Parameter(delta))
@@ -134,8 +135,8 @@ class Conv2dDST(torch.nn.Module):
         w = w.reshape(self.out_channels, in_channels, -1, *self.kernel_size)  # N_out x N_in x kH x (kH * kW) x kW
 
         # weighted sum of basis functions
-        # w = torch.mean(w * self.delta.reshape(self.out_channels, 1, -1, 1, 1), dim=2)  # N_out x N_in x kH x kW
-        w = torch.mean(w,dim=2)
+        w = torch.mean(w * self.delta.reshape(self.out_channels, 1, -1, 1, 1), dim=2)  # N_out x N_in x kH x kW
+        # w = torch.mean(w,dim=2)
         return w 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

@@ -1,5 +1,4 @@
 from models.TransformLayers.LinearFBSP import LinearFBSP
-from math import pi as PI
 from models.AlexNetCifar.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNetConvDFT
 from models.AlexNetCifar.AlexNet import AlexNet
 from models.AlexNetCifar.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, AlexNetDCT
@@ -7,7 +6,10 @@ from models.AlexNetCifar.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetL
 from models.DenseNetCifar.DenseNet import DenseNet
 from models.DenseNetCifar.DCTDenseNets import DenseNetConvDCT, DenseNetDCT, DenseNetLinearDCT
 from models.AlexNetCifar.CWTAlexNets import AlexNetLinearCWT
-
+from models.LeNet.LeNet import LeNet
+from models.LeNet.DFTLeNets import LeNetLinearDFT, LeNetConvDFT, LeNetDFT
+from models.LeNet.DCTLeNets import LeNetLinearDCT, LeNetConvDCT, LeNetDCT
+from models.LeNet.DSTLeNets import LeNetLinearDST, LeNetConvDST, LeNetDST
 
 def model_select_AlexNet(kernel, layers, num_classes):
 
@@ -75,3 +77,41 @@ def model_select_DenseNet(kernel, layers, num_classes):
     #         return DenseNet121ConvDFT(num_classes=num_classes), 'DenseNet121ConvDFT'
     #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
     #         return DenseNet121LinearDFT(num_classes=num_classes), 'DenseNet121LinearDFT'
+
+
+def model_select_LeNet(kernel, layers, num_classes):
+
+    if kernel == None:
+        return LeNet(num_classes=num_classes), 'LeNet'
+
+    if kernel == 'DCT' or kernel == 'dct':
+        if layers == 'all' or layers == 'All' or layers == None:
+            return LeNetDCT(num_classes=num_classes), 'LeNetDCT'
+        if layers == 'conv' or layers == 'Conv':
+            return LeNetConvDCT(num_classes=num_classes), 'LeNetConvDCT'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
+            return LeNetLinearDCT(num_classes=num_classes), 'LeNetLinearDCT'
+
+    if kernel == 'DST' or kernel == 'dst':
+        if layers == 'all' or layers == 'All' or layers == None:
+            return LeNetDST(num_classes=num_classes), 'LeNetDST'
+        if layers == 'conv' or layers == 'Conv':
+            return LeNetConvDST(num_classes=num_classes), 'LeNetConvDST'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+            return LeNetLinearDST(num_classes=num_classes), 'LeNetLinearDST'
+
+    if kernel == 'DFT' or kernel == 'dft':
+        if layers == 'all' or layers == 'All' or layers == None:
+            return LeNetDFT(num_classes=num_classes) , 'LeNetDFT'
+        if layers == 'conv' or layers == 'Conv':
+            return LeNetConvDFT(num_classes=num_classes), 'LeNetConvDFT'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+            return LeNetLinearDFT(num_classes=num_classes), 'LeNetLinearDFT'
+
+    # if kernel == 'CWT' or kernel == 'cwt':
+    #     # if layers == 'all' or layers == 'All' or layers == None:
+    #         # return AlexNetDFT(num_classes=num_classes) , 'AlexNetDFT'
+    #     # if layers == 'conv' or layers == 'Conv':
+    #         # return AlexNetConvDFT(num_classes=num_classes), 'AlexNetConvDFT'
+    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+    #         return LeNetLinearCWT(num_classes=num_classes), 'LeNetLinearCWT'

@@ -24,8 +24,8 @@ class LinearCWT(nn.Module):
         self.in_features = in_features
         
         default_dtype = torch.get_default_dtype()
-        self.a = nn.Parameter(torch.arange(1, self.out_features +1, dtype=default_dtype).reshape(-1,1)) 
-        self.b = nn.Parameter(torch.arange((self.out_features), dtype=default_dtype).reshape(-1,1))     
+        self.a = nn.Parameter(torch.ones(self.out_features, dtype=default_dtype).reshape(-1,1)  ) 
+        self.b = nn.Parameter(torch.zeros(self.out_features, dtype=default_dtype).reshape(-1,1))     
         
         self.a.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
         self.b.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
@@ -47,24 +47,19 @@ class LinearCWT(nn.Module):
                 param=None
             )
 
-    ## https://github.com/AndreyGuzhov/ESResNeXt-fbsp/blob/master/model/esresnet_fbsp.py
-
-    def sinc(self, x: torch.Tensor) -> torch.Tensor:
-        return torch.where(cast(torch.Tensor, x == 0), torch.ones_like(x), torch.sin(x) / x)
-
     def shannon_kernel(self,t): 
-        
-        psi = (2 * self.sinc(2*t)) - self.sinc(t)
+            
+        psi = torch.sinc(0.5*t) * torch.cos(0.5*3*PI*t)
         
         return psi
     
     def materialize_weights(self,x):
 
-        t = PI * torch.linspace(-1.0, 1.0, x.shape[-1], device = x.device).reshape(1, -1)
+        t = torch.linspace(-1.0, 1.0, x.shape[-1], device = x.device).reshape(1, -1)
 
         psi = self.shannon_kernel(t)
         
-        w =  torch.rsqrt(self.a) * psi * ((t-self.b)/self.a)  
+        w =  torch.rsqrt(torch.pow(2,self.a)) * psi * (t- (torch.pow(2,self.a))*self.b)/ (torch.pow(2,self.a))  
 
         return w
         

@@ -10,6 +10,7 @@ from models.LeNet.LeNet import LeNet
 from models.LeNet.DFTLeNets import LeNetLinearDFT, LeNetConvDFT, LeNetDFT
 from models.LeNet.DCTLeNets import LeNetLinearDCT, LeNetConvDCT, LeNetDCT
 from models.LeNet.DSTLeNets import LeNetLinearDST, LeNetConvDST, LeNetDST
+from models.LeNet.CWTLeNets import LeNetLinearCWT
 
 def model_select_AlexNet(kernel, layers, num_classes):
 
@@ -108,10 +109,10 @@ def model_select_LeNet(kernel, layers, num_classes):
         if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
             return LeNetLinearDFT(num_classes=num_classes), 'LeNetLinearDFT'
 
-    # if kernel == 'CWT' or kernel == 'cwt':
-    #     # if layers == 'all' or layers == 'All' or layers == None:
-    #         # return AlexNetDFT(num_classes=num_classes) , 'AlexNetDFT'
+    if kernel == 'CWT' or kernel == 'cwt':
+        # if layers == 'all' or layers == 'All' or layers == None:
+            # return AlexNetDFT(num_classes=num_classes) , 'AlexNetDFT'
     #     # if layers == 'conv' or layers == 'Conv':
     #         # return AlexNetConvDFT(num_classes=num_classes), 'AlexNetConvDFT'
-    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
-    #         return LeNetLinearCWT(num_classes=num_classes), 'LeNetLinearCWT'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+            return LeNetLinearCWT(num_classes=num_classes), 'LeNetLinearCWT'

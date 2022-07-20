@@ -15,13 +15,13 @@ class LeNetLinearDFT(pl.LightningModule):
             super(LeNetLinearDFT, self).__init__()
             self.features = nn.Sequential(
                 nn.Conv2d(1, 6, 5),
-                nn.ReLU(),
+                nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),
                 nn.Conv2d(6, 16, 5),
-                nn.ReLU(),
+                nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),
                 nn.Conv2d(16, 120, 5),
-                nn.ReLU(),
+                nn.ReLU(inplace=True),
 
             )
             self.classifier = nn.Sequential(
@@ -37,7 +37,7 @@ class LeNetLinearDFT(pl.LightningModule):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
             x = self.classifier(x)
-            return x.sum(-1)    
+            return torch.sqrt(x[...,0]**2 + x[...,1]**2) ## magnitude
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
@@ -169,7 +169,7 @@ class LeNetConvDFT(pl.LightningModule):
             )
             self.classifier = nn.Sequential(
                 nn.Linear(120, 84),
-                nn.ReLU(),
+                nn.ReLU(inplace=True),
                 nn.Linear(84, num_classes),
             )
             

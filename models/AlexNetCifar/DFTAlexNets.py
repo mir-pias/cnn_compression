@@ -32,10 +32,10 @@ class AlexNetLinearDFT(pl.LightningModule):
             self.classifier = nn.Sequential(
                 nn.Dropout(),
                 LinearDFT(256 * 2 * 2, 4096),
-                nn.ReLU(inplace=True),
+                Cardioid(),
                 nn.Dropout(),
                 LinearDFT(4096, 4096),
-                nn.ReLU(inplace=True),
+                Cardioid(),
                 LinearDFT(4096, num_classes),
             )
 
@@ -46,7 +46,7 @@ class AlexNetLinearDFT(pl.LightningModule):
             x = self.features(x)
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
-            return x.sum(-1)  ## sum in the last dim to get correct shape output for loss function
+            return torch.sqrt(x[...,0]**2 + x[...,1]**2) ## sum in the last dim to get correct shape output for loss function
 
 
         def configure_optimizers(self):

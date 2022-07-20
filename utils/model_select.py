@@ -1,3 +1,4 @@
+import imp
 from models.TransformLayers.LinearFBSP import LinearFBSP
 from models.AlexNetCifar.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNetConvDFT
 from models.AlexNetCifar.AlexNet import AlexNet
@@ -12,6 +13,9 @@ from models.LeNet.DCTLeNets import LeNetLinearDCT, LeNetConvDCT, LeNetDCT
 from models.LeNet.DSTLeNets import LeNetLinearDST, LeNetConvDST, LeNetDST
 from models.LeNet.CWTLeNets import LeNetLinearCWT
 from models.ResNet.ResNet import resnet18
+from models.ResNet.DCTResNets.ResNetDCT import resnet18DCT
+from models.ResNet.DCTResNets.ResNetConvDCT import resnet18ConvDCT
+from models.ResNet.DCTResNets.ResNetLinearDCT import resnet18LinearDCT
 
 def model_select_AlexNet(kernel, layers, num_classes):
 
@@ -122,15 +126,15 @@ def model_select_LeNet(kernel, layers, num_classes):
 def model_select_ResNet18(kernel, layers, num_classes):
 
     if kernel == None:
-        return resnet18(num_classes=num_classes), 'ResNet'
+        return resnet18(num_classes=num_classes), 'ResNet18'
 
-    # if kernel == 'DCT' or kernel == 'dct':
-    #     if layers == 'all' or layers == 'All' or layers == None:
-    #         return DenseNetDCT(num_classes=num_classes), 'DenseNetDCT'
-    #     if layers == 'conv' or layers == 'Conv':
-    #         return DenseNetConvDCT(num_classes=num_classes), 'DenseNetConvDCT'
-    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
-    #         return DenseNetLinearDCT(num_classes=num_classes), 'DenseNetLinearDCT'
+    if kernel == 'DCT' or kernel == 'dct':
+        if layers == 'all' or layers == 'All' or layers == None:
+            return resnet18DCT(num_classes=num_classes), 'ResNet18DCT'
+        if layers == 'conv' or layers == 'Conv':
+            return resnet18ConvDCT(num_classes=num_classes), 'ResNet18ConvDCT'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
+            return resnet18LinearDCT(num_classes=num_classes), 'ResNet18LinearDCT'
 
     # if kernel == 'DST' or kernel == 'dst':
     #     if layers == 'all' or layers == 'All' or layers == None:

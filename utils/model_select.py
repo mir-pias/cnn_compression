@@ -11,6 +11,7 @@ from models.LeNet.DFTLeNets import LeNetLinearDFT, LeNetConvDFT, LeNetDFT
 from models.LeNet.DCTLeNets import LeNetLinearDCT, LeNetConvDCT, LeNetDCT
 from models.LeNet.DSTLeNets import LeNetLinearDST, LeNetConvDST, LeNetDST
 from models.LeNet.CWTLeNets import LeNetLinearCWT
+from models.ResNet.ResNet import resnet18
 
 def model_select_AlexNet(kernel, layers, num_classes):
 
@@ -116,3 +117,33 @@ def model_select_LeNet(kernel, layers, num_classes):
     #         # return AlexNetConvDFT(num_classes=num_classes), 'AlexNetConvDFT'
         if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
             return LeNetLinearCWT(num_classes=num_classes), 'LeNetLinearCWT'
+
+
+def model_select_ResNet18(kernel, layers, num_classes):
+
+    if kernel == None:
+        return resnet18(num_classes=num_classes), 'ResNet'
+
+    # if kernel == 'DCT' or kernel == 'dct':
+    #     if layers == 'all' or layers == 'All' or layers == None:
+    #         return DenseNetDCT(num_classes=num_classes), 'DenseNetDCT'
+    #     if layers == 'conv' or layers == 'Conv':
+    #         return DenseNetConvDCT(num_classes=num_classes), 'DenseNetConvDCT'
+    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
+    #         return DenseNetLinearDCT(num_classes=num_classes), 'DenseNetLinearDCT'
+
+    # if kernel == 'DST' or kernel == 'dst':
+    #     if layers == 'all' or layers == 'All' or layers == None:
+    #         return DenseNet121DST(num_classes=num_classes), 'DenseNet121DST'
+    #     if layers == 'conv' or layers == 'Conv':
+    #         return DenseNet121ConvDST(num_classes=num_classes), 'DenseNet121ConvDST'
+    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+    #         return DenseNet121LinearDST(num_classes=num_classes), 'DenseNet121LinearDST'
+
+    # if kernel == 'DFT' or kernel == 'dft':
+    #     if layers == 'all' or layers == 'All' or layers == None:
+    #         return DenseNet121DFT(num_classes=num_classes) , 'DenseNet121DFT'
+    #     if layers == 'conv' or layers == 'Conv':
+    #         return DenseNet121ConvDFT(num_classes=num_classes), 'DenseNet121ConvDFT'
+    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
+    #         return DenseNet121LinearDFT(num_classes=num_classes), 'DenseNet121LinearDFT'

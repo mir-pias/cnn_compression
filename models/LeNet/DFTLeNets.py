@@ -37,7 +37,7 @@ class LeNetLinearDFT(pl.LightningModule):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
             x = self.classifier(x)
-            return torch.sqrt(x[...,0]**2 + x[...,1]**2) ## magnitude
+            return  (torch.pow(x[...,0],2) + torch.pow(x[...,1],2))  ## squared magnitude
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)

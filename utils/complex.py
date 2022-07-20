@@ -16,7 +16,7 @@ class Cardioid(nn.Module):
     def forward(self, z):
         # print(torch.cos(torch.atan2(z[...,1], z[...,0])).shape)
         # print(z.shape)
-        return 0.5*(1 + torch.cos(torch.atan2(z[...,1], z[...,0])))*(torch.sqrt(z[...,0]**2 + z[...,1]**2))  ## magnitude of z
+        return 0.5*(1 + torch.cos(torch.atan2(z[...,1], z[...,0])))*(torch.pow(z[...,0],2) + torch.pow(z[...,1],2))  ## squared magnitude of z
 
 class ConcatenatedMaxPool2d(nn.Module):
     def __init__(

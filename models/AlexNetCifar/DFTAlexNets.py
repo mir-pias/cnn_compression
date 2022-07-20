@@ -46,7 +46,7 @@ class AlexNetLinearDFT(pl.LightningModule):
             x = self.features(x)
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
-            return torch.sqrt(x[...,0]**2 + x[...,1]**2) ## sum in the last dim to get correct shape output for loss function
+            return (torch.pow(x[...,0],2) + torch.pow(x[...,1],2)) ## sum in the last dim to get correct shape output for loss function
 
 
         def configure_optimizers(self):

@@ -23,7 +23,7 @@ class LinearDCT(nn.Module):
         self.in_features = in_features
         
         default_dtype = torch.get_default_dtype()
-        self.fc = nn.Parameter(torch.arange((self.out_features), dtype=default_dtype).reshape(-1,1))     
+        self.fc = nn.Parameter(torch.arange(self.out_features, dtype=default_dtype).reshape(-1,1))     
         
         self.fc.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
 
@@ -46,9 +46,9 @@ class LinearDCT(nn.Module):
 
     def materialize_weights(self,x): 
 
-        t = torch.arange(x.shape[-1], device = x.device).reshape(1,-1)
+        t: torch.Tensor = torch.arange(x.shape[-1], device = x.device).reshape(1,-1)
 
-        norm = torch.rsqrt(
+        norm: torch.Tensor = torch.rsqrt(
             torch.full_like(
                 self.fc, 2 * self.in_features
             ) * (
@@ -57,8 +57,8 @@ class LinearDCT(nn.Module):
         )
 
         
-        dct_m = 2 * norm * torch.cos(0.5 * PI * self.fc * (2 * t + 1) / self.in_features)
-        
+        dct_m: torch.Tensor = 2 * norm * torch.cos(0.5 * PI * (self.fc / self.in_features) * (2 * t + 1))
+
         
         return dct_m
     

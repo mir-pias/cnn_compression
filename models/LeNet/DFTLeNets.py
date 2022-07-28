@@ -7,7 +7,7 @@ import pytorch_lightning as pl
 from torchmetrics import Accuracy
 from models.TransformLayers.DFT_layers import LinearDFT
 from models.TransformLayers.conv2d_dft import Conv2dDFT
-from utils.complex import ConcatenatedMaxPool2d, ConcatenatedReLU as cReLU, Cardioid
+from utils.complex import Cardioid, ComplexMaxPool2d, complex_abs
 
 
 class LeNetLinearDFT(pl.LightningModule):
@@ -37,7 +37,7 @@ class LeNetLinearDFT(pl.LightningModule):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
             x = self.classifier(x)
-            return  (torch.pow(x[...,0],2) + torch.pow(x[...,1],2))  ## squared magnitude
+            return complex_abs(x) ##  magnitude
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
@@ -88,10 +88,10 @@ class LeNetDFT(pl.LightningModule):
             self.features = nn.Sequential(
                 Conv2dDFT(1, 6, 5),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),
+                ComplexMaxPool2d(kernel_size=2),
                 Conv2dDFT(6, 16, 5),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),
+                ComplexMaxPool2d(kernel_size=2),
                 Conv2dDFT(16, 120, 5),
                 Cardioid(),
 
@@ -109,7 +109,7 @@ class LeNetDFT(pl.LightningModule):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
             x = self.classifier(x)
-            return x.sum(-1)    
+            return complex_abs(x)    
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
@@ -159,10 +159,10 @@ class LeNetConvDFT(pl.LightningModule):
             self.features = nn.Sequential(
                 Conv2dDFT(1, 6, 5),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),
+                ComplexMaxPool2d(kernel_size=2),
                 Conv2dDFT(6, 16, 5),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),
+                ComplexMaxPool2d(kernel_size=2),
                 Conv2dDFT(16, 120, 5),
                 Cardioid(),
 
@@ -178,6 +178,7 @@ class LeNetConvDFT(pl.LightningModule):
 
         def forward(self, x):
             x = self.features(x)
+            x = complex_abs(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
             x = self.classifier(x)
             return x   

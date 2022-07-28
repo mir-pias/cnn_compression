@@ -6,44 +6,99 @@ import torch.nn.functional as F
 from torch.nn.common_types import (_size_any_t, _size_1_t, _size_2_t, _size_3_t,
                             _ratio_3_t, _ratio_2_t, _size_any_opt_t, _size_2_opt_t, _size_3_opt_t)
 
-from typing import List, Optional
 from torch.nn.modules.utils import _single, _pair, _triple
 from torch import Tensor
 
-class Cardioid(nn.Module):
-    def __init__(self):
-        super().__init__()
-    def forward(self, z):
-        # print(torch.cos(torch.atan2(z[...,1], z[...,0])).shape)
-        # print(z.shape)
-        return 0.5*(1 + torch.cos(torch.atan2(z[...,1], z[...,0])))*(torch.pow(z[...,0],2) + torch.pow(z[...,1],2))  ## squared magnitude of z
+from typing import (
+    Tuple,
+    Union,
+    Optional
+)
 
-class ConcatenatedMaxPool2d(nn.Module):
+
+def complex_abs(x: torch.Tensor) -> torch.Tensor:
+    return (x[..., 0] ** 2 + x[..., 1] ** 2) ** 0.5
+
+
+def complex_angle(x: torch.Tensor) -> torch.Tensor:
+    x = torch.where(
+        (x[..., :1] == 0) & (x[..., 1:] == 0),
+        torch.stack((torch.ones_like(x[..., 0]), torch.zeros_like(x[..., 1])), -1),
+        x
+    )
+
+    return torch.atan2(x[..., 1], x[..., 0])
+
+
+class Cardioid(torch.nn.Module):
+
+    @staticmethod
+    def cardioid(x: torch.Tensor) -> torch.Tensor:
+        scale = torch.cos(complex_angle(x))
+        return 0.5 * (1.0 + torch.stack((scale,) * 2, dim=-1)) * x
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.cardioid(x)
+
+class ComplexMaxPool2d(torch.nn.MaxPool2d):
+
     def __init__(
-        self,kernel_size: _size_2_t, stride: Optional[_size_2_t] = None,
-                 padding: _size_2_t = 0, dilation: _size_2_t = 1,
-                 return_indices: bool = False, ceil_mode: bool = False) -> None:
-    
-        super().__init__()
-        self.kernel_size = kernel_size
-        self.stride = stride if (stride is not None) else kernel_size
-        self.padding = padding
-        self.dilation = dilation
-        self.return_indices = return_indices
-        self.ceil_mode = ceil_mode
+        self,
+        kernel_size: Union[int, Tuple[int, int]],
+        stride: Optional[Union[int, Tuple[int, int]]] = None,
+        padding: Union[int, Tuple[int, int]] = 0,
+        dilation: Union[int, Tuple[int, int]] = 1,
+        return_indices: bool = False,
+        ceil_mode: bool = False
+    ):
+        super(ComplexMaxPool2d, self).__init__(
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            return_indices=return_indices,
+            ceil_mode=ceil_mode
+        )
 
-    def forward(self,input: Tensor) -> Tensor:
-        
-    
-        y1 = F.max_pool2d(input[...,0], self.kernel_size, self.stride,
-                            self.padding, self.dilation, ceil_mode=self.ceil_mode,
-                            return_indices=self.return_indices)
+    @staticmethod
+    def max_pool2d(
+        input: torch.Tensor,
+        kernel_size: Union[int, Tuple[int, int]],
+        stride: Optional[Union[int, Tuple[int, int]]] = None,
+        padding: Union[int, Tuple[int, int]] = 0,
+        dilation: Union[int, Tuple[int, int]] = 1,
+        ceil_mode: bool = False,
+        return_indices: bool = False,
+    ):
+        _, indices = F.max_pool2d(
+            input=complex_abs(input),
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            ceil_mode=ceil_mode,
+            return_indices=True
+        )
 
-        y2 = F.max_pool2d(input[...,1], self.kernel_size, self.stride,
-                            self.padding, self.dilation, ceil_mode=self.ceil_mode,
-                            return_indices=self.return_indices)
+        pooled = torch.stack(
+            (
+                input[..., 0].flatten(start_dim=2).gather(dim=2, index=indices.flatten(start_dim=2)).view_as(indices),
+                input[..., 1].flatten(start_dim=2).gather(dim=2, index=indices.flatten(start_dim=2)).view_as(indices)),
+            dim=-1
+        )
 
-        return torch.stack((y1,y2), dim=-1)
+        return (pooled, indices) if return_indices else pooled
+
+    def forward(self, x: torch.Tensor) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
+        return self.max_pool2d(
+            input=x,
+            kernel_size=self.kernel_size,
+            stride=self.stride,
+            padding=self.padding,
+            dilation=self.dilation,
+            ceil_mode=self.ceil_mode,
+            return_indices=self.return_indices
+        )
         
 
 class ConcatenatedReLU(nn.Module):
@@ -54,3 +109,34 @@ class ConcatenatedReLU(nn.Module):
         act = nn.ReLU()
         
         return torch.stack((act(x[...,0]),act(-x[...,1])), dim=-1)
+
+
+class ComplexBatchNorm2d(torch.nn.Module):
+
+    def __init__(
+        self,
+        num_features: int,
+        eps: float = 1e-5,
+        momentum: float = 0.1,
+        affine: bool = True,
+        track_running_stats: bool = True
+    ):
+        super(ComplexBatchNorm2d, self).__init__()
+
+        self.bn_real = torch.nn.BatchNorm2d(
+            num_features=num_features,
+            eps=eps,
+            momentum=momentum,
+            affine=affine,
+            track_running_stats=track_running_stats
+        )
+        self.bn_imag = torch.nn.BatchNorm2d(
+            num_features=num_features,
+            eps=eps,
+            momentum=momentum,
+            affine=affine,
+            track_running_stats=track_running_stats
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.stack((self.bn_real(x[..., 0]), self.bn_imag(x[..., 1])), dim=-1) / 2.0

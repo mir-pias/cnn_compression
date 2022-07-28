@@ -7,7 +7,7 @@ from models.TransformLayers.conv2d_dft import Conv2dDFT
 import math
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
-from utils.complex import Cardioid ,ConcatenatedReLU as cReLU
+from utils.complex import Cardioid, ComplexMaxPool2d, complex_abs
 
 class AlexNetLinearDFT(pl.LightningModule):
 
@@ -46,8 +46,7 @@ class AlexNetLinearDFT(pl.LightningModule):
             x = self.features(x)
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
-            return (torch.pow(x[...,0],2) + torch.pow(x[...,1],2)) ## sum in the last dim to get correct shape output for loss function
-
+            return complex_abs(x)
 
         def configure_optimizers(self):
             optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
@@ -99,27 +98,27 @@ class AlexNetDFT(pl.LightningModule):
             super(AlexNetDFT, self).__init__()
             self.features = nn.Sequential(
                 Conv2dDFT(3, 64, kernel_size=3, stride=2, padding=1),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2),   
+                Cardioid(),
+                ComplexMaxPool2d(kernel_size=2),   
                 Conv2dDFT(64, 192, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2),    
+                Cardioid(),
+                ComplexMaxPool2d(kernel_size=2),    
                 Conv2dDFT(192, 384, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
+                Cardioid(),
                 Conv2dDFT(384, 256, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
+                Cardioid(),
                 Conv2dDFT(256, 256, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2),
+                Cardioid(),
+                ComplexMaxPool2d(kernel_size=2),
 
             )
             self.classifier = nn.Sequential(
                 nn.Dropout(),
                 LinearDFT(256 * 2 * 2, 4096),
-                nn.ReLU(inplace=True),
+                Cardioid(),
                 nn.Dropout(),
                 LinearDFT(4096, 4096),
-                nn.ReLU(inplace=True),
+                Cardioid(),
                 LinearDFT(4096, num_classes),
             )
 
@@ -128,9 +127,9 @@ class AlexNetDFT(pl.LightningModule):
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
-            x = x.view(x.size(0), 256 * 2 * 2)
+            x = x.view(x.size(0), 256 * 2 * 2, 2)
             x = self.classifier(x)
-            return x.sum(-1)  ## sum in the last dim to get correct shape output for loss function
+            return complex_abs(x)  ## sum in the last dim to get correct shape output for loss function
 
 
         def configure_optimizers(self):
@@ -183,17 +182,17 @@ class AlexNetConvDFT(pl.LightningModule):
             self.features = nn.Sequential(
                 Conv2dDFT(3, 64, kernel_size=3, stride=2, padding=1),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),   
+                ComplexMaxPool2d(kernel_size=2),   
                 Conv2dDFT(64, 192, kernel_size=3, padding=1),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),    
+                ComplexMaxPool2d(kernel_size=2),    
                 Conv2dDFT(192, 384, kernel_size=3, padding=1),
                 Cardioid(),
                 Conv2dDFT(384, 256, kernel_size=3, padding=1),
                 Cardioid(),
                 Conv2dDFT(256, 256, kernel_size=3, padding=1),
                 Cardioid(),
-                nn.MaxPool2d(kernel_size=2),
+                ComplexMaxPool2d(kernel_size=2),
 
             )
             self.classifier = nn.Sequential(
@@ -211,7 +210,7 @@ class AlexNetConvDFT(pl.LightningModule):
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
-            # x = x.sum(-1) ## hack for cReLU+cMaxPool2d
+            x = complex_abs(x)
             x = x.view(x.size(0), 256 * 2 * 2)
             x = self.classifier(x)
             return x  

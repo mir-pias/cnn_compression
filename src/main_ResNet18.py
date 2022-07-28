@@ -4,7 +4,7 @@ sys.path.append('.')
 
 import torch
 
-from models.DataModules.DataModules import Cifar10DataModule, Cifar100DataModule
+from models.DataModules.DataModules import Cifar10DataModule, Cifar100DataModule, MNISTDataModule
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
@@ -20,13 +20,18 @@ def main(inputs):
         pl.seed_everything(87, workers=True) ## for reproduciblilty
 
     ## data load
+    # print(inputs.batch_size)
     if inputs.dataset == 'Cifar10' or inputs.dataset == 'cifar10' :
-        data = Cifar10DataModule()
+        data = Cifar10DataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
 
     if inputs.dataset == 'Cifar100' or inputs.dataset == 'cifar100':
-        data = Cifar100DataModule()
+        data = Cifar100DataModule(batch_size=int(inputs.batch_size))
         num_classes = 100
+
+    if inputs.dataset == 'MNIST' or inputs.dataset == 'mnist':
+        data = MNISTDataModule(batch_size=int(inputs.batch_size))
+        num_classes = 10
 
     ## model init
     model , model_name = model_select_ResNet18(inputs.kernel, inputs.layers, num_classes)
@@ -39,6 +44,7 @@ def main(inputs):
     # csv_logger = CSVLogger(f"lightning_logs/{inputs.dataset}/", name=model_name)
 
     if torch.cuda.is_available():
+        torch.cuda.empty_cache()
         devices = inputs.devices
     else:
         devices = None
@@ -94,6 +100,7 @@ if __name__ == '__main__':
     parser.add_argument("--max_epochs", default=5)
     parser.add_argument("--rep", default=False) ## reproducible flag
     parser.add_argument('--dataset', default='Cifar10')
+    parser.add_argument('--batch_size', default=32)
     args = parser.parse_args()
     
     main(args)

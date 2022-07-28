@@ -21,15 +21,15 @@ def main(inputs):
 
     
     if inputs.dataset == 'MNIST' or inputs.dataset == 'mnist':
-        data = MNISTDataModule()
+        data = MNISTDataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
 
     if inputs.dataset == 'Cifar10' or inputs.dataset == 'cifar10' :
-        data = Cifar10DataModule()
+        data = Cifar10DataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
 
     if inputs.dataset == 'Cifar100' or inputs.dataset == 'cifar100':
-        data = Cifar100DataModule()
+        data = Cifar100DataModule(batch_size=int(inputs.batch_size))
         num_classes = 100
 
 
@@ -100,6 +100,7 @@ if __name__ == '__main__':
     parser.add_argument("--max_epochs", default=5)
     parser.add_argument("--rep", default=False) ## reproducible flag
     parser.add_argument('--dataset', default='MNIST')
+    parser.add_argument('--batch_size', default=32)
     args = parser.parse_args()
     
     main(args)

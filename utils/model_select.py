@@ -19,6 +19,10 @@ from models.ResNet.DCTResNets.ResNetLinearDCT import resnet18LinearDCT
 from models.ResNet.DSTResNets.ResNetDST import resnet18DST
 from models.ResNet.DSTResNets.ResNetConvDST import resnet18ConvDST
 from models.ResNet.DSTResNets.ResNetLinearDST import resnet18LinearDST
+from models.ResNet.DFTResNets.ResNetConvDFT import resnet18ConvDFT
+from models.ResNet.DFTResNets.ResNetLinearDFT import resnet18LinearDFT
+from models.ResNet.DFTResNets.ResNetDFT import resnet18DFT
+
 
 def model_select_AlexNet(kernel, layers, num_classes):
 
@@ -148,10 +152,10 @@ def model_select_ResNet18(kernel, layers, num_classes):
             return resnet18LinearDST(num_classes=num_classes), 'ResNet18LinearDST'
 
 
-    # if kernel == 'DFT' or kernel == 'dft':
-    #     if layers == 'all' or layers == 'All' or layers == None:
-    #         return DenseNet121DFT(num_classes=num_classes) , 'DenseNet121DFT'
-    #     if layers == 'conv' or layers == 'Conv':
-    #         return DenseNet121ConvDFT(num_classes=num_classes), 'DenseNet121ConvDFT'
-    #     if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers == 'FC':
-    #         return DenseNet121LinearDFT(num_classes=num_classes), 'DenseNet121LinearDFT'
+    if kernel == 'DFT' or kernel == 'dft':
+        if layers == 'all' or layers == 'All' or layers == None:
+            return resnet18DFT(num_classes=num_classes), 'ResNet18DFT'
+        if layers == 'conv' or layers == 'Conv':
+            return resnet18ConvDFT(num_classes=num_classes), 'ResNet18ConvDFT'
+        if layers == 'Linear' or layers == 'linear' or layers == 'fc' or layers =='FC':
+            return resnet18LinearDFT(num_classes=num_classes), 'ResNet18LinearDFT'

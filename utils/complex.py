@@ -140,3 +140,13 @@ class ComplexBatchNorm2d(torch.nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return torch.stack((self.bn_real(x[..., 0]), self.bn_imag(x[..., 1])), dim=-1) / 2.0
+
+
+class ComplexAdaptiveAvgPool2d(torch.nn.Module):
+
+    def __init__(self, output_size: Union[int, Tuple[int, int]]):
+        self.output_size = output_size
+        super().__init__()
+
+    def forward(self, x:Tensor) -> Tensor:
+        return torch.stack((F.adaptive_avg_pool2d(x[..., 0],self.output_size), F.adaptive_avg_pool2d(x[..., 1], self.output_size)), dim=-1)

@@ -311,3 +311,7 @@ def _resnetLinearDST(
 def resnet18LinearDST(*, num_classes, **kwargs: Any) -> ResNetLinearDST:
     
     return _resnetLinearDST(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50LinearDST(*, num_classes, **kwargs: Any) -> ResNetLinearDST:
+
+    return _resnetLinearDST(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

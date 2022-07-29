@@ -313,3 +313,7 @@ def _resnetConvDST(
 def resnet18ConvDST(*, num_classes, **kwargs: Any) -> ResNetConvDST:
 
     return _resnetConvDST(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50ConvDST(*, num_classes, **kwargs: Any) -> ResNetConvDST:
+
+    return _resnetConvDST(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

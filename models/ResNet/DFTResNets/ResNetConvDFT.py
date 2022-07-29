@@ -316,3 +316,7 @@ def _resnetConvDFT(
 def resnet18ConvDFT(*, num_classes, **kwargs: Any) -> ResNetConvDFT:
 
     return _resnetConvDFT(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50ConvDFT(*, num_classes, **kwargs: Any) -> ResNetConvDFT:
+
+    return _resnetConvDFT(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

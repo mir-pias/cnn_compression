@@ -314,3 +314,7 @@ def _resnetDST(
 def resnet18DST(*, num_classes, **kwargs: Any) -> ResNetDST:
 
     return _resnetDST(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50DST(*, num_classes, **kwargs: Any) -> ResNetDST:
+
+    return _resnetDST(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

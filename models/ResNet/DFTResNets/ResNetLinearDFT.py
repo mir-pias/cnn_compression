@@ -312,3 +312,7 @@ def _resnetLinearDFT(
 def resnet18LinearDFT(*, num_classes, **kwargs: Any) -> ResNetLinearDFT:
     
     return _resnetLinearDFT(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50LinearDFT(*, num_classes, **kwargs: Any) -> ResNetLinearDFT:
+
+    return _resnetLinearDFT(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

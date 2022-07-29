@@ -311,3 +311,7 @@ def _resnetLinearDCT(
 def resnet18LinearDCT(*, num_classes, **kwargs: Any) -> ResNetLinearDCT:
     
     return _resnetLinearDCT(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50LinearDCT(*, num_classes, **kwargs: Any) -> ResNetLinearDCT:
+
+    return _resnetLinearDCT(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

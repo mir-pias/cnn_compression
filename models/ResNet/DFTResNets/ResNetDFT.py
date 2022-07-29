@@ -316,3 +316,7 @@ def _resnetDFT(
 def resnet18DFT(*, num_classes, **kwargs: Any) -> ResNetDFT:
 
     return _resnetDFT(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+
+def resnet50DFT(*, num_classes, **kwargs: Any) -> ResNetDFT:
+
+    return _resnetDFT(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

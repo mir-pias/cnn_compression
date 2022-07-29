@@ -13,6 +13,7 @@ from typing import Any, List, Optional, Tuple
 
 import torch.utils.checkpoint as cp
 from torch import Tensor
+from models.TransformLayers.conv2d_dct import Conv2dDCT
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
@@ -23,11 +24,11 @@ class _DenseLayer(nn.Module):
         super().__init__()
         self.norm1 = nn.BatchNorm2d(num_input_features)
         self.relu1 = nn.ReLU(inplace=True)
-        self.conv1 = nn.Conv2d(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
+        self.conv1 = Conv2dDCT(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
 
         self.norm2 = nn.BatchNorm2d(bn_size * growth_rate)
         self.relu2 = nn.ReLU(inplace=True)
-        self.conv2 = nn.Conv2d(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = Conv2dDCT(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
 
         self.drop_rate = float(drop_rate)
         self.memory_efficient = memory_efficient
@@ -117,37 +118,44 @@ class _Transition(nn.Sequential):
         super().__init__()
         self.norm = nn.BatchNorm2d(num_input_features)
         self.relu = nn.ReLU(inplace=True)
-        self.conv = nn.Conv2d(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
+        self.conv = Conv2dDCT(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
         self.pool = nn.AvgPool2d(kernel_size=2, stride=2)
 
-class DenseNet(pl.LightningModule):
-    """Args:
+
+class DenseNetConvDCT(pl.LightningModule):
+    r"""Densenet-BC model class, based on
+    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_.
+    Args:
         growth_rate (int) - how many filters to add each layer (`k` in paper)
-        block_config (list of 3 ints) - how many layers in each pooling block
+        block_config (list of 4 ints) - how many layers in each pooling block
         num_init_features (int) - the number of filters to learn in the first convolution layer
         bn_size (int) - multiplicative factor for number of bottle neck layers
           (i.e. bn_size * k features in the bottleneck layer)
         drop_rate (float) - dropout rate after each dense layer
         num_classes (int) - number of classification classes
         memory_efficient (bool) - If True, uses checkpointing. Much more memory efficient,
-          but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_."""
+          but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_.
+    """
+
     def __init__(
-    self,
-    growth_rate: int = 12,
-    block_config: Tuple[int, int, int] = (6, 12, 24),
-    num_init_features: int = 24, ## 2* growth_rate
-    bn_size: int = 4,
-    drop_rate: float = 0.2,
-    num_classes: int = 10,
-    memory_efficient: bool = False,
-) -> None:
+        self,
+        growth_rate: int = 32,
+        block_config: Tuple[int, int, int, int] = (6, 12, 24, 16),
+        num_init_features: int = 64,
+        bn_size: int = 4,
+        drop_rate: float = 0,
+        num_classes: int = 1000,
+        memory_efficient: bool = False,
+        in_channels: int = 3,
+    ) -> None:
+
         super().__init__()
 
         # First convolution
         self.features = nn.Sequential(
             OrderedDict(
                 [
-                    ("conv0", nn.Conv2d(3, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
+                    ("conv0", Conv2dDCT(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
                     ("norm0", nn.BatchNorm2d(num_init_features)),
                     ("relu0", nn.ReLU(inplace=True)),
                     ("pool0", nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
@@ -172,8 +180,6 @@ class DenseNet(pl.LightningModule):
                 trans = _Transition(num_input_features=num_features, num_output_features=num_features // 2)
                 self.features.add_module("transition%d" % (i + 1), trans)
                 num_features = num_features // 2
-                
-                
 
         # Final batch norm
         self.features.add_module("norm5", nn.BatchNorm2d(num_features))
@@ -181,18 +187,18 @@ class DenseNet(pl.LightningModule):
         # Linear layer
         self.classifier = nn.Linear(num_features, num_classes)
 
-        self.val_accuracy = Accuracy()
-        self.test_accuracy = Accuracy()
-
         # Official init from torch repo.
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, Conv2dDCT):
                 nn.init.kaiming_normal_(m.weight)
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
                 nn.init.constant_(m.bias, 0)
+        
+        self.val_accuracy = Accuracy()
+        self.test_accuracy = Accuracy()
 
     def forward(self, x: Tensor) -> Tensor:
         features = self.features(x)
@@ -201,6 +207,7 @@ class DenseNet(pl.LightningModule):
         out = torch.flatten(out, 1)
         out = self.classifier(out)
         return out
+
 
 
     def configure_optimizers(self):
@@ -244,3 +251,22 @@ class DenseNet(pl.LightningModule):
         x, y = batch
         pred = self(x)
         return pred
+
+def _densenetConvDCT(
+    growth_rate: int,
+    block_config: Tuple[int, int, int, int],
+    num_init_features: int,
+    num_classes: int,
+    **kwargs: Any,
+) -> DenseNetConvDCT:
+
+    model = DenseNetConvDCT(growth_rate, block_config, num_init_features, num_classes, **kwargs)
+    return model
+
+def densenet121ConvDCT(*,num_classes , **kwargs: Any) -> DenseNetConvDCT:
+
+    return _densenetConvDCT(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
+
+def densenet201ConvDCT(*,num_classes , **kwargs: Any) -> DenseNetConvDCT:
+
+    return _densenetConvDCT(32, (6, 12, 48, 32), 64, num_classes, **kwargs)

@@ -26,6 +26,12 @@ def mlflowExpt(model: str):
     if 'resnet50' in model.casefold():
          return "ResNet50s"
 
+    if 'densenet121' in model.casefold():
+         return "DenseNet121s"
+    
+    if 'densenet201' in model.casefold():
+         return "DenseNet201s"
+
 def main(inputs):
     
     if inputs.rep:

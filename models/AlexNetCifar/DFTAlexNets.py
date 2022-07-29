@@ -11,10 +11,10 @@ from utils.complex import Cardioid, ComplexMaxPool2d, complex_abs
 
 class AlexNetLinearDFT(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10,  in_channels: int = 3) -> None:
             super(AlexNetLinearDFT, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
+                nn.Conv2d(in_channels, 64, kernel_size=3, stride=2, padding=1),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),   
                 nn.Conv2d(64, 192, kernel_size=3, padding=1),
@@ -94,10 +94,10 @@ class AlexNetLinearDFT(pl.LightningModule):
 
 class AlexNetDFT(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10,  in_channels: int = 3) -> None:
             super(AlexNetDFT, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDFT(3, 64, kernel_size=3, stride=2, padding=1),
+                Conv2dDFT(in_channels, 64, kernel_size=3, stride=2, padding=1),
                 Cardioid(),
                 ComplexMaxPool2d(kernel_size=2),   
                 Conv2dDFT(64, 192, kernel_size=3, padding=1),
@@ -177,10 +177,10 @@ class AlexNetDFT(pl.LightningModule):
 
 class AlexNetConvDFT(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10,  in_channels: int = 3) -> None:
             super(AlexNetConvDFT, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDFT(3, 64, kernel_size=3, stride=2, padding=1),
+                Conv2dDFT(in_channels, 64, kernel_size=3, stride=2, padding=1),
                 Cardioid(),
                 ComplexMaxPool2d(kernel_size=2),   
                 Conv2dDFT(64, 192, kernel_size=3, padding=1),

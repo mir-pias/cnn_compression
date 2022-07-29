@@ -11,10 +11,10 @@ from utils.complex import Cardioid, ComplexMaxPool2d, complex_abs
 
 
 class LeNetLinearDFT(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetLinearDFT, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(1, 6, 5),
+                nn.Conv2d(in_channels, 6, 5),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),
                 nn.Conv2d(6, 16, 5),
@@ -83,10 +83,10 @@ class LeNetLinearDFT(pl.LightningModule):
 
 
 class LeNetDFT(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10,in_channels: int = 1):
             super(LeNetDFT, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDFT(1, 6, 5),
+                Conv2dDFT(in_channels, 6, 5),
                 Cardioid(),
                 ComplexMaxPool2d(kernel_size=2),
                 Conv2dDFT(6, 16, 5),
@@ -154,10 +154,10 @@ class LeNetDFT(pl.LightningModule):
             return pred
 
 class LeNetConvDFT(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetConvDFT, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDFT(1, 6, 5),
+                Conv2dDFT(in_channels, 6, 5),
                 Cardioid(),
                 ComplexMaxPool2d(kernel_size=2),
                 Conv2dDFT(6, 16, 5),

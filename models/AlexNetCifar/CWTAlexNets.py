@@ -8,10 +8,10 @@ from torchmetrics import Accuracy
 
 class AlexNetLinearCWT(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10, in_channels: int = 3) -> None:
             super(AlexNetLinearCWT, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
+                nn.Conv2d(in_channels, 64, kernel_size=3, stride=2, padding=1),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),   
                 nn.Conv2d(64, 192, kernel_size=3, padding=1),

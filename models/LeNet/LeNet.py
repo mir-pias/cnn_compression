@@ -7,10 +7,10 @@ from torchmetrics import Accuracy
 
 
 class LeNet(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNet, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(1, 6, 5),
+                nn.Conv2d(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 nn.Conv2d(6, 16, 5),
@@ -76,3 +76,6 @@ class LeNet(pl.LightningModule):
             x, y = batch
             pred = self(x)
             return pred
+
+
+

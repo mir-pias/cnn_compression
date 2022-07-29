@@ -9,10 +9,10 @@ from torchmetrics import Accuracy
 
 class AlexNetLinearDST(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10,  in_channels: int = 3) -> None:
             super(AlexNetLinearDST, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1),
+                nn.Conv2d(in_channels, 64, kernel_size=3, stride=2, padding=1),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),   
                 nn.Conv2d(64, 192, kernel_size=3, padding=1),
@@ -92,10 +92,10 @@ class AlexNetLinearDST(pl.LightningModule):
 
 class AlexNetConvDST(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10,  in_channels: int = 3) -> None:
             super(AlexNetConvDST, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDST(in_channels=3,out_channels=64,kernel_size=3,stride=2,padding=1),
+                Conv2dDST(in_channels,out_channels=64,kernel_size=3,stride=2,padding=1),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),   
                 Conv2dDST(in_channels=64,out_channels=192,kernel_size=3,padding=1),
@@ -174,10 +174,10 @@ class AlexNetConvDST(pl.LightningModule):
 
 class AlexNetDST(pl.LightningModule):
 
-        def __init__(self, num_classes: int = 10) -> None:
+        def __init__(self, num_classes: int = 10,  in_channels: int = 3) -> None:
             super(AlexNetDST, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDST(3, 64, kernel_size=3, stride=2, padding=1),
+                Conv2dDST(in_channels, 64, kernel_size=3, stride=2, padding=1),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2),   
                 Conv2dDST(64, 192, kernel_size=3, padding=1),

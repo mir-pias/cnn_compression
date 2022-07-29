@@ -9,10 +9,10 @@ from models.TransformLayers.conv2d_dct import Conv2dDCT
 
 
 class LeNetLinearDCT(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetLinearDCT, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(1, 6, 5),
+                nn.Conv2d(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 nn.Conv2d(6, 16, 5),
@@ -81,10 +81,10 @@ class LeNetLinearDCT(pl.LightningModule):
 
 
 class LeNetDCT(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetDCT, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDCT(1, 6, 5),
+                Conv2dDCT(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDCT(6, 16, 5),
@@ -152,10 +152,10 @@ class LeNetDCT(pl.LightningModule):
             return pred
 
 class LeNetConvDCT(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetConvDCT, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDCT(1, 6, 5),
+                Conv2dDCT(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDCT(6, 16, 5),

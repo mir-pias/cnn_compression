@@ -32,19 +32,22 @@ def main(inputs):
     if inputs.dataset.casefold() == 'cifar10':
         data = Cifar10DataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
+        in_channels = 3
 
     if inputs.dataset.casefold() == 'cifar100':
         data = Cifar100DataModule(batch_size=int(inputs.batch_size))
         num_classes = 100
+        in_channels = 3
 
     if inputs.dataset.casefold() == 'mnist':
         data = MNISTDataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
+        in_channels = 1
     
     ## model init
     modelSelect = ModelSelect()
 
-    model , model_name = modelSelect.getModel(inputs.model, inputs.kernel, inputs.layers, num_classes)
+    model , model_name = modelSelect.getModel(inputs.model, inputs.kernel, inputs.layers, num_classes, in_channels)
     print(model)
 
     expt_id = mlflowExpt(inputs.model)

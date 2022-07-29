@@ -9,10 +9,10 @@ from models.TransformLayers.conv2d_dst import Conv2dDST
 
 
 class LeNetLinearDST(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetLinearDST, self).__init__()
             self.features = nn.Sequential(
-                nn.Conv2d(1, 6, 5),
+                nn.Conv2d(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 nn.Conv2d(6, 16, 5),
@@ -81,10 +81,10 @@ class LeNetLinearDST(pl.LightningModule):
 
 
 class LeNetDST(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10, in_channels: int = 1):
             super(LeNetDST, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDST(1, 6, 5),
+                Conv2dDST(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDST(6, 16, 5),
@@ -152,10 +152,10 @@ class LeNetDST(pl.LightningModule):
             return pred
 
 class LeNetConvDST(pl.LightningModule):
-        def __init__(self, num_classes:int =10):
+        def __init__(self, num_classes:int =10,in_channels: int = 1):
             super(LeNetConvDST, self).__init__()
             self.features = nn.Sequential(
-                Conv2dDST(1, 6, 5),
+                Conv2dDST(in_channels, 6, 5),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2),
                 Conv2dDST(6, 16, 5),

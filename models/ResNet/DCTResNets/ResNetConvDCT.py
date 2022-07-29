@@ -81,11 +81,6 @@ class BasicBlock(nn.Module):
 
 
 class Bottleneck(nn.Module):
-    # Bottleneck in torchvision places the stride for downsampling at 3x3 convolution(self.conv2)
-    # while original implementation places the stride at the first 1x1 convolution(self.conv1)
-    # according to "Deep residual learning for image recognition"https://arxiv.org/abs/1512.03385.
-    # This variant is also known as ResNetConvDCT V1.5 and improves accuracy according to
-    # https://ngc.nvidia.com/catalog/model-scripts/nvidia:resnet_50_v1_5_for_pytorch.
 
     expansion: int = 4
 
@@ -149,6 +144,7 @@ class ResNetConvDCT(pl.LightningModule):
         width_per_group: int = 64,
         replace_stride_with_dilation: Optional[List[bool]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
+        in_channels: int = 3,
     ) -> None:
         super().__init__()
         if norm_layer is None:
@@ -168,7 +164,7 @@ class ResNetConvDCT(pl.LightningModule):
             )
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = Conv2dDCT(3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = Conv2dDCT(in_channels, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -315,20 +311,5 @@ def _resnetConvDCT(
     return model
 
 def resnet18ConvDCT(*, num_classes, **kwargs: Any) -> ResNetConvDCT:
-    """ResNetConvDCT-18 from `Deep Residual Learning for Image Recognition <https://arxiv.org/pdf/1512.03385.pdf>`__.
-    Args:
-        weights (:class:`~torchvision.models.ResNet18_Weights`, optional): The
-            pretrained weights to use. See
-            :class:`~torchvision.models.ResNet18_Weights` below for
-            more details, and possible values. By default, no pre-trained
-            weights are used.
-        progress (bool, optional): If True, displays a progress bar of the
-            download to stderr. Default is True.
-        **kwargs: parameters passed to the ``torchvision.models.resnet.ResNetConvDCT``
-            base class. Please refer to the `source code
-            <https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py>`_
-            for more details about this class.
-    .. autoclass:: torchvision.models.ResNet18_Weights
-        :members:
-    """
+   
     return _resnetConvDCT(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)

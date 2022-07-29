@@ -3,25 +3,29 @@ DEADLINE : 01.09.2022
 
 run example 
 
-python src/main_AlexNet.py --kernel 'dct' layers 'linear' 
+python src/main.py --model=alexnet --kernel=dct --layers=linear 
 
 options
 
---kernel:  default=None | 'dct', 'dst', 'dft, None
+--model: default=LeNet || alexnet, resnet18
 
---layers:  default=None | 'all', 'linear'|'fc', 'conv' (None is same as 'all')
+--kernel:  default=None || dct, dst, dft, None
+
+--layers:  default=None, || linear|fc|dense, conv, all (None is same as 'all')
 
 --devices: default=None
 
 --max_epochs: default=5
 
---rep: default=False ## reproducible flag, to compare changes in layers, arch etc. 
+--rep: default=False ## reproducible flag, to compare changes in runs. 
 
---dataset: default=cifar10 | 'cifar10', 'cifar100'
+--dataset: default=cifar10 || cifar10, cifar100, mnist
+
+-- batch_size: default=32
 
 
 
-implemented arch: AlexNet, dataset: CIFAR10, CIFAR100
+implemented arch: AlexNet, LeNet, ResNet18. dataset: CIFAR10, CIFAR100, MNIST
 
 to do: 
 

@@ -1,4 +1,3 @@
-from asyncio.log import logger
 import sys
 sys.path.append('.')
 
@@ -10,9 +9,19 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
 from pytorch_lightning.utilities.model_summary import ModelSummary
 from argparse import ArgumentParser
-from utils.model_select import model_select_ResNet18
 import mlflow.pytorch
 from mlflow.tracking import MlflowClient
+from ModelSelect import ModelSelect
+
+def mlflowExpt(model: str):
+    if 'alexnet' in model.casefold():
+        return "AlexNets"
+    
+    if 'lenet' in model.casefold():
+         return "LeNets"
+    
+    if 'resnet18' in model.casefold():
+         return "ResNet18s"
 
 def main(inputs):
     
@@ -20,44 +29,41 @@ def main(inputs):
         pl.seed_everything(87, workers=True) ## for reproduciblilty
 
     ## data load
-    # print(inputs.batch_size)
-    if inputs.dataset == 'Cifar10' or inputs.dataset == 'cifar10' :
+    if inputs.dataset.casefold() == 'cifar10':
         data = Cifar10DataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
 
-    if inputs.dataset == 'Cifar100' or inputs.dataset == 'cifar100':
+    if inputs.dataset.casefold() == 'cifar100':
         data = Cifar100DataModule(batch_size=int(inputs.batch_size))
         num_classes = 100
 
-    if inputs.dataset == 'MNIST' or inputs.dataset == 'mnist':
+    if inputs.dataset.casefold() == 'mnist':
         data = MNISTDataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
-
+    
     ## model init
-    model , model_name = model_select_ResNet18(inputs.kernel, inputs.layers, num_classes)
+    modelSelect = ModelSelect()
+
+    model , model_name = modelSelect.getModel(inputs.model, inputs.kernel, inputs.layers, num_classes)
     print(model)
 
-    # mlf_logger = MLFlowLogger(experiment_name=model_name)
-
-    # experiment_id = mlflow.create_experiment(model_name)
-    
-    # csv_logger = CSVLogger(f"lightning_logs/{inputs.dataset}/", name=model_name)
+    expt_id = mlflowExpt(inputs.model)
 
     if torch.cuda.is_available():
-        torch.cuda.empty_cache()
         devices = inputs.devices
     else:
         devices = None
 
     try:
-        expt_id = mlflow.create_experiment("ResNet18s")
+        expt_id = mlflow.create_experiment(expt_id)
     except mlflow.exceptions.MlflowException:
-        expt = mlflow.get_experiment_by_name('ResNet18s')
+        expt = mlflow.get_experiment_by_name(expt_id)
         expt_id = expt.experiment_id
     
     mlflow.pytorch.autolog()
 
     run_name = inputs.dataset + '_' + model_name
+
     ## train and test
     with mlflow.start_run(experiment_id = expt_id, run_name=run_name ) as run:
         if inputs.rep:
@@ -84,16 +90,13 @@ def main(inputs):
             ## test
             trainer.test(model=model, datamodule=data)
 
-    # experiment = mlflow.get_experiment_by_name(model_name)
-
-    # with mlflow.start_run(experiment_id=experiment.experiment_id) as run:
-    #     mlflow.pytorch.log_model(model, "model")
 
     print(ModelSummary(model, max_depth=-1))
 
 if __name__ == '__main__':
     
     parser = ArgumentParser()
+    parser.add_argument("--model", default='lenet')
     parser.add_argument("--kernel", default=None)
     parser.add_argument("--layers", default=None)
     parser.add_argument("--devices", default=1)

@@ -20,6 +20,12 @@ from models.ResNet.DFTResNets.ResNetLinearDFT import resnet18LinearDFT, resnet50
 from models.ResNet.DFTResNets.ResNetDFT import resnet18DFT, resnet50DFT
 from models.DenseNet.DenseNet import densenet121, densenet201
 from models.DenseNet.DCTDenseNets.DenseNetConvDCT import densenet121ConvDCT, densenet201ConvDCT
+from models.DenseNet.DCTDenseNets.DenseNetDCT import densenet121DCT, densenet201DCT
+from models.DenseNet.DCTDenseNets.DenseNetLinearDCT import densenet121LinearDCT, densenet201LinearDCT
+from models.DenseNet.DSTDenseNets.DenseNetConvDST import densenet121ConvDST, densenet201ConvDST
+from models.DenseNet.DSTDenseNets.DenseNetDST import densenet121DST, densenet201DST
+from models.DenseNet.DSTDenseNets.DenseNetLinearDST import densenet121LinearDST, densenet201LinearDST
+from models.DenseNet.DFTDenseNets.DenseNetConvDFT import densenet121ConvDFT, densenet201ConvDFT
 
 class ModelSelect():
     def __init__(self) -> None:
@@ -178,76 +184,62 @@ class ModelSelect():
             return densenet121(num_classes=num_classes, in_channels=in_channels), 'DenseNet121'
 
         if kernel.casefold() == 'dct':
-            # if layers.casefold() == 'all' or layers == None:
-            #     return resnet50DCT(num_classes=num_classes,in_channels=in_channels), 'ResNet50DCT'
+            if layers.casefold() == 'all' or layers == None:
+                return densenet121DCT(num_classes=num_classes,in_channels=in_channels), 'DenseNet121DCT'
             if layers.casefold() == 'conv':
                 return densenet121ConvDCT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121ConvDCT'
-            # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                # return resnet50LinearDCT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDCT'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet121LinearDCT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDCT'
 
-        # if kernel.casefold() == 'dst':
-        #     if layers.casefold() == 'all' or layers == None:
-        #         return resnet50DST(num_classes=num_classes, in_channels=in_channels), 'ResNet50DST'
-        #     if layers.casefold() == 'conv':
-        #         return resnet50ConvDST(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvDST'
-        #     if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-        #         return resnet50LinearDST(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDST'
-        
-        # if kernel.casefold() == 'dft':
-        #     if layers.casefold() == 'all' or layers == None:
-        #         return resnet50DFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50DFT'
-        #     if layers.casefold() == 'conv':
-        #         return resnet50ConvDFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvDFT'
-        #     if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-        #         return resnet50LinearDFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDFT'
+        if kernel.casefold() == 'dst':
+            if layers.casefold() == 'all' or layers == None:
+                return densenet121DST(num_classes=num_classes,in_channels=in_channels), 'DenseNet121DST'
+            if layers.casefold() == 'conv':
+                return densenet121ConvDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet121ConvDST'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet121LinearDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDST'
 
-        # if kernel.casefold() == 'cwt':
+        if kernel.casefold() == 'dft':
             # if layers.casefold() == 'all' or layers == None:
-            #     return resnet50CWT(num_classes=num_classes, in_channels=in_channels), 'ResNet50CWT'
-            # if layers.casefold() == 'conv':
-            #     return resnet50ConvCWT(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvCWT'
+                # return densenet121DFT(num_classes=num_classes,in_channels=in_channels), 'DenseNet121DFT'
+            if layers.casefold() == 'conv':
+                return densenet121ConvDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121ConvDFT'
             # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-            #     return resnet50LinearCWT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearCWT'
+                # return densenet121LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDFT'
 
+        
     def _densenet201(self, kernel, layers, num_classes, in_channels):
         if kernel == None:
             return densenet201(num_classes=num_classes, in_channels=in_channels), 'DenseNet201'
 
         if kernel.casefold() == 'dct':
-            # if layers.casefold() == 'all' or layers == None:
-                # return resnet50DCT(num_classes=num_classes,in_channels=in_channels), 'ResNet50DCT'
+            if layers.casefold() == 'all' or layers == None:
+                return densenet201DCT(num_classes=num_classes,in_channels=in_channels), 'DenseNet201DCT'
             if layers.casefold() == 'conv':
                 return densenet201ConvDCT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201ConvDCT'
-            # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                # return resnet50LinearDCT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDCT'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet201LinearDCT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDCT'
 
-        # if kernel.casefold() == 'dst':
-        #     if layers.casefold() == 'all' or layers == None:
-        #         return resnet50DST(num_classes=num_classes, in_channels=in_channels), 'ResNet50DST'
-        #     if layers.casefold() == 'conv':
-        #         return resnet50ConvDST(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvDST'
-        #     if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-        #         return resnet50LinearDST(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDST'
-        
-        # if kernel.casefold() == 'dft':
-        #     if layers.casefold() == 'all' or layers == None:
-        #         return resnet50DFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50DFT'
-        #     if layers.casefold() == 'conv':
-        #         return resnet50ConvDFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvDFT'
-        #     if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-        #         return resnet50LinearDFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDFT'
+        if kernel.casefold() == 'dst':
+            if layers.casefold() == 'all' or layers == None:
+                return densenet201DST(num_classes=num_classes,in_channels=in_channels), 'DenseNet201DST'
+            if layers.casefold() == 'conv':
+                return densenet201ConvDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet201ConvDST'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet201LinearDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDST'
 
-        # if kernel.casefold() == 'cwt':
+        if kernel.casefold() == 'dft':
             # if layers.casefold() == 'all' or layers == None:
-            #     return resnet50CWT(num_classes=num_classes, in_channels=in_channels), 'ResNet50CWT'
-            # if layers.casefold() == 'conv':
-            #     return resnet50ConvCWT(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvCWT'
+                # return densenet201DST(num_classes=num_classes,in_channels=in_channels), 'DenseNet201DFT'
+            if layers.casefold() == 'conv':
+                return densenet201ConvDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201ConvDFT'
             # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-            #     return resnet50LinearCWT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearCWT'
+                # return densenet201LinearDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDFT'
 
         
+        
 
-    def getModel(self,model,kernel,layers,num_classes,in_channels):
+    def getModel(self,model,kernel:None,layers:None,num_classes:int,in_channels:int):
 
         if model.casefold() == 'alexnet':
             return self._alexnet(kernel,layers,num_classes, in_channels)

@@ -13,7 +13,7 @@ from typing import Any, List, Optional, Tuple
 
 import torch.utils.checkpoint as cp
 from torch import Tensor
-from models.TransformLayers.conv2d_dct import Conv2dDCT
+from models.TransformLayers.DST_layers import LinearDST, Conv2dDST
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
@@ -24,11 +24,11 @@ class _DenseLayer(nn.Module):
         super().__init__()
         self.norm1 = nn.BatchNorm2d(num_input_features)
         self.relu1 = nn.ReLU(inplace=True)
-        self.conv1 = Conv2dDCT(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
+        self.conv1 = Conv2dDST(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
 
         self.norm2 = nn.BatchNorm2d(bn_size * growth_rate)
         self.relu2 = nn.ReLU(inplace=True)
-        self.conv2 = Conv2dDCT(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = Conv2dDST(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
 
         self.drop_rate = float(drop_rate)
         self.memory_efficient = memory_efficient
@@ -118,12 +118,12 @@ class _Transition(nn.Sequential):
         super().__init__()
         self.norm = nn.BatchNorm2d(num_input_features)
         self.relu = nn.ReLU(inplace=True)
-        self.conv = Conv2dDCT(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
+        self.conv = Conv2dDST(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
         self.pool = nn.AvgPool2d(kernel_size=2, stride=2)
 
 
-class DenseNetConvDCT(pl.LightningModule):
- 
+class DenseNetDST(pl.LightningModule):
+
     def __init__(
         self,
         growth_rate: int = 32,
@@ -142,7 +142,7 @@ class DenseNetConvDCT(pl.LightningModule):
         self.features = nn.Sequential(
             OrderedDict(
                 [
-                    ("conv0", Conv2dDCT(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
+                    ("conv0", Conv2dDST(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
                     ("norm0", nn.BatchNorm2d(num_init_features)),
                     ("relu0", nn.ReLU(inplace=True)),
                     ("pool0", nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
@@ -172,17 +172,17 @@ class DenseNetConvDCT(pl.LightningModule):
         self.features.add_module("norm5", nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = nn.Linear(num_features, num_classes)
+        self.classifier = LinearDST(num_features, num_classes)
 
         # Official init from torch repo.
         for m in self.modules():
-            # if isinstance(m, Conv2dDCT):
+            # if isinstance(m, Conv2dDST):
             #     nn.init.kaiming_normal_(m.weight)
             if isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.constant_(m.bias, 0)
+            # elif isinstance(m, LinearDST):
+            #     nn.init.constant_(m.bias, 0)
         
         self.val_accuracy = Accuracy()
         self.test_accuracy = Accuracy()
@@ -239,21 +239,21 @@ class DenseNetConvDCT(pl.LightningModule):
         pred = self(x)
         return pred
 
-def _densenetConvDCT(
+def _densenetDST(
     growth_rate: int,
     block_config: Tuple[int, int, int, int],
     num_init_features: int,
     num_classes: int,
     **kwargs: Any,
-) -> DenseNetConvDCT:
+) -> DenseNetDST:
 
-    model = DenseNetConvDCT(growth_rate, block_config, num_init_features, num_classes, **kwargs)
+    model = DenseNetDST(growth_rate, block_config, num_init_features, num_classes, **kwargs)
     return model
 
-def densenet121ConvDCT(*,num_classes , **kwargs: Any) -> DenseNetConvDCT:
+def densenet121DST(*,num_classes , **kwargs: Any) -> DenseNetDST:
 
-    return _densenetConvDCT(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
+    return _densenetDST(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
 
-def densenet201ConvDCT(*,num_classes , **kwargs: Any) -> DenseNetConvDCT:
+def densenet201DST(*,num_classes , **kwargs: Any) -> DenseNetDST:
 
-    return _densenetConvDCT(32, (6, 12, 48, 32), 64, num_classes, **kwargs)
+    return _densenetDST(32, (6, 12, 48, 32), 64, num_classes, **kwargs)

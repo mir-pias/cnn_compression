@@ -141,9 +141,9 @@ class DenseNet(pl.LightningModule):
         growth_rate: int = 32,
         block_config: Tuple[int, int, int, int] = (6, 12, 24, 16),
         num_init_features: int = 64,
+        num_classes: int = 1000,
         bn_size: int = 4,
         drop_rate: float = 0,
-        num_classes: int = 1000,
         memory_efficient: bool = False,
         in_channels: int = 3,
     ) -> None:

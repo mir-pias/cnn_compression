@@ -13,7 +13,8 @@ from typing import Any, List, Optional, Tuple
 
 import torch.utils.checkpoint as cp
 from torch import Tensor
-from models.TransformLayers.conv2d_dct import Conv2dDCT
+# from models.TransformLayers.conv2d_dct import Conv2dDCT
+from models.TransformLayers.DCT_layers import LinearDCT, Conv2dDCT
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
@@ -122,8 +123,8 @@ class _Transition(nn.Sequential):
         self.pool = nn.AvgPool2d(kernel_size=2, stride=2)
 
 
-class DenseNetConvDCT(pl.LightningModule):
- 
+class DenseNetDCT(pl.LightningModule):
+
     def __init__(
         self,
         growth_rate: int = 32,
@@ -172,7 +173,7 @@ class DenseNetConvDCT(pl.LightningModule):
         self.features.add_module("norm5", nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = nn.Linear(num_features, num_classes)
+        self.classifier = LinearDCT(num_features, num_classes)
 
         # Official init from torch repo.
         for m in self.modules():
@@ -181,8 +182,8 @@ class DenseNetConvDCT(pl.LightningModule):
             if isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.constant_(m.bias, 0)
+            # elif isinstance(m, LinearDCT):
+            #     nn.init.constant_(m.bias, 0)
         
         self.val_accuracy = Accuracy()
         self.test_accuracy = Accuracy()
@@ -239,21 +240,21 @@ class DenseNetConvDCT(pl.LightningModule):
         pred = self(x)
         return pred
 
-def _densenetConvDCT(
+def _densenetDCT(
     growth_rate: int,
     block_config: Tuple[int, int, int, int],
     num_init_features: int,
     num_classes: int,
     **kwargs: Any,
-) -> DenseNetConvDCT:
+) -> DenseNetDCT:
 
-    model = DenseNetConvDCT(growth_rate, block_config, num_init_features, num_classes, **kwargs)
+    model = DenseNetDCT(growth_rate, block_config, num_init_features, num_classes, **kwargs)
     return model
 
-def densenet121ConvDCT(*,num_classes , **kwargs: Any) -> DenseNetConvDCT:
+def densenet121DCT(num_classes , **kwargs: Any) -> DenseNetDCT:
 
-    return _densenetConvDCT(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
+    return _densenetDCT(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
 
-def densenet201ConvDCT(*,num_classes , **kwargs: Any) -> DenseNetConvDCT:
+def densenet201DCT(num_classes , **kwargs: Any) -> DenseNetDCT:
 
-    return _densenetConvDCT(32, (6, 12, 48, 32), 64, num_classes, **kwargs)
+    return _densenetDCT(32, (6, 12, 48, 32), 64, num_classes, **kwargs)

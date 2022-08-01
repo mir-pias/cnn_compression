@@ -4,8 +4,8 @@ from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
-from models.TransformLayers.DCT_layers import LinearDCT
-from models.TransformLayers.conv2d_dct import Conv2dDCT
+from models.TransformLayers.DCT_layers import LinearDCT, Conv2dDCT
+# from models.TransformLayers.conv2d_dct import Conv2dDCT
 
 
 class LeNetLinearDCT(pl.LightningModule):

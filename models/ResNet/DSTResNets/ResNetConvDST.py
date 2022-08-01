@@ -9,7 +9,7 @@ from torch._C import _log_api_usage_once
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
 import torch.nn.functional as F
-from models.TransformLayers.conv2d_dst import Conv2dDST
+from models.TransformLayers.DST_layers import Conv2dDST
 
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> Conv2dDST:

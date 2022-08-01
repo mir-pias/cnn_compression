@@ -13,7 +13,7 @@ from typing import Any, List, Optional, Tuple
 
 import torch.utils.checkpoint as cp
 from torch import Tensor
-from models.TransformLayers.conv2d_dct import Conv2dDCT
+from models.TransformLayers.DCT_layers import Conv2dDCT
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 

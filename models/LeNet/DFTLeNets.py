@@ -5,8 +5,8 @@ from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
-from models.TransformLayers.DFT_layers import LinearDFT
-from models.TransformLayers.conv2d_dft import Conv2dDFT
+from models.TransformLayers.DFT_layers import LinearDFT, Conv2dDFT
+# from models.TransformLayers.conv2d_dft import Conv2dDFT
 from utils.complex import Cardioid, ComplexMaxPool2d, complex_abs
 
 

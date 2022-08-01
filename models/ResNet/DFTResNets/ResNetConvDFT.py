@@ -9,7 +9,7 @@ from torch._C import _log_api_usage_once
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
 import torch.nn.functional as F
-from models.TransformLayers.conv2d_dft import Conv2dDFT
+from models.TransformLayers.DFT_layers import Conv2dDFT
 from utils.complex import Cardioid, ComplexBatchNorm2d, ComplexMaxPool2d, complex_abs, ComplexAdaptiveAvgPool2d
 
 

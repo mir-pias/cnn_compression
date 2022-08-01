@@ -3,13 +3,13 @@ DEADLINE : 01.09.2022
 
 run example 
 
-python src/main.py --model=alexnet --kernel=dct --layers=linear 
+python src/main.py --model=alexnet --kernel=dct --layers=linear --dataset=mnist
 
 options
 
---model: default=LeNet || alexnet, resnet18
+--model: default=LeNet || alexnet, resnet18, resnet50, densenet121, densenet201
 
---kernel:  default=None || dct, dst, dft, None
+--kernel:  default=None || dct, dst, dft
 
 --layers:  default=None, || linear|fc|dense, conv, all (None is same as 'all')
 
@@ -25,7 +25,7 @@ options
 
 
 
-implemented arch: AlexNet, LeNet, ResNet18. dataset: CIFAR10, CIFAR100, MNIST
+implemented arch: AlexNet, LeNet, ResNet18, ResNet50, DenseNet121, DenseNet201. dataset: CIFAR10, CIFAR100, MNIST
 
 to do: 
 

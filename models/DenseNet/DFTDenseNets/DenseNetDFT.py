@@ -212,7 +212,7 @@ class DenseNetDFT(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
-        # self.log('train loss', loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log('train loss', loss, on_step=False, on_epoch=True)
         return loss
 
     def validation_step(self, batch, batch_idx):

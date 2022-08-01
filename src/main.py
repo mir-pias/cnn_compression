@@ -102,6 +102,9 @@ def main(inputs):
             ## test
             trainer.test(model=model, datamodule=data)
 
+        state_dict = model.state_dict()
+        mlflow.pytorch.log_state_dict(state_dict, artifact_path='model')
+
 
     print(ModelSummary(model, max_depth=-1))
 

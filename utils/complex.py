@@ -150,3 +150,57 @@ class ComplexAdaptiveAvgPool2d(torch.nn.Module):
 
     def forward(self, x:Tensor) -> Tensor:
         return torch.stack((F.adaptive_avg_pool2d(x[..., 0],self.output_size), F.adaptive_avg_pool2d(x[..., 1], self.output_size)), dim=-1)
+
+
+class ComplexAvgPool2d(torch.nn.AvgPool2d):
+
+    def __init__(
+        self,
+        kernel_size: Union[int, Tuple[int, int]],
+        stride: Optional[Union[int, Tuple[int, int]]] = None,
+        padding: Union[int, Tuple[int, int]] = 0,
+        ceil_mode: bool = False,
+        count_include_pad: bool = True,
+        divisor_override: Optional[int] = None,
+        
+    ):
+        super(ComplexAvgPool2d, self).__init__(
+            kernel_size=kernel_size,
+            stride=stride if (stride is not None) else kernel_size,
+            padding=padding,
+            ceil_mode=ceil_mode,
+            count_include_pad = count_include_pad,
+            divisor_override = divisor_override
+
+        )
+    @staticmethod
+    def avgpool2d(
+        input: torch.Tensor,
+        kernel_size: Union[int, Tuple[int, int]],
+        stride: Optional[Union[int, Tuple[int, int]]] = None,
+        padding: Union[int, Tuple[int, int]] = 0,
+        ceil_mode: bool = False,
+        count_include_pad: bool = True,
+        divisor_override: Optional[int] = None,
+    ):
+
+        pooled_real = F.avg_pool2d(input[...,0], kernel_size, stride, padding, ceil_mode, count_include_pad, divisor_override)
+
+        pooled_complex = F.avg_pool2d(input[...,1], kernel_size, stride, padding, ceil_mode, count_include_pad, divisor_override)
+
+        pooled = torch.stack((pooled_real,pooled_complex), dim=-1)
+
+        return pooled
+
+    def forward(self, x: torch.Tensor):
+
+        return self.avgpool2d(
+            input=x,
+            kernel_size=self.kernel_size,
+            stride=self.stride,
+            padding=self.padding,
+            ceil_mode=self.ceil_mode,
+            count_include_pad=self.count_include_pad,
+            divisor_override=self.divisor_override
+            )
+

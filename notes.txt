@@ -145,3 +145,9 @@ cReLU works combined with cMaxPool2d
 test_acc in AlexnetConvDFT with cReLU and cMaxPool2d is worse than previous hacky way of y.sum(-1), no complex output from conv2dDFT
 
 cardioid can work with normal maxpool2d, seems to be ok LeNetConvDFT
+
+01-08
+
+ConvDFT sum in line 225, maybe wrong
+
+ComplexAvgPool2d and ComplexAdadptiveAvgPool2d are probably wrong

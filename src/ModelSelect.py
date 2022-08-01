@@ -26,6 +26,8 @@ from models.DenseNet.DSTDenseNets.DenseNetConvDST import densenet121ConvDST, den
 from models.DenseNet.DSTDenseNets.DenseNetDST import densenet121DST, densenet201DST
 from models.DenseNet.DSTDenseNets.DenseNetLinearDST import densenet121LinearDST, densenet201LinearDST
 from models.DenseNet.DFTDenseNets.DenseNetConvDFT import densenet121ConvDFT, densenet201ConvDFT
+from models.DenseNet.DFTDenseNets.DenseNetLinearDFT import densenet121LinearDFT, densenet201LinearDFT
+from models.DenseNet.DFTDenseNets.DenseNetDFT import densenet121DFT, densenet201DFT
 
 class ModelSelect():
     def __init__(self) -> None:
@@ -200,12 +202,12 @@ class ModelSelect():
                 return densenet121LinearDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDST'
 
         if kernel.casefold() == 'dft':
-            # if layers.casefold() == 'all' or layers == None:
-                # return densenet121DFT(num_classes=num_classes,in_channels=in_channels), 'DenseNet121DFT'
+            if layers.casefold() == 'all' or layers == None:
+                return densenet121DFT(num_classes=num_classes,in_channels=in_channels), 'DenseNet121DFT'
             if layers.casefold() == 'conv':
                 return densenet121ConvDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121ConvDFT'
-            # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                # return densenet121LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDFT'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet121LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDFT'
 
         
     def _densenet201(self, kernel, layers, num_classes, in_channels):
@@ -229,12 +231,12 @@ class ModelSelect():
                 return densenet201LinearDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDST'
 
         if kernel.casefold() == 'dft':
-            # if layers.casefold() == 'all' or layers == None:
-                # return densenet201DST(num_classes=num_classes,in_channels=in_channels), 'DenseNet201DFT'
+            if layers.casefold() == 'all' or layers == None:
+                return densenet201DFT(num_classes=num_classes,in_channels=in_channels), 'DenseNet201DFT'
             if layers.casefold() == 'conv':
                 return densenet201ConvDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201ConvDFT'
-            # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                # return densenet201LinearDST(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDFT'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet201LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDFT'
 
         
         

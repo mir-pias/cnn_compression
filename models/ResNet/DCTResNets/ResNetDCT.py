@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch import Tensor
 from torch._C import _log_api_usage_once
 import pytorch_lightning as pl
-from torchmetrics import Accuracy
+from torchmetrics import Accuracy, AveragePrecision
 import torch.nn.functional as F
 # from models.TransformLayers.conv2d_dct import Conv2dDCT
 from models.TransformLayers.DCT_layers import LinearDCT, Conv2dDCT
@@ -196,6 +196,9 @@ class ResNetDCT(pl.LightningModule):
         self.val_accuracy = Accuracy()
         self.test_accuracy = Accuracy()
 
+        self.val_ap = AveragePrecision(num_classes=num_classes)
+        self.test_ap = AveragePrecision(num_classes=num_classes)
+
     def _make_layer(
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
@@ -270,18 +273,20 @@ class ResNetDCT(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
-        val_loss = F.cross_entropy(y_hat, y)
-        
-        preds = torch.argmax(y_hat, dim=1)
-        self.val_accuracy.update(preds, y)
-
-        self.log("val_loss", val_loss, prog_bar=True, on_epoch=True)
-        self.log("val_acc", self.val_accuracy, prog_bar=True, on_epoch=True)
-        
-        # return val_loss, self.val_accuracy
+            x, y = batch
+            y_hat = self(x)
+            val_loss = F.cross_entropy(y_hat, y)
             
+            preds = torch.argmax(y_hat, dim=1)
+            self.val_accuracy.update(preds, y)
+            self.val_ap.update(y_hat, y)
+
+            self.log("val_loss", val_loss, prog_bar=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log('val_AP', self.val_ap,prog_bar=True)
+            
+            # return val_loss, self.val_accuracy
+             
     def test_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
@@ -289,12 +294,13 @@ class ResNetDCT(pl.LightningModule):
         
         preds = torch.argmax(y_hat, dim=1)
         self.test_accuracy.update(preds, y)
+        self.test_ap.update(y_hat, y)
 
         self.log("test_loss", test_loss, prog_bar=True)
         self.log("test_acc", self.test_accuracy, prog_bar=True)
+        self.log('test_AP', self.test_ap,prog_bar=True)
 
         # return test_loss, self.test_accuracy
-
     def predict_step(self, batch, batch_idx):
         x, y = batch
         pred = self(x)

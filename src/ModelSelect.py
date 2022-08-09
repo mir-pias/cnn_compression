@@ -35,6 +35,9 @@ from models.DenseNet.DSTDenseNets.DenseNetLinearDST import densenet121LinearDST,
 from models.DenseNet.DFTDenseNets.DenseNetConvDFT import densenet121ConvDFT, densenet201ConvDFT
 from models.DenseNet.DFTDenseNets.DenseNetLinearDFT import densenet121LinearDFT, densenet201LinearDFT
 from models.DenseNet.DFTDenseNets.DenseNetDFT import densenet121DFT, densenet201DFT
+from models.DenseNet.ShanDenseNets.DenseNetConvShan import densenet121ConvShan, densenet201ConvShan
+from models.DenseNet.ShanDenseNets.DenseNetLinearShan import densenet121LinearShan, densenet201LinearShan
+from models.DenseNet.ShanDenseNets.DenseNetShan import densenet121Shan, densenet201Shan
 
 class ModelSelect():
     def __init__(self) -> None:
@@ -216,13 +219,13 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return densenet121LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDFT'
 
-        # if kernel.casefold() == 'shan':
-            # if layers.casefold() == 'all' or layers == None:
-            #     return densenet121Shan(num_classes=num_classes, in_channels=in_channels), 'densenet121Shan'
-            # if layers.casefold() == 'conv':
-            #     return densenet121ConvShan(num_classes=num_classes, in_channels=in_channels), 'densenet121ConvShan'
-            # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-            #     return densenet121LinearShan(num_classes=num_classes, in_channels=in_channels), 'densenet121LinearShan'
+        if kernel.casefold() == 'shan':
+            if layers.casefold() == 'all' or layers == None:
+                return densenet121Shan(num_classes=num_classes, in_channels=in_channels), 'densenet121Shan'
+            if layers.casefold() == 'conv':
+                return densenet121ConvShan(num_classes=num_classes, in_channels=in_channels), 'densenet121ConvShan'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet121LinearShan(num_classes=num_classes, in_channels=in_channels), 'densenet121LinearShan'
 
         
     def _densenet201(self, kernel, layers, num_classes, in_channels):
@@ -253,13 +256,13 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return densenet201LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDFT'
 
-        # if kernel.casefold() == 'shan':
-            # if layers.casefold() == 'all' or layers == None:
-            #     return densenet201Shan(num_classes=num_classes, in_channels=in_channels), 'densenet201Shan'
-            # if layers.casefold() == 'conv':
-            #     return densenet201ConvShan(num_classes=num_classes, in_channels=in_channels), 'densenet201ConvShan'
-            # if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-            #     return densenet201LinearShan(num_classes=num_classes, in_channels=in_channels), 'densenet201LinearShan'
+        if kernel.casefold() == 'shan':
+            if layers.casefold() == 'all' or layers == None:
+                return densenet201Shan(num_classes=num_classes, in_channels=in_channels), 'densenet201Shan'
+            if layers.casefold() == 'conv':
+                return densenet201ConvShan(num_classes=num_classes, in_channels=in_channels), 'densenet201ConvShan'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return densenet201LinearShan(num_classes=num_classes, in_channels=in_channels), 'densenet201LinearShan'
         
         
 

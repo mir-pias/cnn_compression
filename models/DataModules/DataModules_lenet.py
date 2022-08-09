@@ -13,13 +13,11 @@ from torchvision.datasets import CIFAR10, CIFAR100, MNIST
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
-class Cifar10DataModule(pl.LightningDataModule):
+class Cifar10DataModuleLenet(pl.LightningDataModule):
     def __init__(self, data_dir: str = "../data", batch_size=32):
         super().__init__()
         self.data_dir = data_dir
-        self.transform = transforms.Compose([transforms.Resize(256),
-                                            transforms.CenterCrop(224),
-                                            transforms.ToTensor(),
+        self.transform = transforms.Compose([transforms.ToTensor(),
                                             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),])
         self.batch_size = batch_size
 
@@ -59,13 +57,11 @@ class Cifar10DataModule(pl.LightningDataModule):
         return DataLoader(self.cifar10_predict, batch_size=self.batch_size)
 
 
-class Cifar100DataModule(pl.LightningDataModule):
+class Cifar100DataModuleLenet(pl.LightningDataModule):
     def __init__(self, data_dir: str = "../data", batch_size=32):
         super().__init__()
         self.data_dir = data_dir
-        self.transform = transforms.Compose([transforms.Resize(256),
-                                            transforms.CenterCrop(224),
-                                            transforms.ToTensor(),
+        self.transform = transforms.Compose([transforms.ToTensor(),
                                             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),])
         self.batch_size = batch_size
 
@@ -105,14 +101,12 @@ class Cifar100DataModule(pl.LightningDataModule):
         return DataLoader(self.cifar100_predict, batch_size=self.batch_size)
 
 
-class MNISTDataModule(pl.LightningDataModule):
+class MNISTDataModuleLenet(pl.LightningDataModule):
     def __init__(self, data_dir: str = "../data", batch_size=32):
         super().__init__()
         self.data_dir = data_dir
-        self.transform = transforms.Compose([transforms.Resize(256),
-                                            transforms.CenterCrop(224),
-                                            transforms.ToTensor(),
-                                            transforms.Normalize((0.1307,), (0.3081,))])
+        self.transform = transforms.Compose(
+            [transforms.ToTensor(), transforms.Resize((32, 32)),transforms.Normalize((0.1307,), (0.3081,))])
 
         self.batch_size = batch_size
 

@@ -4,6 +4,7 @@ sys.path.append('.')
 import torch
 
 from models.DataModules.DataModules import Cifar10DataModule, Cifar100DataModule, MNISTDataModule
+from models.DataModules.DataModules_lenet import Cifar10DataModuleLenet, Cifar100DataModuleLenet, MNISTDataModuleLenet
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.progress import TQDMProgressBar
@@ -39,17 +40,26 @@ def main(inputs):
 
     ## data load
     if inputs.dataset.casefold() == 'cifar10':
-        data = Cifar10DataModule(batch_size=int(inputs.batch_size))
+        if 'lenet' in inputs.model.casefold(): 
+            data = Cifar10DataModuleLenet(batch_size=int(inputs.batch_size))
+        else:
+            data = Cifar10DataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
         in_channels = 3
 
     if inputs.dataset.casefold() == 'cifar100':
-        data = Cifar100DataModule(batch_size=int(inputs.batch_size))
+        if 'lenet' in inputs.model.casefold(): 
+            data = Cifar100DataModuleLenet(batch_size=int(inputs.batch_size))
+        else:
+            data = Cifar100DataModule(batch_size=int(inputs.batch_size))
         num_classes = 100
         in_channels = 3
 
     if inputs.dataset.casefold() == 'mnist':
-        data = MNISTDataModule(batch_size=int(inputs.batch_size))
+        if 'lenet' in inputs.model.casefold(): 
+            data = MNISTDataModuleLenet(batch_size=int(inputs.batch_size))
+        else:
+            data = MNISTDataModule(batch_size=int(inputs.batch_size))
         num_classes = 10
         in_channels = 1
     

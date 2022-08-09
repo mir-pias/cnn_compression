@@ -11,7 +11,7 @@ from torchmetrics import Accuracy
 import torch.nn.functional as F
 # from models.TransformLayers.conv2d_dft import Conv2dDFT
 from models.TransformLayers.DFT_layers import LinearDFT, Conv2dDFT
-from utils.complex import Cardioid, ComplexBatchNorm2d, ComplexMaxPool2d, complex_abs, ComplexAdaptiveAvgPool2d
+from utils.complex import Cardioid, ComplexBatchNorm2d, ComplexMaxPool2d, complex_abs
 
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> Conv2dDFT:
@@ -175,7 +175,7 @@ class ResNetDFT(pl.LightningModule):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
-        self.avgpool = ComplexAdaptiveAvgPool2d((1, 1))
+        self.avgpool = nn.AdaptiveAvgPool3d((1, 1, 2))
         self.fc = LinearDFT(512 * block.expansion, num_classes)
 
         # for m in self.modules():

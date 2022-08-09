@@ -3,7 +3,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-from torchmetrics import Accuracy
+from torchmetrics import Accuracy, AveragePrecision
 from models.TransformLayers.DST_layers import LinearDST, Conv2dDST
 # from models.TransformLayers.conv2d_dst import Conv2dDST
 
@@ -31,6 +31,9 @@ class LeNetLinearDST(pl.LightningModule):
             self.val_accuracy = Accuracy()
             self.test_accuracy = Accuracy()
 
+            self.val_ap = AveragePrecision(num_classes=num_classes)
+            self.test_ap = AveragePrecision(num_classes=num_classes)
+
         def forward(self, x):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
@@ -55,9 +58,11 @@ class LeNetLinearDST(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
+            self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -68,9 +73,11 @@ class LeNetLinearDST(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
+            self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
+            self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -103,6 +110,9 @@ class LeNetDST(pl.LightningModule):
             self.val_accuracy = Accuracy()
             self.test_accuracy = Accuracy()
 
+            self.val_ap = AveragePrecision(num_classes=num_classes)
+            self.test_ap = AveragePrecision(num_classes=num_classes)
+
         def forward(self, x):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
@@ -127,9 +137,11 @@ class LeNetDST(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
+            self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -140,12 +152,13 @@ class LeNetDST(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
+            self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
+            self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
-
         def predict_step(self, batch, batch_idx):
             x, y = batch
             pred = self(x)
@@ -174,6 +187,9 @@ class LeNetConvDST(pl.LightningModule):
             self.val_accuracy = Accuracy()
             self.test_accuracy = Accuracy()
 
+            self.val_ap = AveragePrecision(num_classes=num_classes)
+            self.test_ap = AveragePrecision(num_classes=num_classes)
+
         def forward(self, x):
             x = self.features(x)
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
@@ -198,9 +214,11 @@ class LeNetConvDST(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
+            self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -211,9 +229,11 @@ class LeNetConvDST(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
+            self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
+            self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 

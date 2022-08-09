@@ -3,7 +3,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-from torchmetrics import Accuracy
+from torchmetrics import Accuracy, AveragePrecision
 import torchvision.models as models
 
 import re
@@ -199,6 +199,10 @@ class DenseNet(pl.LightningModule):
         self.val_accuracy = Accuracy()
         self.test_accuracy = Accuracy()
 
+        self.val_ap = AveragePrecision(num_classes=num_classes)
+        self.test_ap = AveragePrecision(num_classes=num_classes)
+
+
     def forward(self, x: Tensor) -> Tensor:
         features = self.features(x)
         out = F.relu(features, inplace=True)
@@ -221,18 +225,20 @@ class DenseNet(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
-        val_loss = F.cross_entropy(y_hat, y)
-        
-        preds = torch.argmax(y_hat, dim=1)
-        self.val_accuracy.update(preds, y)
-
-        self.log("val_loss", val_loss, prog_bar=True)
-        self.log("val_acc", self.val_accuracy, prog_bar=True)
-        
-        # return val_loss, self.val_accuracy
+            x, y = batch
+            y_hat = self(x)
+            val_loss = F.cross_entropy(y_hat, y)
             
+            preds = torch.argmax(y_hat, dim=1)
+            self.val_accuracy.update(preds, y)
+            self.val_ap.update(y_hat, y)
+
+            self.log("val_loss", val_loss, prog_bar=True)
+            self.log("val_acc", self.val_accuracy, prog_bar=True)
+            self.log('val_AP', self.val_ap,prog_bar=True)
+            
+            # return val_loss, self.val_accuracy
+             
     def test_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
@@ -240,9 +246,11 @@ class DenseNet(pl.LightningModule):
         
         preds = torch.argmax(y_hat, dim=1)
         self.test_accuracy.update(preds, y)
+        self.test_ap.update(y_hat, y)
 
         self.log("test_loss", test_loss, prog_bar=True)
         self.log("test_acc", self.test_accuracy, prog_bar=True)
+        self.log('test_AP', self.test_ap,prog_bar=True)
 
         # return test_loss, self.test_accuracy
 

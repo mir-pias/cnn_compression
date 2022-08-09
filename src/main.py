@@ -91,7 +91,7 @@ def main(inputs):
         if inputs.rep:
             trainer_det = pl.Trainer(accelerator="auto",
                                     devices=devices, 
-                                    max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
+                                    max_epochs=int(inputs.max_epochs), callbacks=[TQDMProgressBar(refresh_rate=20)],
                                     deterministic=True) ## for reproduciblilty
             
             
@@ -103,7 +103,7 @@ def main(inputs):
         else:
             trainer = pl.Trainer(accelerator="auto",
                                 devices=devices, 
-                                max_epochs=inputs.max_epochs, callbacks=[TQDMProgressBar(refresh_rate=20)],
+                                max_epochs=int(inputs.max_epochs), callbacks=[TQDMProgressBar(refresh_rate=20)],
                                 )
 
             

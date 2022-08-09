@@ -5,7 +5,7 @@ from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchmetrics import Accuracy, AveragePrecision
-from models.TransformLayers.CWT_layers import LinearShannon, Conv2dShannon
+from models.TransformLayers.Shan_layers import LinearShannon, Conv2dShannon
 
 class LeNetLinearShan(pl.LightningModule):
         def __init__(self, num_classes:int =10, in_channels: int = 1):

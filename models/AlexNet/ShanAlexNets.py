@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-from models.TransformLayers.CWT_layers import LinearShannon, Conv2dShannon
+from models.TransformLayers.Shan_layers import LinearShannon, Conv2dShannon
 import pytorch_lightning as pl
 from torchmetrics import Accuracy, AveragePrecision
 

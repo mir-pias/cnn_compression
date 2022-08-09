@@ -14,7 +14,7 @@ from typing import Any, List, Optional, Tuple
 import torch.utils.checkpoint as cp
 from torch import Tensor
 from models.TransformLayers.DFT_layers import Conv2dDFT, LinearDFT
-from utils.complex import Cardioid, ComplexBatchNorm2d, ComplexMaxPool2d, complex_abs, ComplexAdaptiveAvgPool2d, ComplexAvgPool2d
+from utils.complex import Cardioid, ComplexBatchNorm2d, ComplexMaxPool2d, complex_abs
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
@@ -120,7 +120,7 @@ class _Transition(nn.Sequential):
         self.norm = ComplexBatchNorm2d(num_input_features)
         self.cardioid = Cardioid()
         self.conv = Conv2dDFT(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
-        self.pool = ComplexAvgPool2d(kernel_size=2, stride=2)
+        self.pool = nn.AvgPool3d(kernel_size=(2,2,1), stride=(2,2,1))
 
 
 class DenseNetDFT(pl.LightningModule):
@@ -193,7 +193,7 @@ class DenseNetDFT(pl.LightningModule):
         features = self.features(x)
         out = Cardioid.cardioid(features)
 
-        complex_adaptive_avg_pool2d = ComplexAdaptiveAvgPool2d((1,1))
+        complex_adaptive_avg_pool2d = nn.AdaptiveAvgPool3d((1,1,2))
         out = complex_adaptive_avg_pool2d(out)
 
         out = torch.flatten(out, 1)

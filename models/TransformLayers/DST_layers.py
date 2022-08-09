@@ -56,7 +56,7 @@ class LinearDST(nn.Module):
             )
         )
 
-        dst_m: torch.Tensor = 2 * norm * torch.sin(0.5 * PI * ((self.fc + 1 )/ self.in_features) * (2 * t + 1)) 
+        dst_m: torch.Tensor = 2 * norm * torch.sin(0.5 * PI * ((self.fc + 1 )/ self.out_features) * (2 * t + 1)) 
 
         return dst_m
     
@@ -166,7 +166,7 @@ class Conv2dDST(torch.nn.Module):
             )
         ) 
 
-        kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * ((self.fcc + 1 )/ in_channels) * (2 * tc + 1)) 
+        kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * ((self.fcc + 1 )/ self.out_channels) * (2 * tc + 1)) 
 
         norm_h: torch.Tensor = torch.rsqrt(
             torch.full_like(

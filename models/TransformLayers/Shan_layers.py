@@ -48,7 +48,7 @@ class LinearShannon(nn.Module):
             -1  # time dimension
         )
 
-        fb: torch.Tensor = torch.ones_like(self.fc)
+        # fb: torch.Tensor = torch.ones_like(self.fc)
         norm: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
                 self.fc, in_features
@@ -56,8 +56,8 @@ class LinearShannon(nn.Module):
                 torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype) + 1
             ) / PI
         )
-        w: torch.Tensor = norm * fb.sqrt() * torch.sinc(
-            fb * (t - in_features // 2) / in_features
+        w: torch.Tensor = norm  * torch.sinc(
+            (t - in_features // 2) / in_features
         ) * torch.cos(PI * (self.fc / self.out_features) * t)
 
         return w.unsqueeze(1)
@@ -153,9 +153,9 @@ class Conv2dShannon(torch.nn.Module):
             self.kernel_size[1], dtype=x.dtype, device=x.device
         ).reshape(1, -1)
 
-        fbc: torch.Tensor = torch.ones_like(self.fcc)
-        fbh: torch.Tensor = torch.ones_like(self.fch)
-        fbw: torch.Tensor = torch.ones_like(self.fcw)
+        # fbc: torch.Tensor = torch.ones_like(self.fcc)
+        # fbh: torch.Tensor = torch.ones_like(self.fch)
+        # fbw: torch.Tensor = torch.ones_like(self.fcw)
 
         norm_c: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
@@ -165,7 +165,7 @@ class Conv2dShannon(torch.nn.Module):
             ) / PI
         )
         kc: torch.Tensor = norm_c * torch.sinc(
-            fbc * (tc - in_channels // 2) / in_channels
+             (tc - in_channels // 2) / in_channels
         ) * torch.cos(PI * (self.fcc / self.out_channels) * tc)
 
         norm_h: torch.Tensor = torch.rsqrt(
@@ -176,7 +176,7 @@ class Conv2dShannon(torch.nn.Module):
             ) / PI
         )
         kh: torch.Tensor = norm_h * torch.sinc(
-            fbh * (th - in_channels // 2) / in_channels
+             (th - in_channels // 2) / in_channels
         ) * torch.cos(PI * (self.fch / self.kernel_size[0]) * th)
 
         norm_w: torch.Tensor = torch.rsqrt(
@@ -187,7 +187,7 @@ class Conv2dShannon(torch.nn.Module):
             ) / PI
         )
         kw: torch.Tensor = norm_w * torch.sinc(
-            fbw * (tw - in_channels // 2) / in_channels
+             (tw - in_channels // 2) / in_channels
         ) * torch.cos(PI * (self.fcw / self.kernel_size[1]) * tw)
 
         w: torch.Tensor = kc.reshape(

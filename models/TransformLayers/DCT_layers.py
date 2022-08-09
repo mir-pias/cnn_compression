@@ -59,7 +59,7 @@ class LinearDCT(nn.Module):
         )
 
         
-        dct_m: torch.Tensor = 2 * norm * torch.cos(0.5 * PI * (self.fc / self.in_features) * (2 * t + 1))
+        dct_m: torch.Tensor = 2 * norm * torch.cos(0.5 * PI * (self.fc / self.out_features) * (2 * t + 1))
 
         
         return dct_m
@@ -170,7 +170,7 @@ class Conv2dDCT(torch.nn.Module):
             )
         )
 
-        kc: torch.Tensor = 2 * norm_c * torch.cos(0.5 * PI * (self.fcc / in_channels) * (2 * tc + 1))
+        kc: torch.Tensor = 2 * norm_c * torch.cos(0.5 * PI * (self.fcc / self.out_channels) * (2 * tc + 1))
 
         norm_h: torch.Tensor = torch.rsqrt(
             torch.full_like(

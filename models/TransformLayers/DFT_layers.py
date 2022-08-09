@@ -52,7 +52,7 @@ class LinearDFT(nn.Module):
             ) 
         )
 
-        dft_m = norm * torch.cat((torch.cos((fc*t*2*PI)/in_features), - torch.sin((fc*t*2*PI)/in_features)), dim=-1) 
+        dft_m = norm * torch.cat((torch.cos((fc*t*2*PI)/self.out_features), - torch.sin((fc*t*2*PI)/self.out_features)), dim=-1) 
         
         # dft_m = dft_m / (math.sqrt(self.in_features)) ## normalize
         
@@ -192,8 +192,8 @@ class Conv2dDFT(torch.nn.Module):
             ) 
         )
 
-        kc: torch.Tensor = norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/in_channels), 
-                                            - torch.sin((self.fcc*tc*2*PI)/in_channels)), dim=-1)
+        kc: torch.Tensor = norm_c * torch.cat((torch.cos((self.fcc*tc*2*PI)/self.out_channels), 
+                                            - torch.sin((self.fcc*tc*2*PI)/self.out_channels)), dim=-1)
 
         norm_h: torch.Tensor = torch.rsqrt(
             torch.full_like(

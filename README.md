@@ -9,7 +9,7 @@ options
 
 --model: default=LeNet || alexnet, resnet18, resnet50, densenet121, densenet201
 
---kernel:  default=None || dct, dst, dft, shan
+--kernel:  default=None || dct, dst, dft, realshannon, shannon
 
 --layers:  default=None, || linear|fc|dense, conv, all (None is same as 'all')
 

@@ -43,32 +43,21 @@ class LinearDFT(nn.Module):
                 name='bias',
                 param=None
             )
-
-    def dft_kernel(self,t,fc,in_features): 
-
-        norm = torch.rsqrt(
-            torch.full_like(
-                fc, in_features
-            ) 
-        )
-
-        dft_m = norm * torch.cat((torch.cos((fc*t*2*PI)/self.out_features), - torch.sin((fc*t*2*PI)/self.out_features)), dim=-1) 
-        
-        # dft_m = dft_m / (math.sqrt(self.in_features)) ## normalize
-        
-        return dft_m
     
     def materialize_weights(self, x):
         x_is_complex = x.shape[-1] == 2
         in_features = x.shape[-1 - int(x_is_complex)]
 
-        # print(x_is_complex)
-        # print(in_features)
         t = torch.arange(in_features,dtype=x.dtype, device=x.device).reshape(1, -1, 1)
-        # t = torch.linspace(-1.0, 1.0, in_features, dtype=x.dtype, device=x.device).reshape(1, -1, 1)
-        fc = self.fc
+        
+        norm = torch.rsqrt(
+            torch.full_like(
+                self.fc, in_features
+            ) 
+        )
 
-        weights = self.dft_kernel(t,fc,in_features) 
+        weights = norm * torch.cat((torch.cos((self.fc*t*2*PI)/self.out_features), - torch.sin((self.fc*t*2*PI)/self.out_features)), dim=-1) 
+
         return weights, x_is_complex
 
     def forward(self,x):

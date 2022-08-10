@@ -58,15 +58,18 @@ class LinearDST(nn.Module):
 
         dst_m: torch.Tensor = 2 * norm * torch.sin(0.5 * PI * ((self.fc + 1 )/ self.out_features) * (2 * t + 1)) 
 
-        return dst_m
+        return dst_m.unsqueeze(1)
     
         
     def forward(self,x):
-        
-        
+
         w = self.materialize_weights(x) 
+
+        dummy = torch.ones(x.shape[0], *((1,) * (x.dim() - 1)), device=x.device, dtype=x.dtype, requires_grad=False)
+
+        y = F.bilinear(dummy, x, w, bias=self.bias)
          
-        y = F.linear(x,w, self.bias)   
+        # y = F.linear(x,w, self.bias)   
         return y
 
     def extra_repr(self) -> str:

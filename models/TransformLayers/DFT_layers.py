@@ -58,24 +58,26 @@ class LinearDFT(nn.Module):
 
         weights = norm * torch.cat((torch.cos((self.fc*t*2*PI)/self.out_features), - torch.sin((self.fc*t*2*PI)/self.out_features)), dim=-1) 
 
-        return weights, x_is_complex
+        return weights.unsqueeze(1), x_is_complex
 
     def forward(self,x):
         # print(x.shape)
         weights, x_is_complex = self.materialize_weights(x) 
         
-        # print('dft weights: ', weights.shape)  
+        dummy = torch.ones(x.shape[0], *((1,) * (x.dim() - 1)), device=x.device, dtype=x.dtype, requires_grad=False)
+        
         if x_is_complex:
+            dummy = dummy.squeeze(-1)
             y = torch.stack((
-                    F.linear(x[..., 0], weights[..., 0]) - F.linear(x[..., 1], weights[..., 1]),
-                    F.linear(x[..., 0], weights[..., 1]) + F.linear(x[..., 1], weights[..., 0])
+                    F.bilinear(dummy, x[...,0], weights[...,0]) - F.bilinear(dummy, x[...,1], weights[...,1]),
+                    F.bilinear(dummy, x[...,0], weights[...,1]) + F.bilinear(dummy, x[...,1], weights[...,0])
                 ), dim=-1)
 
         else:
             y = torch.stack((
-                        F.linear(x, weights[..., 0]),
-                        F.linear(x, weights[..., 1])
-                    ), dim=-1)    
+                        F.bilinear(dummy, x, weights[...,0]),
+                        F.bilinear(dummy, x, weights[...,1])
+                    ), dim=-1)
 
         if (self.bias is not None) and (self.bias.numel() == (self.out_features * 2)):
             y = y + self.bias

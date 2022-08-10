@@ -2,13 +2,13 @@ from models.LeNet.LeNet import LeNet
 from models.LeNet.DFTLeNets import LeNetLinearDFT, LeNetConvDFT, LeNetDFT
 from models.LeNet.DCTLeNets import LeNetLinearDCT, LeNetConvDCT, LeNetDCT
 from models.LeNet.DSTLeNets import LeNetLinearDST, LeNetConvDST, LeNetDST
-from models.LeNet.ShanLeNets import LeNetLinearShan, LeNetConvShan, LeNetShan
+from models.LeNet.ShanLeNets import LeNetLinearRealShannon, LeNetConvRealShannon, LeNetRealShannon, LeNetLinearShannon, LeNetConvShannon, LeNetShannon
 
 from models.AlexNet.DFTAlexNets import AlexNetLinearDFT, AlexNetDFT, AlexNetConvDFT
 from models.AlexNet.AlexNet import AlexNet
 from models.AlexNet.DCTAlexNets import AlexNetLinearDCT, AlexNetConvDCT, AlexNetDCT
 from models.AlexNet.DSTAlexNets import AlexNetConvDST, AlexNetDST, AlexNetLinearDST
-from models.AlexNet.ShanAlexNets import AlexNetLinearShan, AlexNetConvShan, AlexNetShan
+from models.AlexNet.ShanAlexNets import AlexNetLinearRealShannon, AlexNetConvRealShannon, AlexNetRealShannon, AlexNetConvShannon, AlexNetLinearShannon, AlexNetShannon
 
 from models.ResNet.ResNet import resnet18, resnet50
 from models.ResNet.DCTResNets.ResNetDCT import resnet18DCT, resnet50DCT
@@ -20,9 +20,9 @@ from models.ResNet.DSTResNets.ResNetLinearDST import resnet18LinearDST, resnet50
 from models.ResNet.DFTResNets.ResNetConvDFT import resnet18ConvDFT, resnet50ConvDFT
 from models.ResNet.DFTResNets.ResNetLinearDFT import resnet18LinearDFT, resnet50LinearDFT
 from models.ResNet.DFTResNets.ResNetDFT import resnet18DFT, resnet50DFT
-from models.ResNet.ShanResNets.ResNetConvShan import resnet18ConvShan, resnet50ConvShan
-from models.ResNet.ShanResNets.ResNetLinearShan import resnet18LinearShan, resnet50LinearShan
-from models.ResNet.ShanResNets.ResNetShan import resnet18Shan, resnet50Shan
+from models.ResNet.ShanResNets.ResNetConvRealShannon import resnet18ConvRealShannon, resnet50ConvRealShannon
+from models.ResNet.ShanResNets.ResNetLinearRealShannon import resnet18LinearRealShannon, resnet50LinearRealShannon
+from models.ResNet.ShanResNets.ResNetRealShannon import resnet18RealShannon, resnet50RealShannon
 
 
 from models.DenseNet.DenseNet import densenet121, densenet201
@@ -35,9 +35,9 @@ from models.DenseNet.DSTDenseNets.DenseNetLinearDST import densenet121LinearDST,
 from models.DenseNet.DFTDenseNets.DenseNetConvDFT import densenet121ConvDFT, densenet201ConvDFT
 from models.DenseNet.DFTDenseNets.DenseNetLinearDFT import densenet121LinearDFT, densenet201LinearDFT
 from models.DenseNet.DFTDenseNets.DenseNetDFT import densenet121DFT, densenet201DFT
-from models.DenseNet.ShanDenseNets.DenseNetConvShan import densenet121ConvShan, densenet201ConvShan
-from models.DenseNet.ShanDenseNets.DenseNetLinearShan import densenet121LinearShan, densenet201LinearShan
-from models.DenseNet.ShanDenseNets.DenseNetShan import densenet121Shan, densenet201Shan
+from models.DenseNet.ShanDenseNets.DenseNetConvRealShannon import densenet121ConvRealShannon, densenet201ConvRealShannon
+from models.DenseNet.ShanDenseNets.DenseNetLinearRealShannon import densenet121LinearRealShannon, densenet201LinearRealShannon
+from models.DenseNet.ShanDenseNets.DenseNetRealShannon import densenet121RealShannon, densenet201RealShannon
 
 class ModelSelect():
     def __init__(self) -> None:
@@ -71,13 +71,21 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return AlexNetLinearDFT(num_classes=num_classes,in_channels=in_channels), 'AlexNetLinearDFT'
 
-        if kernel.casefold() == 'shan':
+        if kernel.casefold() == 'realshannon':
             if layers.casefold() == 'all' or layers == None:
-                return AlexNetShan(num_classes=num_classes,in_channels=in_channels), 'AlexNetShan'
+                return AlexNetRealShannon(num_classes=num_classes,in_channels=in_channels), 'AlexNetRealShannon'
             if layers.casefold() == 'conv':
-                return AlexNetConvShan(num_classes=num_classes,in_channels=in_channels), 'AlexNetConvShan'
+                return AlexNetConvRealShannon(num_classes=num_classes,in_channels=in_channels), 'AlexNetConvRealShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                return AlexNetLinearShan(num_classes=num_classes,in_channels=in_channels), 'AlexNetLinearShan'
+                return AlexNetLinearRealShannon(num_classes=num_classes,in_channels=in_channels), 'AlexNetLinearRealShannon'
+
+        if kernel.casefold() == 'shannon':
+            if layers.casefold() == 'all' or layers == None:
+                return AlexNetShannon(num_classes=num_classes,in_channels=in_channels), 'AlexNetShannon'
+            if layers.casefold() == 'conv':
+                return AlexNetConvShannon(num_classes=num_classes,in_channels=in_channels), 'AlexNetConvShannon'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return AlexNetLinearShannon(num_classes=num_classes,in_channels=in_channels), 'AlexNetLinearShannon'
 
         
 
@@ -109,13 +117,21 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return LeNetLinearDFT(num_classes=num_classes,in_channels=in_channels), 'LeNetLinearDFT'
 
-        if kernel.casefold() == 'shan':
+        if kernel.casefold() == 'realshannon':
             if layers.casefold() == 'all' or layers == None:
-                return LeNetShan(num_classes=num_classes,in_channels=in_channels), 'LeNetShan'
+                return LeNetRealShannon(num_classes=num_classes,in_channels=in_channels), 'LeNetRealShannon'
             if layers.casefold() == 'conv':
-                return LeNetConvShan(num_classes=num_classes,in_channels=in_channels), 'LeNetConvShan'
+                return LeNetConvRealShannon(num_classes=num_classes,in_channels=in_channels), 'LeNetConvRealShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                return LeNetLinearShan(num_classes=num_classes,in_channels=in_channels), 'LeNetLinearShan'
+                return LeNetLinearRealShannon(num_classes=num_classes,in_channels=in_channels), 'LeNetLinearRealShannon'
+
+        if kernel.casefold() == 'shannon':
+            if layers.casefold() == 'all' or layers == None:
+                return LeNetShannon(num_classes=num_classes,in_channels=in_channels), 'LeNetShannon'
+            if layers.casefold() == 'conv':
+                return LeNetConvShannon(num_classes=num_classes,in_channels=in_channels), 'LeNetConvShannon'
+            if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
+                return LeNetLinearShannon(num_classes=num_classes,in_channels=in_channels), 'LeNetLinearShannon'
 
         
 
@@ -147,13 +163,13 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return resnet18LinearDFT(num_classes=num_classes, in_channels=in_channels), 'ResNet18LinearDFT'
 
-        if kernel.casefold() == 'shan':
+        if kernel.casefold() == 'realshannon':
             if layers.casefold() == 'all' or layers == None:
-                return resnet18Shan(num_classes=num_classes, in_channels=in_channels), 'ResNet18Shann'
+                return resnet18RealShannon(num_classes=num_classes, in_channels=in_channels), 'ResNet18RealShannon'
             if layers.casefold() == 'conv':
-                return resnet18ConvShan(num_classes=num_classes, in_channels=in_channels), 'ResNet18ConvShan'
+                return resnet18ConvRealShannon(num_classes=num_classes, in_channels=in_channels), 'ResNet18ConvRealShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                return resnet18LinearShan(num_classes=num_classes, in_channels=in_channels), 'ResNet18LinearShan'
+                return resnet18LinearRealShannon(num_classes=num_classes, in_channels=in_channels), 'ResNet18LinearRealShannon'
 
     def _resnet50(self, kernel, layers, num_classes, in_channels):
         if kernel == None:
@@ -183,13 +199,13 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return resnet50LinearDFT(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearDFT'
 
-        if kernel.casefold() == 'shan':
+        if kernel.casefold() == 'realshannon':
             if layers.casefold() == 'all' or layers == None:
-                return resnet50Shan(num_classes=num_classes, in_channels=in_channels), 'ResNet50Shan'
+                return resnet50RealShannon(num_classes=num_classes, in_channels=in_channels), 'ResNet50RealShannon'
             if layers.casefold() == 'conv':
-                return resnet50ConvShan(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvShan'
+                return resnet50ConvRealShannon(num_classes=num_classes, in_channels=in_channels), 'ResNet50ConvRealShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                return resnet50LinearShan(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearShan'
+                return resnet50LinearRealShannon(num_classes=num_classes, in_channels=in_channels), 'ResNet50LinearRealShannon'
 
     def _densenet121(self, kernel, layers, num_classes, in_channels):
         if kernel == None:
@@ -219,13 +235,13 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return densenet121LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet121LinearDFT'
 
-        if kernel.casefold() == 'shan':
+        if kernel.casefold() == 'realshannon':
             if layers.casefold() == 'all' or layers == None:
-                return densenet121Shan(num_classes=num_classes, in_channels=in_channels), 'densenet121Shan'
+                return densenet121RealShannon(num_classes=num_classes, in_channels=in_channels), 'densenet121RealShannon'
             if layers.casefold() == 'conv':
-                return densenet121ConvShan(num_classes=num_classes, in_channels=in_channels), 'densenet121ConvShan'
+                return densenet121ConvRealShannon(num_classes=num_classes, in_channels=in_channels), 'densenet121ConvRealShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                return densenet121LinearShan(num_classes=num_classes, in_channels=in_channels), 'densenet121LinearShan'
+                return densenet121LinearRealShannon(num_classes=num_classes, in_channels=in_channels), 'densenet121LinearRealShannon'
 
         
     def _densenet201(self, kernel, layers, num_classes, in_channels):
@@ -256,13 +272,13 @@ class ModelSelect():
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return densenet201LinearDFT(num_classes=num_classes, in_channels=in_channels), 'DenseNet201LinearDFT'
 
-        if kernel.casefold() == 'shan':
+        if kernel.casefold() == 'realshannon':
             if layers.casefold() == 'all' or layers == None:
-                return densenet201Shan(num_classes=num_classes, in_channels=in_channels), 'densenet201Shan'
+                return densenet201RealShannon(num_classes=num_classes, in_channels=in_channels), 'densenet201RealShannon'
             if layers.casefold() == 'conv':
-                return densenet201ConvShan(num_classes=num_classes, in_channels=in_channels), 'densenet201ConvShan'
+                return densenet201ConvRealShannon(num_classes=num_classes, in_channels=in_channels), 'densenet201ConvRealShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
-                return densenet201LinearShan(num_classes=num_classes, in_channels=in_channels), 'densenet201LinearShan'
+                return densenet201LinearRealShannon(num_classes=num_classes, in_channels=in_channels), 'densenet201LinearRealShannon'
         
         
 

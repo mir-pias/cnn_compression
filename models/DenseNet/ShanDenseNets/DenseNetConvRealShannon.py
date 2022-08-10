@@ -13,7 +13,7 @@ from typing import Any, List, Optional, Tuple
 
 import torch.utils.checkpoint as cp
 from torch import Tensor
-from models.TransformLayers.Shan_layers import LinearShannon, Conv2dShannon
+from models.TransformLayers.Shan_layers import Conv2dRealShannon
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
@@ -24,11 +24,11 @@ class _DenseLayer(nn.Module):
         super().__init__()
         self.norm1 = nn.BatchNorm2d(num_input_features)
         self.relu1 = nn.ReLU(inplace=True)
-        self.conv1 = Conv2dShannon(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
+        self.conv1 = Conv2dRealShannon(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
 
         self.norm2 = nn.BatchNorm2d(bn_size * growth_rate)
         self.relu2 = nn.ReLU(inplace=True)
-        self.conv2 = Conv2dShannon(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = Conv2dRealShannon(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
 
         self.drop_rate = float(drop_rate)
         self.memory_efficient = memory_efficient
@@ -118,12 +118,12 @@ class _Transition(nn.Sequential):
         super().__init__()
         self.norm = nn.BatchNorm2d(num_input_features)
         self.relu = nn.ReLU(inplace=True)
-        self.conv = Conv2dShannon(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
+        self.conv = Conv2dRealShannon(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
         self.pool = nn.AvgPool2d(kernel_size=2, stride=2)
 
 
-class DenseNetShan(pl.LightningModule):
-
+class DenseNetConvRealShannon(pl.LightningModule):
+ 
     def __init__(
         self,
         growth_rate: int = 32,
@@ -142,7 +142,7 @@ class DenseNetShan(pl.LightningModule):
         self.features = nn.Sequential(
             OrderedDict(
                 [
-                    ("conv0", Conv2dShannon(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
+                    ("conv0", Conv2dRealShannon(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
                     ("norm0", nn.BatchNorm2d(num_init_features)),
                     ("relu0", nn.ReLU(inplace=True)),
                     ("pool0", nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
@@ -172,7 +172,7 @@ class DenseNetShan(pl.LightningModule):
         self.features.add_module("norm5", nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = LinearShannon(num_features, num_classes)
+        self.classifier = nn.Linear(num_features, num_classes)
 
         # Official init from torch repo.
         for m in self.modules():
@@ -181,8 +181,8 @@ class DenseNetShan(pl.LightningModule):
             if isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-            # elif isinstance(m, LinearShannon):
-            #     nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.constant_(m.bias, 0)
         
         self.val_accuracy = Accuracy()
         self.test_accuracy = Accuracy()
@@ -246,21 +246,21 @@ class DenseNetShan(pl.LightningModule):
         pred = self(x)
         return pred
 
-def _densenetShan(
+def _densenetConvRealShannon(
     growth_rate: int,
     block_config: Tuple[int, int, int, int],
     num_init_features: int,
     num_classes: int,
     **kwargs: Any,
-) -> DenseNetShan:
+) -> DenseNetConvRealShannon:
 
-    model = DenseNetShan(growth_rate, block_config, num_init_features, num_classes, **kwargs)
+    model = DenseNetConvRealShannon(growth_rate, block_config, num_init_features, num_classes, **kwargs)
     return model
 
-def densenet121Shan(num_classes , **kwargs: Any) -> DenseNetShan:
+def densenet121ConvRealShannon(*,num_classes , **kwargs: Any) -> DenseNetConvRealShannon:
 
-    return _densenetShan(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
+    return _densenetConvRealShannon(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
 
-def densenet201Shan(num_classes , **kwargs: Any) -> DenseNetShan:
+def densenet201ConvRealShannon(*,num_classes , **kwargs: Any) -> DenseNetConvRealShannon:
 
-    return _densenetShan(32, (6, 12, 48, 32), 64, num_classes, **kwargs)
+    return _densenetConvRealShannon(32, (6, 12, 48, 32), 64, num_classes, **kwargs)

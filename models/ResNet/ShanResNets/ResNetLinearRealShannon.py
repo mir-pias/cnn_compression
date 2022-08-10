@@ -8,7 +8,7 @@ from torch._C import _log_api_usage_once
 import pytorch_lightning as pl
 from torchmetrics import Accuracy, AveragePrecision
 import torch.nn.functional as F
-from models.TransformLayers.Shan_layers import LinearShannon 
+from models.TransformLayers.Shan_layers import LinearRealShannon 
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
@@ -131,7 +131,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class ResNetLinearShan(pl.LightningModule):
+class ResNetLinearRealShannon(pl.LightningModule):
     def __init__(
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
@@ -171,7 +171,7 @@ class ResNetLinearShan(pl.LightningModule):
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = LinearShannon(512 * block.expansion, num_classes)
+        self.fc = LinearRealShannon(512 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -304,21 +304,21 @@ class ResNetLinearShan(pl.LightningModule):
         return pred
 
 
-def _resnetLinearShan(
+def _resnetLinearRealShannon(
     block: Type[Union[BasicBlock, Bottleneck]],
     layers: List[int],
     num_classes: int,
     **kwargs: Any,
-) -> ResNetLinearShan:
+) -> ResNetLinearRealShannon:
 
-    model = ResNetLinearShan(block, layers, num_classes, **kwargs)
+    model = ResNetLinearRealShannon(block, layers, num_classes, **kwargs)
 
     return model
 
-def resnet18LinearShan(*, num_classes, **kwargs: Any) -> ResNetLinearShan:
+def resnet18LinearRealShannon(*, num_classes, **kwargs: Any) -> ResNetLinearRealShannon:
     
-    return _resnetLinearShan(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+    return _resnetLinearRealShannon(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
 
-def resnet50LinearShan(*, num_classes, **kwargs: Any) -> ResNetLinearShan:
+def resnet50LinearRealShannon(*, num_classes, **kwargs: Any) -> ResNetLinearRealShannon:
 
-    return _resnetLinearShan(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)
+    return _resnetLinearRealShannon(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

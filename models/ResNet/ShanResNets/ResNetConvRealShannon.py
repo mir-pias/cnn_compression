@@ -9,12 +9,12 @@ from torch._C import _log_api_usage_once
 import pytorch_lightning as pl
 from torchmetrics import Accuracy, AveragePrecision
 import torch.nn.functional as F
-from models.TransformLayers.Shan_layers import Conv2dShannon
+from models.TransformLayers.Shan_layers import Conv2dRealShannon
 
 
-def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> Conv2dShannon:
+def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> Conv2dRealShannon:
     """3x3 convolution with padding"""
-    return Conv2dShannon(
+    return Conv2dRealShannon(
         in_planes,
         out_planes,
         kernel_size=3,
@@ -26,9 +26,9 @@ def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, d
     )
 
 
-def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> Conv2dShannon:
+def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> Conv2dRealShannon:
     """1x1 convolution"""
-    return Conv2dShannon(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+    return Conv2dRealShannon(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
 
 class BasicBlock(nn.Module):
@@ -133,7 +133,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class ResNetConvShan(pl.LightningModule):
+class ResNetConvRealShannon(pl.LightningModule):
     def __init__(
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
@@ -164,7 +164,7 @@ class ResNetConvShan(pl.LightningModule):
             )
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = Conv2dShannon(in_channels, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = Conv2dRealShannon(in_channels, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -306,21 +306,21 @@ class ResNetConvShan(pl.LightningModule):
         return pred
 
 
-def _resnetConvShan(
+def _resnetConvRealShannon(
     block: Type[Union[BasicBlock, Bottleneck]],
     layers: List[int],
     num_classes: int,
     **kwargs: Any,
-) -> ResNetConvShan:
+) -> ResNetConvRealShannon:
 
-    model = ResNetConvShan(block, layers, num_classes, **kwargs)
+    model = ResNetConvRealShannon(block, layers, num_classes, **kwargs)
 
     return model
 
-def resnet18ConvShan(*, num_classes, **kwargs: Any) -> ResNetConvShan:
+def resnet18ConvRealShannon(*, num_classes, **kwargs: Any) -> ResNetConvRealShannon:
    
-    return _resnetConvShan(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
+    return _resnetConvRealShannon(BasicBlock, [2, 2, 2, 2], num_classes, **kwargs)
 
-def resnet50ConvShan(*, num_classes, **kwargs: Any) -> ResNetConvShan:
+def resnet50ConvRealShannon(*, num_classes, **kwargs: Any) -> ResNetConvRealShannon:
 
-    return _resnetConvShan(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)
+    return _resnetConvRealShannon(Bottleneck, [3, 4, 6, 3], num_classes, **kwargs)

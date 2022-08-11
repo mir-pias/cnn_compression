@@ -283,19 +283,11 @@ class LinearShannon(nn.Module):
 
         t = torch.arange(in_features,dtype=x.dtype, device=x.device).reshape(1, -1, 1)
 
-        # norm: torch.Tensor = torch.rsqrt(
-        #     1.2 * torch.full_like(
-        #         self.fc, in_features
-        #     ) * (
-        #         torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype) + 1
-        #     ) / PI
-        # )
-
-        norm = torch.rsqrt(
-            torch.full_like(
+        norm: torch.Tensor = torch.rsqrt(
+            1.2 * torch.full_like(
                 self.fc, in_features
-            ) 
-        ) * math.sqrt(5*PI / 6)
+            ) / PI
+        )
 
         kernel = torch.cat((torch.cos(2*PI * (self.fc / self.out_features) * t), - torch.sin(2*PI * (self.fc / self.out_features) * t)), dim=-1)
 
@@ -423,11 +415,10 @@ class Conv2dShannon(torch.nn.Module):
         tw: torch.Tensor = torch.arange(self.kernel_size[1], dtype=x.dtype, device=x.device).reshape(1, -1, 1)
 
         norm_c: torch.Tensor = torch.rsqrt(
-            torch.full_like(
+            1.2 * torch.full_like(
                 self.fcc, in_channels
-            ) 
-        ) * math.sqrt(5*PI / 6)
-
+            ) / PI
+        )
         win_c = torch.sinc((tc - in_channels // 2) / in_channels) ## window
 
         kernel_c = torch.cat((torch.cos(PI * (self.fcc / self.out_channels) * tc), - torch.sin(PI * (self.fcc / self.out_channels) * tc)), dim=-1)
@@ -435,10 +426,10 @@ class Conv2dShannon(torch.nn.Module):
         kc: torch.Tensor = norm_c * win_c * kernel_c
 
         norm_h: torch.Tensor = torch.rsqrt(
-            torch.full_like(
+          1.2 * torch.full_like(
                 self.fch, self.kernel_size[0]
-            ) 
-        ) * math.sqrt(5*PI / 6)
+            ) / PI
+        ) 
 
         win_h = torch.sinc((th - self.kernel_size[0] // 2) / self.kernel_size[0]) ## window
 
@@ -447,10 +438,10 @@ class Conv2dShannon(torch.nn.Module):
         kh: torch.Tensor = norm_h * win_h * kernel_h
 
         norm_w: torch.Tensor = torch.rsqrt(
-            torch.full_like(
+            1.2 * torch.full_like(
                 self.fcw, self.kernel_size[1]
-            ) 
-        ) * math.sqrt(5*PI / 6)
+            ) / PI 
+        ) 
 
         win_w = torch.sinc((tw - self.kernel_size[1] // 2) / self.kernel_size[1]) ## window
 

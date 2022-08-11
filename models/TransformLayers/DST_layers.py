@@ -51,10 +51,16 @@ class LinearDST(nn.Module):
         norm: torch.Tensor = torch.rsqrt(
             torch.full_like(
                 self.fc, 2 * self.in_features
-            ) * (
-                torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype) + 1
-            )
+            ) 
         )
+
+        norm: torch.Tensor = norm * torch.rsqrt(
+            torch.full_like(
+                self.fc, 1 
+            ) * (
+                torch.eye(self.out_features, 1, device=x.device, dtype=x.dtype).flip([0, 1]) +1
+            )
+        ) 
 
         dst_m: torch.Tensor = 2 * norm * torch.sin(0.5 * PI * ((self.fc + 1 )/ self.out_features) * (2 * t + 1)) 
 
@@ -164,29 +170,49 @@ class Conv2dDST(torch.nn.Module):
         norm_c: torch.Tensor = torch.rsqrt(
             torch.full_like(
                 self.fcc, 2 * in_channels
-            ) * (
-                torch.eye(self.out_channels, 1, device=x.device, dtype=x.dtype) + 1
-            )
+            ) 
         ) 
+
+        norm_c: torch.Tensor = norm_c * torch.rsqrt(
+            torch.full_like(
+                self.fcc, 1 
+            ) * (
+                torch.eye(self.out_channels, 1, device=x.device, dtype=x.dtype).flip([0, 1]) +1
+            )
+        )
 
         kc: torch.Tensor = 2 * norm_c * torch.sin(0.5 * PI * ((self.fcc + 1 )/ self.out_channels) * (2 * tc + 1)) 
 
         norm_h: torch.Tensor = torch.rsqrt(
             torch.full_like(
                 self.fch, 2 * self.kernel_size[0]
-            ) * (
-                torch.eye(self.kernel_size[0], 1, device=x.device, dtype=x.dtype) + 1
-            )
+            ) 
         ) 
+
+        norm_h: torch.Tensor = norm_h * torch.rsqrt(
+            torch.full_like(
+                self.fch, 1 
+            ) * (
+                torch.eye(self.kernel_size[0], 1, device=x.device, dtype=x.dtype).flip([0, 1]) +1
+            )
+        )
+
         kh: torch.Tensor = 2 * norm_h * torch.sin(0.5 * PI * ((self.fch +1) / self.kernel_size[0]) * (2 * th + 1)) 
 
         norm_w: torch.Tensor = torch.rsqrt(
             torch.full_like(
                 self.fcw, 2 * self.kernel_size[1]
-            ) * (
-                torch.eye(self.kernel_size[1], 1, device=x.device, dtype=x.dtype) + 1
-            )
+            ) 
         ) 
+
+        norm_w: torch.Tensor = norm_w * torch.rsqrt(
+            torch.full_like(
+                self.fcw, 1 
+            ) * (
+                torch.eye(self.kernel_size[1], 1, device=x.device, dtype=x.dtype).flip([0, 1]) +1
+            )
+        )
+
         kw: torch.Tensor = 2 * norm_w * torch.sin(0.5 * PI * ((self.fcw +1) / self.kernel_size[1]) * (2 * tw + 1)) 
 
 

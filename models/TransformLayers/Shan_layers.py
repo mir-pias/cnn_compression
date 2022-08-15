@@ -76,7 +76,7 @@ class LinearRealShannon(nn.Module):
         )
         w: torch.Tensor = norm  * torch.sinc(
             (t - in_features // 2) / in_features
-        ) * torch.cos(PI * (self.fc / self.out_features) * t)
+        ) * torch.cos(2 * PI * (self.fc / self.out_features) * t)
 
         return w.unsqueeze(1)
 
@@ -184,7 +184,7 @@ class Conv2dRealShannon(torch.nn.Module):
         )
         kc: torch.Tensor = norm_c * torch.sinc(
              (tc - in_channels // 2) / in_channels
-        ) * torch.cos(PI * (self.fcc / self.out_channels) * tc)
+        ) * torch.cos(2 * PI * (self.fcc / self.out_channels) * tc)
 
         norm_h: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
@@ -195,7 +195,7 @@ class Conv2dRealShannon(torch.nn.Module):
         )
         kh: torch.Tensor = norm_h * torch.sinc(
              (th - in_channels // 2) / in_channels
-        ) * torch.cos(PI * (self.fch / self.kernel_size[0]) * th)
+        ) * torch.cos(2 * PI * (self.fch / self.kernel_size[0]) * th)
 
         norm_w: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
@@ -206,7 +206,7 @@ class Conv2dRealShannon(torch.nn.Module):
         )
         kw: torch.Tensor = norm_w * torch.sinc(
              (tw - in_channels // 2) / in_channels
-        ) * torch.cos(PI * (self.fcw / self.kernel_size[1]) * tw)
+        ) * torch.cos(2 * PI * (self.fcw / self.kernel_size[1]) * tw)
 
         w: torch.Tensor = kc.reshape(
             self.out_channels, 1, 1, -1, 1, 1
@@ -421,7 +421,7 @@ class Conv2dShannon(torch.nn.Module):
         )
         win_c = torch.sinc((tc - in_channels // 2) / in_channels) ## window
 
-        kernel_c = torch.cat((torch.cos(PI * (self.fcc / self.out_channels) * tc), - torch.sin(PI * (self.fcc / self.out_channels) * tc)), dim=-1)
+        kernel_c = torch.cat((torch.cos(2*PI * (self.fcc / self.out_channels) * tc), - torch.sin(2*PI * (self.fcc / self.out_channels) * tc)), dim=-1)
 
         kc: torch.Tensor = norm_c * win_c * kernel_c
 

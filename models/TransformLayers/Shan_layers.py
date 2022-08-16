@@ -285,7 +285,7 @@ class LinearShannon(nn.Module):
 
         norm: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
-                self.fc, in_features
+                self.fc,2 * in_features
             ) / PI
         )
 
@@ -416,7 +416,7 @@ class Conv2dShannon(torch.nn.Module):
 
         norm_c: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
-                self.fcc, in_channels
+                self.fcc, 2 * in_channels
             ) / PI
         )
         win_c = torch.sinc((tc - in_channels // 2) / in_channels) ## window
@@ -427,7 +427,7 @@ class Conv2dShannon(torch.nn.Module):
 
         norm_h: torch.Tensor = torch.rsqrt(
           1.2 * torch.full_like(
-                self.fch, self.kernel_size[0]
+                self.fch, 2 * self.kernel_size[0]
             ) / PI
         ) 
 
@@ -439,7 +439,7 @@ class Conv2dShannon(torch.nn.Module):
 
         norm_w: torch.Tensor = torch.rsqrt(
             1.2 * torch.full_like(
-                self.fcw, self.kernel_size[1]
+                self.fcw, 2 * self.kernel_size[1]
             ) / PI 
         ) 
 

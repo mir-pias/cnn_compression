@@ -5,7 +5,6 @@ __pycache__/
 *$py.class
 .ipynb_checkpoints/
 models/TransformLayers/LinearFBSP.py
-*.sh
 lightning_logs/
 notebooks/
 py_outputs/

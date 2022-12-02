@@ -151,3 +151,22 @@ cardioid can work with normal maxpool2d, seems to be ok LeNetConvDFT
 ConvDFT sum in line 225, maybe wrong
 
 ComplexAvgPool2d and ComplexAdadptiveAvgPool2d are probably wrong
+
+24-08
+
+MNIST
+
+orig - 
+ConvDCT - 
+ConvDST - 
+ConvRealShannon - 
+
+DCT - 
+DST -  
+DFT - 
+RealShannon - 
+shannon - 
+
+
+12-09
+

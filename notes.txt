@@ -168,5 +168,28 @@ RealShannon -
 shannon - 
 
 
-12-09
+06-12
 
+16.12.2022: pre-draft (outline is defined on both top- and within-chapter level, >=60% of writing is done), please share as PDF per email
+    20.01.2023: first draft (all chapters written, experimental results might be pending), please share as PDF per email
+    10.02.2023: second draft (experiments and writing finished), please share as PDF per email
+    03.03.2023: final draft, please share as PDF per email; schedule defense
+    17.03.2023: ready to submit
+    31.03.2023: thesis deadline <- please let me know if this date is to be adjusted
+
+
+	 1. As for the ablation study, I'd suggest you to focus on the best model for each dataset.  
+	 However, I believe that extending the study to other models should be beneficial to your thesis.
+    2. The theoretical part should cover the mathematical basis of how the network works. 
+	A nice example of a master's thesis that might be relevant to you can be found here: https://arxiv.org/abs/1602.09046
+
+
+1. All milestones completed on time;
+    2. Experiments cover:
+        1. Kernels: DCT, DST, DFT, Shannon (real, complex);
+        2. Datasets: MNIST, CIFAR-{10,100};
+        3. Architectures: LeNet, AlexNet, ResNet-{18,50}, DenseNet-{121,201};
+        4. Ablation study: influence of compressed layers on the model performance (how performance changes when replacing regular layers by compressed ones);
+    3. Theory must include: forward and backward pass calculations (activations, regular and compressed layers, incl. complex-valued), 
+	optimization procedure;
+    4. Formal requirements of the Department fulfilled.

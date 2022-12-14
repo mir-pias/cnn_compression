@@ -67,12 +67,13 @@ def main(inputs):
     modelSelect = ModelSelect()
 
     model , model_name = modelSelect.getModel(inputs.model, inputs.kernel, inputs.layers, num_classes, in_channels)
-    print(model)
+    # print(model)
 
-    expt_id = mlflowExpt(inputs.model)
+    expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
 
     if torch.cuda.is_available():
-        devices = inputs.devices
+        torch.cuda.empty_cache()
+        devices = inputs.devices 
     else:
         devices = None
 
@@ -82,7 +83,7 @@ def main(inputs):
         expt = mlflow.get_experiment_by_name(expt_id)
         expt_id = expt.experiment_id
     
-    mlflow.pytorch.autolog()
+    mlflow.pytorch.autolog(silent=True)
 
     run_name = inputs.dataset + '_' + model_name
 
@@ -116,14 +117,14 @@ def main(inputs):
         mlflow.pytorch.log_state_dict(state_dict, artifact_path='model')
 
 
-    print(ModelSummary(model, max_depth=-1))
+    # print(ModelSummary(model, max_depth=-1))
 
 if __name__ == '__main__':
     
     parser = ArgumentParser()
     parser.add_argument("--model", default='lenet')
     parser.add_argument("--kernel", default=None)
-    parser.add_argument("--layers", default=None)
+    parser.add_argument("--layers", default='all')
     parser.add_argument("--devices", default=1)
     parser.add_argument("--max_epochs", default=5)
     parser.add_argument("--rep", default=False) ## reproducible flag

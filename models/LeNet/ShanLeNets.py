@@ -28,11 +28,11 @@ class LeNetLinearRealShannon(pl.LightningModule):
                 LinearRealShannon(84, num_classes),
             )
             
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x):
             x = self.features(x)
@@ -58,11 +58,11 @@ class LeNetLinearRealShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -73,11 +73,11 @@ class LeNetLinearRealShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -106,11 +106,11 @@ class LeNetConvRealShannon(pl.LightningModule):
                 nn.Linear(84, num_classes),
             )
             
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x):
             x = self.features(x)
@@ -137,11 +137,11 @@ class LeNetConvRealShannon(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
         
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -152,11 +152,11 @@ class LeNetConvRealShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -186,11 +186,11 @@ class LeNetRealShannon(pl.LightningModule):
                 LinearRealShannon(84, num_classes),
             )
             
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x):
             x = self.features(x)
@@ -217,11 +217,11 @@ class LeNetRealShannon(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
         
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -232,11 +232,11 @@ class LeNetRealShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -266,11 +266,11 @@ class LeNetLinearShannon(pl.LightningModule):
                 LinearShannon(84, num_classes),
             )
             
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x):
             x = self.features(x)
@@ -297,11 +297,11 @@ class LeNetLinearShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -312,11 +312,11 @@ class LeNetLinearShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -346,11 +346,11 @@ class LeNetConvShannon(pl.LightningModule):
                 nn.Linear(84, num_classes),
             )
             
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
 
         def forward(self, x):
@@ -368,6 +368,10 @@ class LeNetConvShannon(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             loss = F.cross_entropy(y_hat, y)
+
+            if torch.isnan(loss) == True:
+                loss = torch.nan_to_num(loss)
+
             self.log('train loss', loss, on_step=False, on_epoch=True)
             return loss
 
@@ -375,14 +379,17 @@ class LeNetConvShannon(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             val_loss = F.cross_entropy(y_hat, y)
+
+            if torch.isnan(val_loss) == True:
+                val_loss = torch.nan_to_num(val_loss)
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -390,14 +397,17 @@ class LeNetConvShannon(pl.LightningModule):
             x, y = batch
             y_hat = self(x)
             test_loss = F.cross_entropy(y_hat, y)
+
+            if torch.isnan(test_loss) == True:
+                test_loss = torch.nan_to_num(test_loss)
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
         def predict_step(self, batch, batch_idx):
@@ -425,11 +435,11 @@ class LeNetShannon(pl.LightningModule):
                 LinearShannon(84, num_classes),
             )
             
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
 
         def forward(self, x):
@@ -456,11 +466,11 @@ class LeNetShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -471,11 +481,11 @@ class LeNetShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 

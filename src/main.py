@@ -89,6 +89,7 @@ def main(inputs):
     print(model_name)
 
     expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
+    expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
 
     if torch.cuda.is_available():
         devices = inputs.devices
@@ -142,14 +143,14 @@ def main(inputs):
     #                                 mlf_logger.run_id))
 
 
-    print(ModelSummary(model, max_depth=-1))
+    # print(ModelSummary(model, max_depth=-1))
 
 if __name__ == '__main__':
     
     parser = ArgumentParser()
     parser.add_argument("--model", default='lenet')
     parser.add_argument("--kernel", default=None)
-    parser.add_argument("--layers", default=None)
+    parser.add_argument("--layers", default='all')
     parser.add_argument("--devices", default=1)
     parser.add_argument("--max_epochs", default=5)
     parser.add_argument("--rep", default=False) ## reproducible flag

@@ -8,13 +8,13 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, random_split
 import pytorch_lightning as pl
-from torchvision.datasets import CIFAR10, CIFAR100, MNIST
+from torchvision.datasets import CIFAR10, CIFAR100, MNIST, SVHN
 ## cifar download problem solve
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 class Cifar10DataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "../data", batch_size=32):
+    def __init__(self, data_dir: str = "/ds/images/CIFAR", batch_size=32):
         super().__init__()
         self.data_dir = data_dir
         self.transform = transforms.Compose([transforms.Resize(256),
@@ -25,8 +25,8 @@ class Cifar10DataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         # download
-        CIFAR10(self.data_dir, train=True, download=True)
-        CIFAR10(self.data_dir, train=False, download=True)
+        CIFAR10(self.data_dir, train=True, download=False)
+        CIFAR10(self.data_dir, train=False, download=False)
 
     def setup(self, stage= None):
 
@@ -60,7 +60,7 @@ class Cifar10DataModule(pl.LightningDataModule):
 
 
 class Cifar100DataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "../data", batch_size=32):
+    def __init__(self, data_dir: str = "/ds/images/CIFAR", batch_size=32):
         super().__init__()
         self.data_dir = data_dir
         self.transform = transforms.Compose([transforms.Resize(256),
@@ -71,8 +71,8 @@ class Cifar100DataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         # download
-        CIFAR100(self.data_dir, train=True, download=True)
-        CIFAR100(self.data_dir, train=False, download=True)
+        CIFAR100(self.data_dir, train=True, download=False)
+        CIFAR100(self.data_dir, train=False, download=False)
 
     def setup(self, stage= None):
 
@@ -106,7 +106,7 @@ class Cifar100DataModule(pl.LightningDataModule):
 
 
 class MNISTDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = "../data", batch_size=32):
+    def __init__(self, data_dir: str = "/ds/images", batch_size=32):
         super().__init__()
         self.data_dir = data_dir
         self.transform = transforms.Compose([transforms.Resize(256),
@@ -118,8 +118,8 @@ class MNISTDataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         # download
-        MNIST(self.data_dir, train=True, download=True)
-        MNIST(self.data_dir, train=False, download=True)
+        MNIST(self.data_dir, train=True, download=False)
+        MNIST(self.data_dir, train=False, download=False)
 
     def setup(self, stage= None):
 
@@ -150,3 +150,48 @@ class MNISTDataModule(pl.LightningDataModule):
 
     def predict_dataloader(self):
         return DataLoader(self.mnist_predict, batch_size=self.batch_size)
+
+class SVHNDataModule(pl.LightningDataModule):
+    def __init__(self, data_dir: str = "/ds/images/SVHN/SVHN", batch_size=32):
+        super().__init__()
+        self.data_dir = data_dir
+        self.transform = transforms.Compose([transforms.Resize(256),
+                                            transforms.CenterCrop(224),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),])
+        self.batch_size = batch_size
+
+    def prepare_data(self):
+        # download
+        SVHN(self.data_dir, split = 'train', download=False)
+        SVHN(self.data_dir, split = 'test', download=False)
+
+    def setup(self, stage= None):
+
+        # Assign train/val datasets for use in dataloaders
+        if stage == "fit" or stage is None:
+            SVHN_full = SVHN(self.data_dir, split = 'train', transform=self.transform)
+            
+            val_size = int(len(SVHN_full)*0.1)
+            train_size = int(len(SVHN_full) - val_size)
+
+            self.SVHN_train, self.SVHN_val = random_split(SVHN_full, [train_size, val_size], generator=torch.Generator().manual_seed(42))
+
+        # Assign test dataset for use in dataloader(s)
+        if stage == "test" or stage is None:
+            self.SVHN_test = SVHN(self.data_dir, split = 'test', transform=self.transform)
+
+        if stage == "predict" or stage is None:
+            self.SVHN_predict = SVHN(self.data_dir, split = 'test', transform=self.transform)
+
+    def train_dataloader(self):
+        return DataLoader(self.SVHN_train, batch_size=self.batch_size, shuffle=True)
+
+    def val_dataloader(self):
+        return DataLoader(self.SVHN_val, batch_size=self.batch_size)
+
+    def test_dataloader(self):
+        return DataLoader(self.SVHN_test, batch_size=self.batch_size)
+
+    def predict_dataloader(self):
+        return DataLoader(self.SVHN_predict, batch_size=self.batch_size)

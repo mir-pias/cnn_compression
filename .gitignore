@@ -13,3 +13,4 @@ utils/complex_2.py
 expt.py
 prototypes/
 *.out
+*.sh

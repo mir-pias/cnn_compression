@@ -253,7 +253,7 @@ class ResNetConvShannon(pl.LightningModule):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        x = complex_abs(x) ## complex -> real
+        x = complex_abs(x + 1e-6) ## complex -> real
 
         x = torch.flatten(x, 1)
         x = self.fc(x)

@@ -198,7 +198,7 @@ class LeNetConvDFT(pl.LightningModule):
 
         def forward(self, x):
             x = self.features(x)
-            x = complex_abs(x)
+            x = complex_abs(x + 1e-6) 
             x = torch.flatten(x, 1) # flatten all dimensions except the batch dimension
             x = self.classifier(x)
             return x   

@@ -410,7 +410,7 @@ class AlexNetConvShannon(pl.LightningModule):
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
             x = self.avgpool(x)
-            x = complex_abs(x)
+            x = complex_abs(x + 1e-6)
             x = torch.flatten(x, 1)
             x = self.classifier(x)
             return x

@@ -198,7 +198,7 @@ class DenseNetConvShannon(pl.LightningModule):
         complex_adaptive_avg_pool2d = nn.AdaptiveAvgPool3d((1,1,2))
         out = complex_adaptive_avg_pool2d(out)
 
-        out = complex_abs(out)
+        out = complex_abs(out + 1e-6)
         out = torch.flatten(out, 1)
         out = self.classifier(out)
         return out

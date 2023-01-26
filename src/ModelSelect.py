@@ -45,6 +45,7 @@ from models.DenseNet.ShanDenseNets.DenseNetConvShannon import densenet121ConvSha
 from models.DenseNet.ShanDenseNets.DenseNetLinearShannon import densenet121LinearShannon, densenet201LinearShannon
 from models.DenseNet.ShanDenseNets.DenseNetShannon import densenet121Shannon, densenet201Shannon
 
+
 class ModelSelect():
     def __init__(self) -> None:
         pass
@@ -317,7 +318,14 @@ class ModelSelect():
                 return densenet201ConvShannon(num_classes=num_classes,in_channels=in_channels), 'DenseNet201ConvShannon'
             if layers.casefold() == 'fc' or layers.casefold() == 'linear' or layers.casefold() == 'dense':
                 return densenet201LinearShannon(num_classes=num_classes,in_channels=in_channels), 'DenseNet201LinearShannon'
-        
+    
+    # def _resnet18Ablation(self, kernel, layers, num_classes, in_channels):
+    #     if kernel == None:
+    #         return resnet18Ablation(num_classes=num_classes, in_channels=in_channels), 'ResNet18AblationShan'
+
+    # def _resnet50Ablation(self, kernel, layers, num_classes, in_channels):
+    #     if kernel == None:
+    #         return resnet50Ablation(num_classes=num_classes, in_channels=in_channels), 'ResNet50AblationShan'
         
 
     def getModel(self,model,kernel:None,layers:None,num_classes:int,in_channels:int):
@@ -339,4 +347,12 @@ class ModelSelect():
 
         if model.casefold() == 'densenet201':
             return self._densenet201(kernel,layers,num_classes, in_channels)
+
+        # if model.casefold() == 'resnet18Ablation':
+        #     return self._resnet18Ablation(kernel,layers,num_classes, in_channels)
+
+        # if model.casefold() == 'resnet50Ablation':
+        #     return self._resnet50Ablation(kernel,layers,num_classes, in_channels)
+
+    
         

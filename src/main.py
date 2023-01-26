@@ -3,8 +3,6 @@ sys.path.append('.')
 
 import torch
 
-
-
 from models.DataModules.DataModules import Cifar10DataModule, Cifar100DataModule, MNISTDataModule, SVHNDataModule
 from models.DataModules.DataModules_lenet import Cifar10DataModuleLenet, Cifar100DataModuleLenet, MNISTDataModuleLenet, SVHNDataModuleLenet
 
@@ -91,11 +89,11 @@ def main(inputs):
     expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
     expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
 
-    if torch.cuda.is_available():
-        devices = inputs.devices
-        torch.cuda.amp.autocast(enabled=False)
-    else:
-        devices = None
+    # if torch.cuda.is_available():
+    devices = inputs.devices
+    torch.cuda.amp.autocast(enabled=False)
+    # else:
+    #     devices = None
 
     # try:
     #     expt_id = mlflow.create_experiment(expt_id,artifact_location='/netscratch/pias/mlruns')
@@ -113,7 +111,7 @@ def main(inputs):
     ## train and test
     # with mlflow.start_run(experiment_id = expt_id, run_name=run_name ) as run:
     if inputs.rep:
-        trainer_det = pl.Trainer(accelerator="auto",
+        trainer_det = pl.Trainer(accelerator="gpu", num_nodes = int(inputs.nodes),
                                 devices=devices, 
                                 max_epochs=int(inputs.max_epochs),deterministic=True, logger=mlf_logger,
                                 callbacks=[TQDMProgressBar(refresh_rate=20)],
@@ -126,7 +124,7 @@ def main(inputs):
         trainer_det.test(model=model, datamodule=data)
 
     else:
-        trainer = pl.Trainer(accelerator="auto",
+        trainer = pl.Trainer(accelerator="gpu",num_nodes = int(inputs.nodes),
                             devices=devices, 
                             max_epochs=int(inputs.max_epochs),
                             logger=mlf_logger, callbacks=[TQDMProgressBar(refresh_rate=20)],
@@ -156,6 +154,7 @@ if __name__ == '__main__':
     parser.add_argument("--rep", default=False) ## reproducible flag
     parser.add_argument('--dataset', default='mnist')
     parser.add_argument('--batch_size', default=32)
+    parser.add_argument('--nodes', default=1)
     args = parser.parse_args()
     
     main(args)

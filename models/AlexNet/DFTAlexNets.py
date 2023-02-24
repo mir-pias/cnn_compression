@@ -39,11 +39,11 @@ class AlexNetLinearDFT(pl.LightningModule):
                 LinearDFT(4096, num_classes),
             )
 
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
@@ -73,11 +73,11 @@ class AlexNetLinearDFT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
         
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -88,11 +88,11 @@ class AlexNetLinearDFT(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -132,15 +132,15 @@ class AlexNetConvDFT(pl.LightningModule):
                 nn.Linear(4096, num_classes),
             )
 
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
             x = self.avgpool(x)
-            x = complex_abs(x)
+            x = complex_abs(x + 1e-6)
             x = torch.flatten(x, 1)
             x = self.classifier(x)
             return x
@@ -164,11 +164,11 @@ class AlexNetConvDFT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
         
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -179,11 +179,11 @@ class AlexNetConvDFT(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 
@@ -223,10 +223,11 @@ class AlexNetDFT(pl.LightningModule):
                 LinearDFT(4096, num_classes),
             )
 
-            self.val_accuracy = Accuracy()
-            self.test_accuracy = Accuracy()
-            self.val_ap = AveragePrecision(num_classes=num_classes)
-            self.test_ap = AveragePrecision(num_classes=num_classes)
+            self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+            self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+
+            # self.val_ap = AveragePrecision(num_classes=num_classes)
+            # self.test_ap = AveragePrecision(num_classes=num_classes)
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             x = self.features(x)
@@ -256,11 +257,11 @@ class AlexNetDFT(pl.LightningModule):
             preds = torch.argmax(y_hat, dim=1)
         
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -271,11 +272,11 @@ class AlexNetDFT(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.test_accuracy.update(preds, y)
-            self.test_ap.update(y_hat, y)
+            # self.test_ap.update(y_hat, y)
 
             self.log("test_loss", test_loss, prog_bar=True)
             self.log("test_acc", self.test_accuracy, prog_bar=True)
-            self.log('test_AP', self.test_ap,prog_bar=True)
+            # self.log('test_AP', self.test_ap,prog_bar=True)
 
             # return test_loss, self.test_accuracy
 

@@ -170,7 +170,7 @@ shannon -
 
 06-12
 
-16.12.2022: pre-draft (outline is defined on both top- and within-chapter level, >=60% of writing is done), please share as PDF per email
+    16.12.2022: pre-draft (outline is defined on both top- and within-chapter level, >=60% of writing is done), please share as PDF per email
     20.01.2023: first draft (all chapters written, experimental results might be pending), please share as PDF per email
     10.02.2023: second draft (experiments and writing finished), please share as PDF per email
     03.03.2023: final draft, please share as PDF per email; schedule defense

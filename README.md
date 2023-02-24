@@ -1,5 +1,4 @@
 # cnn_compression
-DEADLINE : 01.09.2022
 
 run example 
 
@@ -19,7 +18,7 @@ options
 
 --rep: default=False ## reproducible flag, to compare changes in runs. 
 
---dataset: default=cifar10 || cifar10, cifar100, mnist
+--dataset: default=cifar10 || cifar10, cifar100, mnist, svhn
 
 -- batch_size: default=32
 

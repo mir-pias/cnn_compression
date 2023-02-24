@@ -1,0 +1,12 @@
+mlflow
+apex==0.1
+cffi==1.15.0
+cloudpickle==2.0.0
+defusedxml==0.7.1
+ipython==8.1.1
+nvidia-dali-cuda110==1.11.1
+pytorch-lightning==1.7.3
+regex==2022.3.15
+torch==1.12.0a0
+torchtext==0.12.0a0
+torchvision==0.13.0a0

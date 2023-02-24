@@ -13,7 +13,8 @@ from typing import Any, List, Optional, Tuple
 
 import torch.utils.checkpoint as cp
 from torch import Tensor
-from models.TransformLayers.DST_layers import LinearDST, Conv2dDST
+from models.TransformLayers.Shan_layers import Conv2dShannon
+from utils.complex import Cardioid, ComplexBatchNorm2d, ComplexMaxPool2d, complex_abs
 
 ## https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
@@ -22,20 +23,20 @@ class _DenseLayer(nn.Module):
         self, num_input_features: int, growth_rate: int, bn_size: int, drop_rate: float, memory_efficient: bool = False
     ) -> None:
         super().__init__()
-        self.norm1 = nn.BatchNorm2d(num_input_features)
-        self.relu1 = nn.ReLU(inplace=True)
-        self.conv1 = Conv2dDST(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
+        # self.norm1 = ComplexBatchNorm2d(num_input_features)
+        self.cardioid1 = Cardioid()
+        self.conv1 = Conv2dShannon(num_input_features, bn_size * growth_rate, kernel_size=1, stride=1, bias=False)
 
-        self.norm2 = nn.BatchNorm2d(bn_size * growth_rate)
-        self.relu2 = nn.ReLU(inplace=True)
-        self.conv2 = Conv2dDST(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
+        # self.norm2 = ComplexBatchNorm2d(bn_size * growth_rate)
+        self.cardioid2 = Cardioid()
+        self.conv2 = Conv2dShannon(bn_size * growth_rate, growth_rate, kernel_size=3, stride=1, padding=1, bias=False)
 
         self.drop_rate = float(drop_rate)
         self.memory_efficient = memory_efficient
 
     def bn_function(self, inputs: List[Tensor]) -> Tensor:
         concated_features = torch.cat(inputs, 1)
-        bottleneck_output = self.conv1(self.relu1(self.norm1(concated_features)))  # noqa: T484
+        bottleneck_output = self.conv1(self.cardioid1(concated_features))  # noqa: T484
         return bottleneck_output
 
     # todo: rewrite when torchscript supports any
@@ -76,7 +77,7 @@ class _DenseLayer(nn.Module):
         else:
             bottleneck_output = self.bn_function(prev_features)
 
-        new_features = self.conv2(self.relu2(self.norm2(bottleneck_output)))
+        new_features = self.conv2(self.cardioid2(bottleneck_output))
         if self.drop_rate > 0:
             new_features = F.dropout(new_features, p=self.drop_rate, training=self.training)
         return new_features
@@ -116,13 +117,14 @@ class _DenseBlock(nn.ModuleDict):
 class _Transition(nn.Sequential):
     def __init__(self, num_input_features: int, num_output_features: int) -> None:
         super().__init__()
-        self.norm = nn.BatchNorm2d(num_input_features)
-        self.relu = nn.ReLU(inplace=True)
-        self.conv = Conv2dDST(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
-        self.pool = nn.AvgPool2d(kernel_size=2, stride=2)
+        # self.norm = ComplexBatchNorm2d(num_input_features)
+        self.cardioid = Cardioid()
+        self.conv = Conv2dShannon(num_input_features, num_output_features, kernel_size=1, stride=1, bias=False)
+        self.pool =  nn.AvgPool3d(kernel_size=(2,2,1), stride=(2,2,1))
 
 
-class DenseNetDST(pl.LightningModule):
+class AbDenseNetConvShan(pl.LightningModule):
+   
 
     def __init__(
         self,
@@ -142,10 +144,10 @@ class DenseNetDST(pl.LightningModule):
         self.features = nn.Sequential(
             OrderedDict(
                 [
-                    ("conv0", Conv2dDST(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
-                    ("norm0", nn.BatchNorm2d(num_init_features)),
-                    ("relu0", nn.ReLU(inplace=True)),
-                    ("pool0", nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
+                    ("conv0", Conv2dShannon(in_channels, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
+                    # ("norm0", ComplexBatchNorm2d(num_init_features)),
+                    ("cardioid0", Cardioid()),
+                    ("pool0", ComplexMaxPool2d(kernel_size=3, stride=2, padding=1)),
                 ]
             )
         )
@@ -169,31 +171,34 @@ class DenseNetDST(pl.LightningModule):
                 num_features = num_features // 2
 
         # Final batch norm
-        self.features.add_module("norm5", nn.BatchNorm2d(num_features))
+        # self.features.add_module("norm5", ComplexBatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = LinearDST(num_features, num_classes)
+        self.classifier = nn.Linear(num_features, num_classes)
 
         # Official init from torch repo.
         for m in self.modules():
-            # if isinstance(m, Conv2dDST):
+            # if isinstance(m, Conv2dShannon):
             #     nn.init.kaiming_normal_(m.weight)
-            if isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
+            # if isinstance(m, ComplexBatchNorm2d):
+                # nn.init.constant_(m.weight, 1)
+                # nn.init.constant_(m.bias, 0)
+            if isinstance(m, nn.Linear):
                 nn.init.constant_(m.bias, 0)
-            # elif isinstance(m, LinearDST):
-            #     nn.init.constant_(m.bias, 0)
         
         self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
         self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
-
         # self.val_ap = AveragePrecision(num_classes=num_classes)
         # self.test_ap = AveragePrecision(num_classes=num_classes)
 
     def forward(self, x: Tensor) -> Tensor:
         features = self.features(x)
-        out = F.relu(features, inplace=True)
-        out = F.adaptive_avg_pool2d(out, (1, 1))
+        out = Cardioid.cardioid(features)
+
+        complex_adaptive_avg_pool2d = nn.AdaptiveAvgPool3d((1,1,2))
+        out = complex_adaptive_avg_pool2d(out)
+
+        out = complex_abs(out + 1e-6)
         out = torch.flatten(out, 1)
         out = self.classifier(out)
         return out
@@ -240,27 +245,26 @@ class DenseNetDST(pl.LightningModule):
         # self.log('test_AP', self.test_ap,prog_bar=True)
 
         # return test_loss, self.test_accuracy
-
     def predict_step(self, batch, batch_idx):
         x, y = batch
         pred = self(x)
         return pred
 
-def _densenetDST(
+def _abDensenetConvShan(
     growth_rate: int,
     block_config: Tuple[int, int, int, int],
     num_init_features: int,
     num_classes: int,
     **kwargs: Any,
-) -> DenseNetDST:
+) -> AbDenseNetConvShan:
 
-    model = DenseNetDST(growth_rate, block_config, num_init_features, num_classes, **kwargs)
+    model = AbDenseNetConvShan(growth_rate, block_config, num_init_features, num_classes, **kwargs)
     return model
 
-def densenet121DST(*,num_classes , **kwargs: Any) -> DenseNetDST:
+def abDensenet121ConvShan(*,num_classes , **kwargs: Any) -> AbDenseNetConvShan:
 
-    return _densenetDST(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
+    return _abDensenetConvShan(32, (6, 12, 24, 16), 64, num_classes, **kwargs)
 
-def densenet201DST(*,num_classes , **kwargs: Any) -> DenseNetDST:
+def abDensenet201ConvShan(*,num_classes , **kwargs: Any) -> AbDenseNetConvShan:
 
-    return _densenetDST(32, (6, 12, 48, 32), 64, num_classes, **kwargs)
+    return _abDensenetConvShan(32, (6, 12, 48, 32), 64, num_classes, **kwargs)

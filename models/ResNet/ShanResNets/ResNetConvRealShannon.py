@@ -191,11 +191,11 @@ class ResNetConvRealShannon(pl.LightningModule):
                     nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
                 elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
                     nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
-        self.val_accuracy = Accuracy()
-        self.test_accuracy = Accuracy()
+        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.test_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
-        self.val_ap = AveragePrecision(num_classes=num_classes)
-        self.test_ap = AveragePrecision(num_classes=num_classes)
+        # self.val_ap = AveragePrecision(num_classes=num_classes)
+        # self.test_ap = AveragePrecision(num_classes=num_classes)
 
     def _make_layer(
         self,
@@ -277,11 +277,11 @@ class ResNetConvRealShannon(pl.LightningModule):
             
             preds = torch.argmax(y_hat, dim=1)
             self.val_accuracy.update(preds, y)
-            self.val_ap.update(y_hat, y)
+            # self.val_ap.update(y_hat, y)
 
             self.log("val_loss", val_loss, prog_bar=True)
             self.log("val_acc", self.val_accuracy, prog_bar=True)
-            self.log('val_AP', self.val_ap,prog_bar=True)
+            # self.log('val_AP', self.val_ap,prog_bar=True)
             
             # return val_loss, self.val_accuracy
              
@@ -292,11 +292,11 @@ class ResNetConvRealShannon(pl.LightningModule):
         
         preds = torch.argmax(y_hat, dim=1)
         self.test_accuracy.update(preds, y)
-        self.test_ap.update(y_hat, y)
+        # self.test_ap.update(y_hat, y)
 
         self.log("test_loss", test_loss, prog_bar=True)
         self.log("test_acc", self.test_accuracy, prog_bar=True)
-        self.log('test_AP', self.test_ap,prog_bar=True)
+        # self.log('test_AP', self.test_ap,prog_bar=True)
 
         # return test_loss, self.test_accuracy
 

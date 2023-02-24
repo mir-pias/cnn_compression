@@ -36,11 +36,6 @@ def mlflowExpt(model: str):
     if 'densenet201' in model.casefold():
         return "DenseNet201s"
 
-    if 'resnet18Ablation' in model.casefold():
-         return "ResNet18Ablation"
-
-    if 'resnet50Ablation' in model.casefold():
-         return "ResNet50Ablation"
 
 def main(inputs):
     
@@ -86,8 +81,10 @@ def main(inputs):
     model , model_name = modelSelect.getModel(inputs.model, inputs.kernel, inputs.layers, num_classes, in_channels)
     print(model_name)
 
-    expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
-    expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
+    if 'ablation' in model_name.casefold():
+        expt_id = inputs.dataset + "_Ablation" + mlflowExpt(inputs.model)
+    else:
+        expt_id = inputs.dataset + "_" + mlflowExpt(inputs.model)
 
     # if torch.cuda.is_available():
     devices = inputs.devices

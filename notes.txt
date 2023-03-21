@@ -194,6 +194,7 @@ shannon -
 	optimization procedure;
     4. Formal requirements of the Department fulfilled.
 
+<<<<<<< HEAD
 
 
 
@@ -232,3 +233,15 @@ you take the DCT along the X-axis first, then you apply the same kernel to the o
 3) Finally, in the chosen models, replace all Conv2d- and FC-layers with the compressed counterparts and evaluate 
 the performance following the same procedure. This way, you'll come up with an in-depth evaluation of the effect of 
 the proposed layer compression approach on model's performance and size.
+=======
+    nvcr.io_nvidia_pytorch_22.11-py3.sqsh
+
+    $ srun -K \
+  --job-name="lenet_test" \
+  --gpus=1 \
+  --container-mounts=/netscratch/pias:/netscratch/pias,/ds:/ds:ro,"`pwd`":"`pwd`" \
+  --container-image=/netscratch/enroot/nvcr.io_nvidia_pytorch_22.11-py3.sqsh \
+  --container-workdir="`pwd`" \
+  --mail-type=ALL --mail-user=mir.pias01@gmail.com \
+  python src/main.py
+>>>>>>> e452af85cdbfa6f5ce53f46f41fd86604f640be6

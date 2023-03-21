@@ -39,8 +39,11 @@ datasets: CIFAR10, CIFAR100, MNIST, SVHN
 Hyperparameters:
 
 optimizer: SGDM, momentum = 0.9
+
 learning_rate=1e-3
+
 loss function: cross_entropy
+
 train_val split: 90% train, 10% validation
 
 Currently, changes in hyperparameters (except for train_val split, specified in DataModules.py and DataModules_lenet.py) have to be made for each model individually

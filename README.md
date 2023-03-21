@@ -1,4 +1,4 @@
-# cnn_compression
+# cnn_compression using integral transform kernels
 
 usage: install requirements.txt, make necessary changes in DataModules.py and DataModules_lenet.py to read the datasets, run with the desired arguments. Models are built using lightning module and training runs are logged using MLFlow, kindly refer to MLFlow and pytorch-lightling documentations. 
 

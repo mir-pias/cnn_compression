@@ -12,7 +12,7 @@ run example
 
 python src/main.py --model=alexnet --kernel=dct --layers=linear --devices=4 --max_epochs=30 --dataset=mnist batch_size=64 nodes=1
 
-options
+arguments
 
 --model: default=LeNet || alexnet, resnet18, resnet50, densenet121, densenet201
 
@@ -37,6 +37,7 @@ datasets: CIFAR10, CIFAR100, MNIST, SVHN
 
 
 Hyperparameters:
+
 optimizer: SGDM, momentum = 0.9
 learning_rate=1e-3
 loss function: cross_entropy

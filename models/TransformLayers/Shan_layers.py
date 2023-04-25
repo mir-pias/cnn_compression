@@ -54,7 +54,7 @@ class LinearRealShannon(nn.Module):
 
         self.fc.register_hook(lambda grad: grad / (torch.linalg.norm(grad) + 1e-8))
 
-    def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
+    def materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         in_features = x.shape[-1]
 
         t = torch.arange(
@@ -81,7 +81,7 @@ class LinearRealShannon(nn.Module):
         return w.unsqueeze(1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        w = self._materialize_weights(x)
+        w = self.materialize_weights(x)
         dummy = torch.ones(x.shape[0], *((1,) * (x.dim() - 1)), device=x.device, dtype=x.dtype, requires_grad=False)
 
         y = F.bilinear(dummy, x, w, bias=self.bias)
@@ -153,7 +153,7 @@ class Conv2dRealShannon(torch.nn.Module):
         self.fcw.register_hook(norm)
         self.delta.register_hook(norm)
 
-    def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
+    def materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         in_channels: int = x.shape[1] // self.groups
 
         tc: torch.Tensor = torch.arange(
@@ -222,7 +222,7 @@ class Conv2dRealShannon(torch.nn.Module):
         return w
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        w = self._materialize_weights(x)
+        w = self.materialize_weights(x)
 
         y = F.conv2d(
             input=x,
@@ -277,7 +277,7 @@ class LinearShannon(nn.Module):
                 param=None
             )
     
-    def _materialize_weights(self, x):
+    def materialize_weights(self, x):
         x_is_complex = x.shape[-1] == 2
         in_features = x.shape[-1 - int(x_is_complex)]
 
@@ -299,7 +299,7 @@ class LinearShannon(nn.Module):
         return weights.unsqueeze(1), x_is_complex
 
     def forward(self,x):
-        weights, x_is_complex = self._materialize_weights(x) 
+        weights, x_is_complex = self.materialize_weights(x) 
 
         dummy = torch.ones(x.shape[0], *((1,) * (x.dim() - 1)), device=x.device, dtype=x.dtype, requires_grad=False)
         
@@ -403,7 +403,7 @@ class Conv2dShannon(torch.nn.Module):
         self.fcw.register_hook(norm)
         self.delta.register_hook(norm)
 
-    def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
+    def materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         in_channels = x.shape[1]
     
         x_is_complex = x.shape[-1] == 2
@@ -469,7 +469,7 @@ class Conv2dShannon(torch.nn.Module):
         return w, x_is_complex 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        weights, x_is_complex = self._materialize_weights(x)
+        weights, x_is_complex = self.materialize_weights(x)
         
         if x_is_complex:
 

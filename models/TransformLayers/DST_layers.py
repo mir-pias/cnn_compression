@@ -148,7 +148,7 @@ class Conv2dDST(torch.nn.Module):
         self.fcw.register_hook(norm)
 
 
-    def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
+    def materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         # in_channels: int = x.shape[1] // self.groups
         in_channels = self.in_channels // self.groups
 
@@ -232,7 +232,7 @@ class Conv2dDST(torch.nn.Module):
         return w 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        w = self._materialize_weights(x)
+        w = self.materialize_weights(x)
 
         y = F.conv2d(
             input=x,

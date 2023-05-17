@@ -166,7 +166,7 @@ class Conv2dDFT(torch.nn.Module):
         self.fcw.register_hook(norm)
         self.delta.register_hook(norm)
 
-    def _materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
+    def materialize_weights(self, x: torch.Tensor) -> torch.Tensor:
         in_channels = x.shape[1]
     
         x_is_complex = x.shape[-1] == 2
@@ -226,7 +226,7 @@ class Conv2dDFT(torch.nn.Module):
         return w, x_is_complex 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        weights, x_is_complex = self._materialize_weights(x)
+        weights, x_is_complex = self.materialize_weights(x)
         # print('w: ', w.shape)
         
         if x_is_complex:
